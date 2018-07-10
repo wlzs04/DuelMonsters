@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-16"?>
+<UserData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <audioValue>1</audioValue>
+  <userCardList>
+    <UserCardData>
+      <cardNo>1</cardNo>
+      <number>2</number>
+    </UserCardData>
+    <UserCardData>
+      <cardNo>2</cardNo>
+      <number>2</number>
+    </UserCardData>
+    <UserCardData>
+      <cardNo>3</cardNo>
+      <number>3</number>
+    </UserCardData>
+  </userCardList>
+</UserData>
