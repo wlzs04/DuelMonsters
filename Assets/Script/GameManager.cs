@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Assets.Script.Card;
+using Assets.Script.Helper;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,16 +14,32 @@ namespace Assets.Script
 {
     class GameManager
     {
-        GameState gameState = new GameState();
         static GameManager gameManagerInstance = new GameManager();
-        UserData userdata;
         string gameSavePath = "/UserDate.txt";
+        string audioPath = "Audio/";
+        string bgmName = "DuelBGM";
+        string cardPath = "/Resources/CardData/";
+        string resourcesCardPath = "CardData/";
+
+        public UserData Userdata { get; private set; }
+        public GameState CurrentGameState { get; private set; }
+        
+        AudioSource bgmPlayer;
+
+        public Dictionary<int,CardBase> allCardInfoList { get; private set; }
 
         private GameManager()
         {
-            gameState = GameState.MainScene;
+            CurrentGameState = GameState.MainScene;
 
             LoadUserData();
+
+            LoadAllCardData();
+
+            bgmPlayer = GameObject.Find("BGMAudio").GetComponent<AudioSource>();
+            bgmPlayer.clip = Resources.Load<AudioClip>(audioPath + bgmName); ;
+            bgmPlayer.volume = Userdata.audioValue;
+            bgmPlayer.Play();
         }
 
         public static GameManager GetSingleInstance()
@@ -30,25 +48,35 @@ namespace Assets.Script
         }
 
         /// <summary>
+        /// 设置音量大小
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetAudioVolume(float value)
+        {
+            Userdata.audioValue = value;
+            bgmPlayer.volume = value;
+        }
+
+        /// <summary>
         /// 返回上一场景
         /// </summary>
         public void ReturnLastScene()
         {
-            switch (gameState)
+            switch (CurrentGameState)
             {
                 case GameState.MainScene:
                     break;
                 case GameState.DuelScene:
-                    SceneManager.LoadScene("MainScene",LoadSceneMode.Single);
-                    gameState = GameState.MainScene;
+                    SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+                    CurrentGameState = GameState.MainScene;
                     break;
                 case GameState.CardGroupScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
-                    gameState = GameState.MainScene;
+                    CurrentGameState = GameState.MainScene;
                     break;
                 case GameState.SettingScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
-                    gameState = GameState.MainScene;
+                    CurrentGameState = GameState.MainScene;
                     break;
                 default:
                     break;
@@ -60,19 +88,18 @@ namespace Assets.Script
         /// </summary>
         public void LoadUserData()
         {
-            if(File.Exists(Application.dataPath + gameSavePath))
+            if (File.Exists(Application.dataPath + gameSavePath))
             {
-
-                string xmlStr = File.ReadAllText(Application.dataPath + gameSavePath);
-                userdata = DESerializer<UserData>(xmlStr);
+                Userdata = XMLHelper.LoadDataFromXML<UserData>(Application.dataPath + gameSavePath);
             }
             else
             {
-                userdata = new UserData();
-                UserCardData ucd = new UserCardData();
-                ucd.cardNo = 1;
-                ucd.number = 2;
-                userdata.userCardList.Add(ucd);
+                Debug.LogError("LoadUserData,存档缺失！");
+                //Userdata = new UserData();
+                //UserCardData ucd = new UserCardData();
+                //ucd.cardNo = 1;
+                //ucd.number = 2;
+                //Userdata.userCardList.Add(ucd);
             }
         }
 
@@ -81,43 +108,33 @@ namespace Assets.Script
         /// </summary>
         public void SaveUserData()
         {
-            string strxml = XmlSerialize<UserData>(userdata);
-            File.WriteAllText(Application.dataPath + gameSavePath, strxml);
-            
-            //BinaryFormatter bf = new BinaryFormatter();
-            //FileStream file = new FileStream();
-            //bf.Serialize(file, userdata);
-            //file.Close();
+            XMLHelper.SaveDataToXML(Application.dataPath + gameSavePath,Userdata);
         }
 
-        /// <summary>
-        /// 获得玩家数据
-        /// </summary>
-        public UserData GetUserData()
+        public void LoadAllCardData()
         {
-            return userdata;
-        }
+            allCardInfoList = new Dictionary<int, CardBase>();
+            int i = 1;
+            DirectoryInfo directoryInfo = new DirectoryInfo(Application.dataPath + cardPath);
 
-        public string XmlSerialize<T>(T obj)
-        {
-            using (StringWriter sw = new StringWriter())
+            foreach (var item in directoryInfo.GetDirectories())
             {
-                Type t = obj.GetType();
-                XmlSerializer serializer = new XmlSerializer(obj.GetType());
-                serializer.Serialize(sw, obj);
-                sw.Close();
-                return sw.ToString();
+                Sprite image = Resources.Load<Sprite>(resourcesCardPath + item.Name + "/image");
+                CardBase card = new CardBase();
+                card.SetImage(image);
+                i = int.Parse(item.Name);
+                allCardInfoList[i] = card;
             }
-        }
 
-        public T DESerializer<T>(string strXML) where T : class
-        {
-
-            using (StringReader sr = new StringReader(strXML))
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
-                return serializer.Deserialize(sr) as T;
-            }
+            //foreach (var item in Directory.GetDirectories(Application.dataPath + cardPath))
+            //{
+            //    string no = item.Substring(item.LastIndexOf('/') + 1);
+            //    Sprite image = Resources.Load<Sprite>(resourcesCardPath + no+"/image");
+            //    CardBase card = new CardBase();
+            //    card.SetImage(image);
+            //    i = int.Parse(no);
+            //    allCardInfoList[i] = card;
+            //}
         }
 
         /// <summary>
@@ -125,9 +142,9 @@ namespace Assets.Script
         /// </summary>
         public void EnterMainScene()
         {
-            if (gameState != GameState.MainScene)
+            if (CurrentGameState != GameState.MainScene)
             {
-                gameState = GameState.MainScene;
+                CurrentGameState = GameState.MainScene;
             }
             else
             {
@@ -140,9 +157,9 @@ namespace Assets.Script
         /// </summary>
         public void EnterDuelScene()
         {
-            if (gameState == GameState.MainScene)
+            if (CurrentGameState == GameState.MainScene)
             {
-                gameState = GameState.DuelScene;
+                CurrentGameState = GameState.DuelScene;
             }
             else
             {
@@ -155,9 +172,9 @@ namespace Assets.Script
         /// </summary>
         public void EnterCardGroupScene()
         {
-            if (gameState == GameState.MainScene)
+            if (CurrentGameState == GameState.MainScene)
             {
-                gameState = GameState.CardGroupScene;
+                CurrentGameState = GameState.CardGroupScene;
                 SceneManager.LoadScene("CardGroupScene", LoadSceneMode.Single);
             }
             else
@@ -171,9 +188,9 @@ namespace Assets.Script
         /// </summary>
         public void EnterSettingScene()
         {
-            if (gameState == GameState.MainScene)
+            if (CurrentGameState == GameState.MainScene)
             {
-                gameState = GameState.SettingScene;
+                CurrentGameState = GameState.SettingScene;
                 SceneManager.LoadScene("SettingScene",LoadSceneMode.Single);
             }
             else

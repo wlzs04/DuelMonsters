@@ -19,6 +19,7 @@ namespace Assets.Script
     public class UserData
     {
         public float audioValue = 1;
-        public List<UserCardData> userCardList=new List<UserCardData>();
+        public List<UserCardData> userCardList = new List<UserCardData>();
+        public List<UserCardData> userCardGroupList=new List<UserCardData>();
     }
 }

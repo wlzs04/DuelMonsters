@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GUIScript : MonoBehaviour {
 
@@ -10,6 +12,11 @@ public class GUIScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         gameManager = GameManager.GetSingleInstance();
+        if(gameManager.CurrentGameState==GameState.SettingScene)
+        {
+            float audioValue = gameManager.Userdata.audioValue;
+            GameObject.Find("AudioSlider").GetComponent<Slider>().value = audioValue;
+        }
     }
 	
 	// Update is called once per frame
@@ -43,5 +50,10 @@ public class GUIScript : MonoBehaviour {
     public void ReturnButtonClick()
     {
         gameManager.ReturnLastScene();
+    }
+
+    public void AudioSliderChange()
+    {
+        gameManager.SetAudioVolume(GameObject.Find("AudioSlider").GetComponent<Slider>().value);
     }
 }

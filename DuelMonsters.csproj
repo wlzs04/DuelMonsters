@@ -220,18 +220,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\AudioScript.cs" />
     <Compile Include="Assets\Script\Card\CardBase.cs" />
     <Compile Include="Assets\Script\Card\MagicCard.cs" />
     <Compile Include="Assets\Script\Card\MonsterCard.cs" />
     <Compile Include="Assets\Script\Card\TrapCard.cs" />
     <Compile Include="Assets\Script\CardGroupScript.cs" />
+    <Compile Include="Assets\Script\CardScript.cs" />
     <Compile Include="Assets\Script\GameDate.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
     <Compile Include="Assets\Script\GameState.cs" />
     <Compile Include="Assets\Script\GUIScript.cs" />
+    <Compile Include="Assets\Script\Helper\XMLHelper.cs" />
     <Compile Include="Assets\Script\UserData.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Resources\CardData\1\script.txt" />
+    <None Include="Assets\Resources\CardData\2\script.txt" />
+    <None Include="Assets\Resources\CardData\3\script.txt" />
     <None Include="Assets\UserDate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

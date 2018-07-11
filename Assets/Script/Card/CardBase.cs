@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Assets.Script.Card
 {
@@ -26,7 +27,19 @@ namespace Assets.Script.Card
     {
         CardType cardType = CardType.Monster;//卡片类型
         CardGameState cardGameState = CardGameState.Group;
+        Sprite image;
         string name = "未命名";//名称
         int cardNO = 0;//唯一编号，0代表为假卡。
+        string effect = "没有效果。";
+
+        internal void SetImage(Sprite image)
+        {
+            this.image = image;
+        }
+
+        internal Sprite GetImage()
+        {
+            return image;
+        }
     }
 }
