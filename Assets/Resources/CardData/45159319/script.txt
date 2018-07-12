@@ -1,0 +1,8 @@
+CardType:怪兽
+Name:石像迎击炮
+MonsterType:地
+Level:4
+ATK:1100
+DEF:2000
+Normal:False
+Effect:这张卡1个回合1次可以变成里侧守备表示。

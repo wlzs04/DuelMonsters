@@ -1,0 +1,8 @@
+CardType:怪兽
+Name:寻宝熊猫
+MonsterType:地
+Level:4
+ATK:1100
+DEF:2000
+Normal:False
+Effect:从自己墓地把最多3张魔法·陷阱卡里侧表示除外才能发动。和除外的卡数量相同等级的1只通常怪兽从卡组特殊召唤。

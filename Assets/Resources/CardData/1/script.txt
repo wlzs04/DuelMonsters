@@ -1,4 +1,0 @@
-Name:
-CardType:
-CardTypeType:
-Effect:

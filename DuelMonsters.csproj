@@ -227,17 +227,26 @@
     <Compile Include="Assets\Script\Card\TrapCard.cs" />
     <Compile Include="Assets\Script\CardGroupScript.cs" />
     <Compile Include="Assets\Script\CardScript.cs" />
-    <Compile Include="Assets\Script\GameDate.cs" />
+    <Compile Include="Assets\Script\DestroySelfScript.cs" />
+    <Compile Include="Assets\Script\Duel\DuelCardGroup.cs" />
+    <Compile Include="Assets\Script\Duel\DuelScene.cs" />
+    <Compile Include="Assets\Script\Duel\Player.cs" />
+    <Compile Include="Assets\Script\Duel\Rule\CardGroupRule.cs" />
+    <Compile Include="Assets\Script\Duel\Rule\DuelRule.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
     <Compile Include="Assets\Script\GameState.cs" />
+    <Compile Include="Assets\Script\GuessFirstScript.cs" />
     <Compile Include="Assets\Script\GUIScript.cs" />
     <Compile Include="Assets\Script\Helper\XMLHelper.cs" />
+    <Compile Include="Assets\Script\NetControllerScript.cs" />
     <Compile Include="Assets\Script\UserData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Resources\CardData\1\script.txt" />
-    <None Include="Assets\Resources\CardData\2\script.txt" />
-    <None Include="Assets\Resources\CardData\3\script.txt" />
+    <None Include="Assets\Resources\CardData\09852718\script.txt" />
+    <None Include="Assets\Resources\CardData\45121025\script.txt" />
+    <None Include="Assets\Resources\CardData\45159319\script.txt" />
+    <None Include="Assets\Resources\CardData\45221020\script.txt" />
+    <None Include="Assets\Resources\CardData\87769556\script.txt" />
     <None Include="Assets\UserDate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

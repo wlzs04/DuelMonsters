@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Assets.Script
+namespace Assets.Script.Duel
 {
-    class GameDate
+    class DuelCardGroup
     {
-        public List<CardBase> allCardList=new List<CardBase>();
+        List<CardBase> cards;
     }
 }

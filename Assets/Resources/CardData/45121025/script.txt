@@ -1,0 +1,8 @@
+CardType:怪兽
+Name:黑影鬼王
+MonsterType:地
+Level:4
+ATK:1200
+DEF:1400
+Normal:True
+Effect:被黑影附体的恶鬼。用惊人的速度突击。
