@@ -1,10 +1,13 @@
 ﻿using Assets.Script.Card;
 using Assets.Script.Duel;
 using Assets.Script.Helper;
+using Assets.Script.Net;
+using Assets.Script.Protocol;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml.Serialization;
@@ -20,18 +23,27 @@ namespace Assets.Script
         string gameSavePath = "/UserDate.txt";
         string audioPath = "Audio/";
         string bgmName = "DuelBGM";
-        string cardPath = "/Resources/CardData/";
-        string resourcesCardPath = "CardData/";
+        string duelBgmName = "光宗信吉-神々の戦い";
+
+        string resourcesCardPath = "/CardData/";
+        string ip = "10.237.20.13";
+        int port = 7777;
+        ServerManager serverManager = null;
+        ClientManager clientManager = null;
+        Queue<ClientProtocol> protocolQueue = new Queue<ClientProtocol>();
+        bool isServer = false;
 
         public UserData Userdata { get; private set; }
         public GameState CurrentGameState { get; private set; }
 
-        AudioSource bgmPlayer;
+        //AudioSource bgmPlayer;
+        AudioScript audioScript;
 
         public Dictionary<int,CardBase> allCardInfoList { get; private set; }
 
         DuelScene duelScene = null;
         GuessEnum myGuessEnum ;
+        GuessEnum opponentGuessEnum;
 
         private GameManager()
         {
@@ -39,18 +51,22 @@ namespace Assets.Script
             myGuessEnum = GuessEnum.Unknown;
 
             LoadUserData();
-
             LoadAllCardData();
 
-            bgmPlayer = GameObject.Find("BGMAudio").GetComponent<AudioSource>();
-            bgmPlayer.clip = Resources.Load<AudioClip>(audioPath + bgmName); ;
-            bgmPlayer.volume = Userdata.audioValue;
-            bgmPlayer.Play();
+            audioScript = GameObject.Find("BGMAudio").GetComponent<AudioScript>();
+            audioScript.Init();
+            audioScript.SetAudioByName(bgmName);
+            audioScript.SetVolume(Userdata.audioValue);
         }
 
         public static GameManager GetSingleInstance()
         {
             return gameManagerInstance;
+        }
+
+        public DuelScene GetDuelScene()
+        {
+            return duelScene;
         }
 
         /// <summary>
@@ -96,7 +112,7 @@ namespace Assets.Script
         public void SetAudioVolume(float value)
         {
             Userdata.audioValue = value;
-            bgmPlayer.volume = value;
+            audioScript.SetVolume(value);
         }
 
         /// <summary>
@@ -137,11 +153,7 @@ namespace Assets.Script
             else
             {
                 Debug.LogError("LoadUserData,存档缺失！");
-                //Userdata = new UserData();
-                //UserCardData ucd = new UserCardData();
-                //ucd.cardNo = 1;
-                //ucd.number = 2;
-                //Userdata.userCardList.Add(ucd);
+                Userdata = new UserData();
             }
         }
 
@@ -160,17 +172,27 @@ namespace Assets.Script
         {
             allCardInfoList = new Dictionary<int, CardBase>();
             int i = 1;
-            DirectoryInfo directoryInfo = new DirectoryInfo(Application.dataPath + cardPath);
+            if(!Directory.Exists(Application.dataPath + resourcesCardPath))
+            {
+                Debug.LogError("此路径没有找到卡牌："+ Application.dataPath + resourcesCardPath);
+                return;
+            }
+            DirectoryInfo directoryInfo = new DirectoryInfo(Application.dataPath + resourcesCardPath);
 
             foreach (var item in directoryInfo.GetDirectories())
             {
-                Sprite image = Resources.Load<Sprite>(resourcesCardPath + item.Name + "/image");
-                CardBase card = CardBase.LoadCardFromInfo(int.Parse(item.Name), File.ReadAllText(Application.dataPath + cardPath+ item.Name + "/script.txt"));
+                WWW www= new WWW(item.FullName + "\\image.jpg");
+                Texture2D texture = new Texture2D(177,254);
+                www.LoadImageIntoTexture(texture);
+                Sprite image = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+                //Resources.Load<Sprite>(resourcesCardPath + item.Name + "/image");
+                
+                CardBase card = CardBase.LoadCardFromInfo(int.Parse(item.Name), File.ReadAllText(item.FullName + "/script.txt"));
                 card.SetImage(image);
                 i = int.Parse(item.Name);
                 allCardInfoList[i] = card;
             }
-            //foreach (var item in Directory.GetDirectories(Application.dataPath + cardPath))
+            //foreach (var item in Directory.GetDirectories(Application.persistentDataPath + cardPath))
             //{
             //    string no = item.Substring(item.LastIndexOf('/') + 1);
             //    Sprite image = Resources.Load<Sprite>(resourcesCardPath + no+"/image");
@@ -206,6 +228,7 @@ namespace Assets.Script
                 CurrentGameState = GameState.DuelScene;
                 SceneManager.LoadScene("GuessFirstScene", LoadSceneMode.Single);
                 duelScene = new DuelScene();
+                StartNet();
             }
             else
             {
@@ -214,7 +237,52 @@ namespace Assets.Script
         }
 
         /// <summary>
-        /// 设定猜先选择
+        /// 启动网络功能
+        /// </summary>
+        public void StartNet()
+        {
+            clientManager = ClientManager.GetInstance();
+            clientManager.AddLegalProtocol(new CGuessFirst());
+            clientManager.AddLegalProtocol(new CDrawCard());
+            clientManager.AddLegalProtocol(new CCardGroup());
+
+            if (ServerManager.GetInstance().GetHostIPV4().ToString() == ip )
+            {
+                serverManager = ServerManager.GetInstance();
+                serverManager.AcceptNewSocketEvent += (Socket s) => { Debug.LogError("有新客户端"); };
+                if (serverManager.StartListen(port))
+                {
+                    serverManager.ProcessProtocolEvent += ProcessProtocolEvent;
+                    isServer = true;
+                }
+            }
+
+            if(!isServer)
+            {
+                clientManager.ConnectSuccessEvent += (Socket s) => { Debug.LogError("连接成功！"); };
+                clientManager.ConnectFailEvent += (Socket s) => { Debug.LogError("连接失败！"); };
+                clientManager.DisconnectEvent += (Socket s) => { Debug.LogError("连接断开！"); };
+                clientManager.StartConnect(ip, port);
+                clientManager.ProcessProtocolEvent += ProcessProtocolEvent;
+            }
+        }
+        
+        void ProcessProtocolEvent(ClientProtocol protocol)
+        {
+            protocolQueue.Enqueue(protocol);
+        }
+
+        void ProcessProtocol()
+        {
+            while (protocolQueue.Count>0)
+            {
+                ClientProtocol protocol = protocolQueue.Dequeue();
+                protocol.Process();
+            }
+        }
+
+        /// <summary>
+        /// 设定我方猜先选择
         /// </summary>
         /// <param name="guessEnum"></param>
         /// <returns></returns>
@@ -222,9 +290,13 @@ namespace Assets.Script
         {
             if (duelScene != null)
             {
-                if(myGuessEnum == GuessEnum.Unknown|| myGuessEnum == guessEnum)
+                if(myGuessEnum == GuessEnum.Unknown)
                 {
                     myGuessEnum = guessEnum;
+                    CGuessFirst guessFirst = new CGuessFirst();
+                    guessFirst.AddContent("guess", myGuessEnum.ToString());
+                    clientManager.SendProtocol(guessFirst);
+                    DecideGuessFirst();
                     return true;
                 }
                 else
@@ -237,6 +309,58 @@ namespace Assets.Script
                 Debug.LogError("SetMyGuess");
             }
             return false;
+        }
+
+        /// <summary>
+        /// 设置对方猜先的选择
+        /// </summary>
+        /// <param name="opponentGuess"></param>
+        public void SetOpponentGuess(GuessEnum opponentGuess)
+        {
+            if (duelScene != null)
+            {
+                opponentGuessEnum = opponentGuess;
+                GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuess-1).GetComponent<GuessFirstScript>().SetChooseState();
+                DecideGuessFirst();
+            }
+        }
+
+        public void ClearChoose()
+        {
+            GameObject.Find("myPanel").transform.GetChild((int)myGuessEnum - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+            GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuessEnum - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+            
+            myGuessEnum = GuessEnum.Unknown;
+            opponentGuessEnum = GuessEnum.Unknown;
+        }
+
+        /// <summary>
+        /// 决定谁先出牌
+        /// </summary>
+        void DecideGuessFirst()
+        {
+            if(myGuessEnum!=GuessEnum.Unknown&&opponentGuessEnum!=GuessEnum.Unknown)
+            {
+                if(myGuessEnum==opponentGuessEnum)
+                {
+                    ClearChoose();
+                    ShowMessage("重新选择！");
+                    return;
+                }
+                SceneManager.LoadScene("DuelScene",LoadSceneMode.Single);
+                audioScript.SetAudioByName(duelBgmName);
+                int tempValue = (int)myGuessEnum - (int)opponentGuessEnum;
+                if(tempValue == 1|| tempValue == - 2)
+                {
+                    ShowMessage("您先手！");
+                    duelScene.SetFirst(true);
+                }
+                else
+                {
+                    ShowMessage("您后手！");
+                    duelScene.SetFirst(false);
+                }
+            }
         }
 
         /// <summary>
@@ -292,6 +416,14 @@ namespace Assets.Script
 #else
         Application.Quit();
 #endif
+        }
+
+        public void Update()
+        {
+            if(CurrentGameState==GameState.DuelScene)
+            {
+                ProcessProtocol();
+            }
         }
     }
 }

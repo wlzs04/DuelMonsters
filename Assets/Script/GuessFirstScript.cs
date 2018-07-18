@@ -16,6 +16,7 @@ public class GuessFirstScript : MonoBehaviour, IPointerClickHandler
 {
     public GuessEnum selectGuessEnum;
     float selectScale = 1.2f;
+    public bool isMyChoose = false;
 
     // Use this for initialization
     void Start()
@@ -29,11 +30,24 @@ public class GuessFirstScript : MonoBehaviour, IPointerClickHandler
 
     }
 
+    public void SetChooseState()
+    {
+        transform.localScale = new Vector3(selectScale, selectScale, 1);
+    }
+
+    public void ClearChooseState()
+    {
+        transform.localScale = new Vector3(1, 1, 1);
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(GameManager.GetSingleInstance().SetMyGuess(selectGuessEnum))
+        if(isMyChoose)
         {
-            transform.localScale = new Vector3(selectScale, selectScale, 1);
+            if (GameManager.GetSingleInstance().SetMyGuess(selectGuessEnum))
+            {
+                SetChooseState();
+            }
         }
     }
 }

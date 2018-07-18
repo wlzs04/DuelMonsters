@@ -17,3 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/GuessFirstScene.unity
     guid: 18dc5eddc34b95041ac7894c0a40eda3
+  - enabled: 1
+    path: Assets/Scene/DuelScene.unity
+    guid: aa91cff74f1bafd4a8c68377c8ea92bb

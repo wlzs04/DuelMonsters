@@ -90,5 +90,20 @@ namespace Assets.Script.Card
                     return "未知";
             }
         }
+
+        public override CardBase GetInstance()
+        {
+            Random random = new Random();
+
+            TrapCard trapCard = new TrapCard();
+            trapCard.name = name;
+            trapCard.SetImage(GetImage());
+            trapCard.cardNo = cardNo;
+            trapCard.cardID = random.Next();
+            trapCard.cardType = cardType;
+            trapCard.trapType = trapType;
+            trapCard.effect = effect;
+            return trapCard;
+        }
     }
 }

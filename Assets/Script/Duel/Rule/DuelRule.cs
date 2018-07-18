@@ -7,7 +7,7 @@ namespace Assets.Script.Duel.Rule
 {
     enum DuelProcess
     {
-        First,
+        Unknown,
         Draw,
         Prepare,
         Main,
@@ -18,6 +18,11 @@ namespace Assets.Script.Duel.Rule
 
     class DuelRule
     {
+        public static readonly int drawCardNumberOnFirstDraw = 5;
+        public static readonly int drawCardNumberEveryTurn = 1;
+        public static readonly int callMonsterWithoutSacrificeMaxLevel = 4;
+
+        public static readonly int monsterAreaNumber = 5;
 
     }
 }

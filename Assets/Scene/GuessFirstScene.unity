@@ -122,6 +122,7 @@ GameObject:
   - component: {fileID: 321993917}
   - component: {fileID: 321993919}
   - component: {fileID: 321993918}
+  - component: {fileID: 321993920}
   m_Layer: 5
   m_Name: jiandaoImage
   m_TagString: Untagged
@@ -180,6 +181,19 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 321993916}
+--- !u!114 &321993920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 321993916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1db47ec04eb3114098f6f53c9f63ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectGuessEnum: 1
+  isMyChoose: 0
 --- !u!1 &706006929
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,6 +355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectGuessEnum: 1
+  isMyChoose: 1
 --- !u!1 &1021340701
 GameObject:
   m_ObjectHideFlags: 0
@@ -597,6 +612,7 @@ GameObject:
   - component: {fileID: 1636432640}
   - component: {fileID: 1636432642}
   - component: {fileID: 1636432641}
+  - component: {fileID: 1636432643}
   m_Layer: 5
   m_Name: shitouImage
   m_TagString: Untagged
@@ -655,6 +671,19 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1636432639}
+--- !u!114 &1636432643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1636432639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1db47ec04eb3114098f6f53c9f63ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectGuessEnum: 2
+  isMyChoose: 0
 --- !u!1 &1749420305
 GameObject:
   m_ObjectHideFlags: 0
@@ -810,6 +839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectGuessEnum: 2
+  isMyChoose: 1
 --- !u!1 &1859262214
 GameObject:
   m_ObjectHideFlags: 0
@@ -1107,6 +1137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectGuessEnum: 3
+  isMyChoose: 1
 --- !u!1 &2124514215
 GameObject:
   m_ObjectHideFlags: 0
@@ -1117,6 +1148,7 @@ GameObject:
   - component: {fileID: 2124514216}
   - component: {fileID: 2124514218}
   - component: {fileID: 2124514217}
+  - component: {fileID: 2124514219}
   m_Layer: 5
   m_Name: budaoImage
   m_TagString: Untagged
@@ -1175,3 +1207,16 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2124514215}
+--- !u!114 &2124514219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2124514215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1db47ec04eb3114098f6f53c9f63ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectGuessEnum: 3
+  isMyChoose: 0

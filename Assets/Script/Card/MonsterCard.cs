@@ -106,7 +106,7 @@ namespace Assets.Script.Card
             {
                 case "水":
                     return MonsterType.Water;
-                case "火":
+                case "炎":
                     return MonsterType.Fire;
                 case "风":
                     return MonsterType.Wind;
@@ -133,7 +133,7 @@ namespace Assets.Script.Card
                 case MonsterType.Water:
                     return "水";
                 case MonsterType.Fire:
-                    return "火";
+                    return "炎";
                 case MonsterType.Wind:
                     return "风";
                 case MonsterType.Soil:
@@ -145,6 +145,25 @@ namespace Assets.Script.Card
                 default:
                     return "未知";
             }
+        }
+
+        public override CardBase GetInstance()
+        {
+            Random random = new Random();
+
+            MonsterCard monsterCard = new MonsterCard();
+            monsterCard.name = name;
+            monsterCard.SetImage(GetImage());
+            monsterCard.cardNo = cardNo;
+            monsterCard.cardID = random.Next();
+            monsterCard.cardType = cardType;
+            monsterCard.monsterType = monsterType;
+            monsterCard.level = level;
+            monsterCard.attackNumber = attackNumber;
+            monsterCard.defenseNumber = defenseNumber;
+            monsterCard.isNormal = isNormal;
+            monsterCard.effect = effect;
+            return monsterCard;
         }
     }
 }

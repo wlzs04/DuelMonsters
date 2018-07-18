@@ -14,11 +14,12 @@ namespace Assets.Script.Card
         Trap//陷阱
     }
 
-    enum CardGameState
+    public enum CardGameState
     {
         Group,//在卡组中
         Hand,//手牌中
-        Front,//表侧表示
+        FrontATK,//表侧表示攻击
+        FrontDEF,//表侧表示防守
         Back,//覆盖表示
         Tomb,//在墓地中
         Exclusion//被排除在游戏外
@@ -33,8 +34,17 @@ namespace Assets.Script.Card
         protected int cardNo = 0;//唯一编号，0代表为假卡。
         protected string effect = "没有效果。";
 
+        protected int cardID = 0;//代表在决斗过程中的唯一标志
+
         protected string info ="";//卡片信息
         protected int limitNumber = 3;//数量限制
+
+        public GameObject cardObject=null;
+
+        public int GetID()
+        {
+            return cardID;
+        }
 
         public string GetName()
         {
@@ -44,6 +54,16 @@ namespace Assets.Script.Card
         public int GetCardNo()
         {
             return cardNo;
+        }
+
+        public void SetCardGameState(CardGameState cardGameState)
+        {
+            this.cardGameState = cardGameState;
+        }
+
+        public CardGameState GetCardGameState()
+        {
+            return cardGameState;
         }
 
         public string GetEffect()
@@ -101,6 +121,8 @@ namespace Assets.Script.Card
             }
             return card;
         }
+
+        public abstract CardBase GetInstance();
 
         /// <summary>
         /// 将汉字转换为卡片种类

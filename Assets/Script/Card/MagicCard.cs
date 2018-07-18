@@ -15,6 +15,14 @@ namespace Assets.Script.Card
         Forever//永续
     }
 
+    enum CallType
+    {
+        Unknown,//未知
+        FrontATK,//表侧攻击表示
+        FrontDEF,//表侧防守表示
+        BackDEF,//里侧（防守）表示
+    }
+
     class MagicCard : CardBase
     {
         public MagicCard()
@@ -99,6 +107,21 @@ namespace Assets.Script.Card
                 default:
                     return "未知";
             }
+        }
+
+        public override CardBase GetInstance()
+        {
+            Random random = new Random();
+
+            MagicCard magicCard = new MagicCard();
+            magicCard.SetImage(GetImage());
+            magicCard.cardNo = cardNo;
+            magicCard.cardID = random.Next();
+            magicCard.cardType = cardType;
+            magicCard.name = name;
+            magicCard.magicType = magicType;
+            magicCard.effect = effect;
+            return magicCard;
         }
     }
 }

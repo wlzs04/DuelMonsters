@@ -108,6 +108,7 @@ public class CardGroupScript : MonoBehaviour {
 
     public void AddCardToCardGroup(CardBase card)
     {
+        gameManager.AddCardToCardGroup(card);
         GameObject go = Instantiate(cardPre, cardGroupScrollViewTransform);
         go.GetComponent<Image>().sprite = card.GetImage();
         go.GetComponent<CardScript>().SetRootScript(this);

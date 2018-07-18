@@ -13,12 +13,14 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectGenerator>VSTU</UnityProjectGenerator>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.2.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -222,13 +224,16 @@
   <ItemGroup>
     <Compile Include="Assets\Script\AudioScript.cs" />
     <Compile Include="Assets\Script\Card\CardBase.cs" />
+    <Compile Include="Assets\Script\Card\DuelCardScript.cs" />
     <Compile Include="Assets\Script\Card\MagicCard.cs" />
     <Compile Include="Assets\Script\Card\MonsterCard.cs" />
     <Compile Include="Assets\Script\Card\TrapCard.cs" />
     <Compile Include="Assets\Script\CardGroupScript.cs" />
     <Compile Include="Assets\Script\CardScript.cs" />
     <Compile Include="Assets\Script\DestroySelfScript.cs" />
+    <Compile Include="Assets\Script\DuelSceneScript.cs" />
     <Compile Include="Assets\Script\Duel\DuelCardGroup.cs" />
+    <Compile Include="Assets\Script\Duel\DuelCommonValue.cs" />
     <Compile Include="Assets\Script\Duel\DuelScene.cs" />
     <Compile Include="Assets\Script\Duel\Player.cs" />
     <Compile Include="Assets\Script\Duel\Rule\CardGroupRule.cs" />
@@ -238,15 +243,28 @@
     <Compile Include="Assets\Script\GuessFirstScript.cs" />
     <Compile Include="Assets\Script\GUIScript.cs" />
     <Compile Include="Assets\Script\Helper\XMLHelper.cs" />
-    <Compile Include="Assets\Script\NetControllerScript.cs" />
+    <Compile Include="Assets\Script\Net\ClientManager.cs" />
+    <Compile Include="Assets\Script\Net\ClientProtocol.cs" />
+    <Compile Include="Assets\Script\Net\Protocol.cs" />
+    <Compile Include="Assets\Script\Net\ServerManager.cs" />
+    <Compile Include="Assets\Script\Net\ServerProtocol.cs" />
+    <Compile Include="Assets\Script\Protocol\CCallMonster.cs" />
+    <Compile Include="Assets\Script\Protocol\CCardGroup.cs" />
+    <Compile Include="Assets\Script\Protocol\CDrawCard.cs" />
+    <Compile Include="Assets\Script\Protocol\CGuessFirst.cs" />
     <Compile Include="Assets\Script\UserData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Resources\CardData\09852718\script.txt" />
-    <None Include="Assets\Resources\CardData\45121025\script.txt" />
-    <None Include="Assets\Resources\CardData\45159319\script.txt" />
-    <None Include="Assets\Resources\CardData\45221020\script.txt" />
-    <None Include="Assets\Resources\CardData\87769556\script.txt" />
+    <None Include="Assets\CardData\09852718\script.txt" />
+    <None Include="Assets\CardData\14558127\script.txt" />
+    <None Include="Assets\CardData\20155904\script.txt" />
+    <None Include="Assets\CardData\35618217\script.txt" />
+    <None Include="Assets\CardData\45121025\script.txt" />
+    <None Include="Assets\CardData\45159319\script.txt" />
+    <None Include="Assets\CardData\45221020\script.txt" />
+    <None Include="Assets\CardData\58518520\script.txt" />
+    <None Include="Assets\CardData\58984738\script.txt" />
+    <None Include="Assets\CardData\87769556\script.txt" />
     <None Include="Assets\UserDate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
