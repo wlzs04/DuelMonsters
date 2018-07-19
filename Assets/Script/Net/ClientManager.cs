@@ -26,8 +26,8 @@ namespace Assets.Script.Net
         private ClientManager()
         {
         }
-
-        public static ClientManager GetInstance()
+        
+        public static ClientManager GetSingleInstance()
         {
             return instance;
         }

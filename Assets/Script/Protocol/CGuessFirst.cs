@@ -22,8 +22,9 @@ namespace Assets.Script.Protocol
 
         public override void Process()
         {
-            GuessEnum OpponentGuess =(GuessEnum)Enum.Parse(typeof(GuessEnum),GetContent("guess"));
-            GameManager.GetSingleInstance().SetOpponentGuess(OpponentGuess);
+            GuessEnum opponentGuess =(GuessEnum)Enum.Parse(typeof(GuessEnum),GetContent("guess"));
+            GameManager.GetSingleInstance().SetOpponentGuess(opponentGuess);
+
         }
     }
 }

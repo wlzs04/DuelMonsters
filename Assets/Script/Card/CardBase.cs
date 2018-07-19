@@ -46,6 +46,11 @@ namespace Assets.Script.Card
             return cardID;
         }
 
+        public void SetID(int ID)
+        {
+            cardID=ID;
+        }
+
         public string GetName()
         {
             return name;

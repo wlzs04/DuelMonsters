@@ -26,7 +26,7 @@ namespace Assets.Script.Duel.Rule
             }
             foreach (var item in userData.userCardGroupList)
             {
-                if(item.number>3)
+                if(item.number> sameCardMaxNumber)
                 {
                     return false;
                 }

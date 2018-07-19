@@ -21,7 +21,6 @@ namespace Assets.Script
     {
         static GameManager gameManagerInstance = new GameManager();
         string gameSavePath = "/UserDate.txt";
-        string audioPath = "Audio/";
         string bgmName = "DuelBGM";
         string duelBgmName = "光宗信吉-神々の戦い";
 
@@ -241,10 +240,15 @@ namespace Assets.Script
         /// </summary>
         public void StartNet()
         {
-            clientManager = ClientManager.GetInstance();
+            clientManager = ClientManager.GetSingleInstance();
+
             clientManager.AddLegalProtocol(new CGuessFirst());
             clientManager.AddLegalProtocol(new CDrawCard());
             clientManager.AddLegalProtocol(new CCardGroup());
+            clientManager.AddLegalProtocol(new CCallMonster());
+            clientManager.AddLegalProtocol(new CEndTurn());
+            clientManager.AddLegalProtocol(new CEnterDuelProcess());
+            clientManager.AddLegalProtocol(new CAttackMonster());
 
             if (ServerManager.GetInstance().GetHostIPV4().ToString() == ip )
             {
@@ -423,6 +427,13 @@ namespace Assets.Script
             if(CurrentGameState==GameState.DuelScene)
             {
                 ProcessProtocol();
+            }
+            if(Input.GetMouseButtonDown(1))
+            {
+                if(duelScene!=null)
+                {
+                    duelScene.MouseRightButtonDown();
+                }
             }
         }
     }

@@ -16,6 +16,13 @@ namespace Assets.Script.Duel
             cards.Add(card);
         }
 
+        public void AddCard(int cardNo,int ID)
+        {
+            CardBase card = GameManager.GetSingleInstance().allCardInfoList[cardNo].GetInstance();
+            card.SetID(ID);
+            cards.Add(card);
+        }
+
         public List<CardBase> GetCards()
         {
             return cards;

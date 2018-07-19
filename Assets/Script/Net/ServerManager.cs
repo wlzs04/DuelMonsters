@@ -93,15 +93,14 @@ namespace Assets.Script.Net
             try
             {
                 clientSocket = serverSocket.Accept();
-                string ipPort = (clientSocket.RemoteEndPoint as IPEndPoint).ToString();
                 
                 if(AcceptNewSocketEvent!=null)
                 {
                     AcceptNewSocketEvent.Invoke(clientSocket);
                 }
 
-                ClientManager.GetInstance().GetClientFromServer(clientSocket);
-                ClientManager.GetInstance().ProcessProtocolEvent += ProcessProtocolEvent;
+                ClientManager.GetSingleInstance().GetClientFromServer(clientSocket);
+                ClientManager.GetSingleInstance().ProcessProtocolEvent += ProcessProtocolEvent;
             }
             catch (SocketException)
             {

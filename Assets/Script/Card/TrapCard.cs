@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Script.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -93,13 +94,11 @@ namespace Assets.Script.Card
 
         public override CardBase GetInstance()
         {
-            Random random = new Random();
-
             TrapCard trapCard = new TrapCard();
             trapCard.name = name;
             trapCard.SetImage(GetImage());
             trapCard.cardNo = cardNo;
-            trapCard.cardID = random.Next();
+            trapCard.cardID = RandomHelper.random.Next();
             trapCard.cardType = cardType;
             trapCard.trapType = trapType;
             trapCard.effect = effect;

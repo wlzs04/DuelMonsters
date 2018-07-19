@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Script.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,12 +16,14 @@ namespace Assets.Script.Card
         Forever//永续
     }
 
+    /// <summary>
+    /// 召唤方式
+    /// </summary>
     enum CallType
     {
         Unknown,//未知
-        FrontATK,//表侧攻击表示
-        FrontDEF,//表侧防守表示
-        BackDEF,//里侧（防守）表示
+        Normal,//通常召唤
+        Special,//特殊召唤
     }
 
     class MagicCard : CardBase
@@ -111,12 +114,10 @@ namespace Assets.Script.Card
 
         public override CardBase GetInstance()
         {
-            Random random = new Random();
-
             MagicCard magicCard = new MagicCard();
             magicCard.SetImage(GetImage());
             magicCard.cardNo = cardNo;
-            magicCard.cardID = random.Next();
+            magicCard.cardID = RandomHelper.random.Next();
             magicCard.cardType = cardType;
             magicCard.name = name;
             magicCard.magicType = magicType;

@@ -13,7 +13,6 @@ namespace Assets.Script.Helper
         {
             using (StringWriter sw = new StringWriter())
             {
-                Type t = obj.GetType();
                 XmlSerializer serializer = new XmlSerializer(obj.GetType());
                 serializer.Serialize(sw, obj);
                 File.WriteAllText(path, sw.ToString());

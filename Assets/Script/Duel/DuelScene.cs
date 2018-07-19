@@ -33,7 +33,10 @@ namespace Assets.Script.Duel
 
         DuelSceneScript duelSceneScript = null;
 
-        public void AddControlFromScene()
+        CardBase currentChooseCard = null;
+        bool canChoose = false;
+
+        void AddControlFromScene()
         {
             GameObject go = GameObject.Find("duelBackImage");
             environmentImage = GameObject.Find("environmentImage").GetComponent<Image>();
@@ -43,6 +46,10 @@ namespace Assets.Script.Duel
             opponentHandCardPanel = GameObject.Find("opponentHandCardPanel");
         }
 
+        /// <summary>
+        /// 设置我方玩家是否先攻
+        /// </summary>
+        /// <param name="myFirst"></param>
         public void SetFirst(bool myFirst)
         {
             this.myFirst = myFirst;
@@ -51,6 +58,142 @@ namespace Assets.Script.Duel
         public void ShowMessage(string value)
         {
             GameManager.ShowMessage(value);
+        }
+
+        public void MouseRightButtonDown()
+        {
+
+        }
+
+        /// <summary>
+        /// 设置为可以选择卡牌的状态
+        /// </summary>
+        /// <param name="canChoose"></param>
+        public void SetCanChoose(bool canChoose)
+        {
+            this.canChoose = canChoose;
+        }
+
+        /// <summary>
+        /// 选择一张卡
+        /// </summary>
+        /// <param name="card"></param>
+        public void ChooseCard(CardBase card)
+        {
+            if(!canChoose)
+            {
+                return;
+            }
+            if(currentChooseCard == null)
+            {
+                currentChooseCard = card;
+            }
+            else
+            {
+                ChooseAnotherCard(card);
+            }
+        }
+
+        /// <summary>
+        /// 选择另一张卡
+        /// </summary>
+        /// <param name="card"></param>
+        void ChooseAnotherCard(CardBase card)
+        {
+            if(currentDuelProcess==DuelProcess.Battle)
+            {
+                if(currentChooseCard.cardObject.GetComponent<DuelCardScript>().GetOwner()!= 
+                    card.cardObject.GetComponent<DuelCardScript>().GetOwner())
+                {
+                    CAttackMonster cAttackMonster = new CAttackMonster();
+                    cAttackMonster.AddContent("cardID",currentChooseCard.GetID());
+                    cAttackMonster.AddContent("anotherCardID", card.GetID());
+
+                    ClientManager.GetSingleInstance().SendProtocol(cAttackMonster);
+
+                    Attack((MonsterCard)currentChooseCard, (MonsterCard)card);
+                    currentChooseCard = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 攻击
+        /// </summary>
+        /// <param name="card1"></param>
+        /// <param name="card2"></param>
+        void Attack(MonsterCard card1, MonsterCard card2)
+        {
+            card1.cardObject.GetComponent<DuelCardScript>().Attack();
+            int differenceValue = card1.GetAttackNumber() - card2.GetAttackNumber();
+
+            if (differenceValue==0)
+            {
+                SendCardToTomb(card1);
+                SendCardToTomb(card2);
+            }
+            else if(differenceValue>0)
+            {
+                card2.cardObject.GetComponent<DuelCardScript>().GetOwner().ReduceLife(differenceValue);
+                SendCardToTomb(card2);
+            }
+            else
+            {
+                card1.cardObject.GetComponent<DuelCardScript>().GetOwner().ReduceLife(-differenceValue);
+                SendCardToTomb(card1);
+            }
+            canChoose = false;
+        }
+
+        /// <summary>
+        /// 检测胜负
+        /// </summary>
+        public void CheckWin()
+        {
+            bool ilost = myPlayer.GetLife() <= DuelRule.lostLife;
+            bool iWin = opponentPlayer.GetLife() <= DuelRule.lostLife;
+            if(!(iWin|| ilost))
+            {
+                return;
+            }
+
+            if (iWin && ilost)
+            {
+                ShowMessage("平局");
+            }
+            else if(iWin)
+            {
+                IWin();
+            }
+            else if (ilost)
+            {
+                ILost();
+            }
+        }
+
+        /// <summary>
+        /// 我赢了
+        /// </summary>
+        public void IWin()
+        {
+
+        }
+
+        /// <summary>
+        /// 我输了
+        /// </summary>
+        public void ILost()
+        {
+
+        }
+
+        /// <summary>
+        /// 将卡牌送入墓地
+        /// </summary>
+        /// <param name="card"></param>
+        public void SendCardToTomb(CardBase card)
+        {
+            card.cardObject.GetComponent<DuelCardScript>().GetOwner().MoveCardToTomb(card);
         }
 
         /// <summary>
@@ -97,12 +240,12 @@ namespace Assets.Script.Duel
 
             for (int i = 0; i < cards.Count-1; i++)
             {
-                stringBuilder.Append(cards[i].GetCardNo() + ":");
+                stringBuilder.Append(cards[i].GetCardNo() + "-"+cards[i].GetID() + ":");
             }
-            stringBuilder.Append(cards[cards.Count - 1].GetCardNo());
+            stringBuilder.Append(cards[cards.Count - 1].GetCardNo()+"-" + cards[cards.Count - 1].GetID());
 
             cCardGroup.AddContent("cardGroupList", stringBuilder.ToString());
-            ClientManager.GetInstance().SendProtocol(cCardGroup);
+            ClientManager.GetSingleInstance().SendProtocol(cCardGroup);
         }
 
         /// <summary>
@@ -115,7 +258,7 @@ namespace Assets.Script.Duel
             string[] cardNos = cardGroupInfo.Split(':');
             foreach (var item in cardNos)
             {
-                duelCardGroup.AddCard(int.Parse(item));
+                duelCardGroup.AddCard(int.Parse(item.Substring(0,item.IndexOf('-'))), int.Parse(item.Substring(item.IndexOf('-')+1)));
             }
             CheckPlayInit();
         }
@@ -150,6 +293,9 @@ namespace Assets.Script.Duel
         /// </summary>
         void StartDuel()
         {
+            myPlayer.SetLife(GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>());
+            opponentPlayer.SetLife(GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>());
+
             InitCardGroup();
             ShowMessage("抽牌！");
             for (int i = 0; i < DuelRule.drawCardNumberOnFirstDraw; i++)
@@ -157,7 +303,6 @@ namespace Assets.Script.Duel
                 myPlayer.Draw();
             }
             ShowMessage("决斗开始！");
-            currentDuelProcess = DuelProcess.Unknown;
             if(myFirst)
             {
                 currentPlayer.StartTurn();
@@ -167,6 +312,34 @@ namespace Assets.Script.Duel
         void EndDuel()
         {
 
+        }
+
+        /// <summary>
+        /// 结束当前玩家的回合
+        /// </summary>
+        public void EndTurn()
+        {
+            EnterDuelProcess(DuelProcess.End);
+            if (currentPlayer == myPlayer)
+            {
+                CEndTurn cEndTurn = new CEndTurn();
+                ClientManager.GetSingleInstance().SendProtocol(cEndTurn);
+            }
+            if (currentPlayer!= startPlayer)
+            {
+                currentTurnNumber++;
+            }
+            currentDuelProcess = DuelProcess.Unknown;
+            currentPlayer = currentPlayer == myPlayer ? opponentPlayer : myPlayer;
+            if(currentPlayer==myPlayer)
+            {
+                myPlayer.StartTurn();
+            }
+        }
+
+        public void Battle()
+        {
+            EnterDuelProcess(DuelProcess.Battle);
         }
 
         void InitCardGroup()
@@ -196,14 +369,6 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 带有Opponent前缀的方法代表对方的操作同步到我方。
-        /// </summary>
-        public void OpponentDraw()
-        {
-            opponentPlayer.Draw();
-        }
-
-        /// <summary>
         /// 设置环境
         /// </summary>
         public void SetEnvironment()
@@ -224,27 +389,26 @@ namespace Assets.Script.Duel
             switch (currentDuelProcess)
             {
                 case DuelProcess.Unknown:
-                    currentDuelProcess = DuelProcess.Draw;
+                    EnterDuelProcess(DuelProcess.Draw);
                     break;
                 case DuelProcess.Draw:
-                    currentDuelProcess = DuelProcess.Prepare;
+                    EnterDuelProcess(DuelProcess.Prepare);
                     break;
                 case DuelProcess.Prepare:
-                    currentDuelProcess = DuelProcess.Main;
+                    EnterDuelProcess(DuelProcess.Main);
                     break;
                 case DuelProcess.Main:
-                    currentDuelProcess = DuelProcess.End;
+                    EnterDuelProcess(DuelProcess.End);
                     Debug.LogError("EnterNextDuelProcess DuelProcess.Main");
                     break;
                 case DuelProcess.Battle:
-                    currentDuelProcess = DuelProcess.Second;
+                    EnterDuelProcess(DuelProcess.Second);
                     break;
                 case DuelProcess.Second:
-                    currentDuelProcess = DuelProcess.End;
+                    EnterDuelProcess(DuelProcess.End);
                     break;
                 case DuelProcess.End:
-                    currentDuelProcess = DuelProcess.End;
-                    Debug.LogError("EnterNextDuelProcess DuelProcess.End");
+                    EnterDuelProcess(DuelProcess.Unknown);
                     break;
                 default:
                     break;
@@ -258,31 +422,39 @@ namespace Assets.Script.Duel
         /// <param name="duelProcess"></param>
         void EnterDuelProcess(DuelProcess duelProcess)
         {
+            currentDuelProcess = duelProcess;
+            string ex = currentPlayer == myPlayer ? "我方进入" : "对方进入";
             switch (duelProcess)
             {
                 case DuelProcess.Unknown:
-                    ShowMessage("未知流程！");
+                    ShowMessage(ex + "未知流程！");
                     break;
                 case DuelProcess.Draw:
-                    ShowMessage("抽牌流程！");
+                    ShowMessage(ex + "抽牌流程！");
                     break;
                 case DuelProcess.Prepare:
-                    ShowMessage("准备流程！");
+                    ShowMessage(ex + "准备流程！");
                     break;
                 case DuelProcess.Main:
-                    ShowMessage("主要流程！");
+                    ShowMessage(ex + "主要流程！");
                     break;
                 case DuelProcess.Battle:
-                    ShowMessage("战斗流程！");
+                    ShowMessage(ex + "战斗流程！");
                     break;
                 case DuelProcess.Second:
-                    ShowMessage("第二主要流程！");
+                    ShowMessage(ex + "第二主要流程！");
                     break;
                 case DuelProcess.End:
-                    ShowMessage("结束流程！");
+                    ShowMessage(ex + "结束流程！");
                     break;
                 default:
                     break;
+            }
+            if(myPlayer.IsMyTurn())
+            {
+                CEnterDuelProcess cEnterDuelProcess = new CEnterDuelProcess();
+                cEnterDuelProcess.AddContent("duelProcess", currentDuelProcess);
+                ClientManager.GetSingleInstance().SendProtocol(cEnterDuelProcess);
             }
         }
 
@@ -292,6 +464,50 @@ namespace Assets.Script.Duel
         public bool AddMonsterCardToDuelArea(MonsterCard monsterCard,CallType callType)
         {
             return false;
+        }
+        
+        // 带有Opponent前缀的方法
+
+        /// <summary>
+        /// 对方抽牌
+        /// </summary>
+        public void OpponentDraw()
+        {
+            opponentPlayer.Draw();
+        }
+
+        /// <summary>
+        /// 对方召唤怪兽
+        /// </summary>
+        /// <param name="cardID"></param>
+        /// <param name="callType"></param>
+        /// <param name="fromCardGameState"></param>
+        /// <param name="toCardGameState"></param>
+        /// <param name="flag"></param>
+        public void OpponentCallMonster(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState,int flag)
+        {
+            opponentPlayer.CallMonster(cardID, callType,fromCardGameState,toCardGameState,flag);
+        }
+
+        /// <summary>
+        /// 对方进入某个流程
+        /// </summary>
+        /// <param name="opponentDuelProcess"></param>
+        public void OpponentEnterDuelProcess(DuelProcess opponentDuelProcess)
+        {
+            EnterDuelProcess(opponentDuelProcess);
+        }
+
+        /// <summary>
+        /// 对方怪兽攻击
+        /// </summary>
+        /// <param name="cardID"></param>
+        /// <param name="anotherCardID"></param>
+        public void OpponentAttack(int cardID, int anotherCardID)
+        {
+            CardBase card1 = opponentPlayer.GetCardByID(cardID);
+            CardBase card2 = myPlayer.GetCardByID(anotherCardID);
+            Attack((MonsterCard)card1, (MonsterCard)card2);
         }
     }
 }

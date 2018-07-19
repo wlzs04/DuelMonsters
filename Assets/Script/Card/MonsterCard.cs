@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Script.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -149,13 +150,11 @@ namespace Assets.Script.Card
 
         public override CardBase GetInstance()
         {
-            Random random = new Random();
-
             MonsterCard monsterCard = new MonsterCard();
             monsterCard.name = name;
             monsterCard.SetImage(GetImage());
             monsterCard.cardNo = cardNo;
-            monsterCard.cardID = random.Next();
+            monsterCard.cardID = RandomHelper.random.Next();
             monsterCard.cardType = cardType;
             monsterCard.monsterType = monsterType;
             monsterCard.level = level;

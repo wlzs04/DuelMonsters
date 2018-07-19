@@ -14,9 +14,9 @@ namespace Assets.Script.Net
 
         public abstract ClientProtocol GetInstance();
 
-        public void AddContent(string key, string value)
+        public void AddContent(string key, object value)
         {
-            contentMap[key] = value;
+            contentMap[key] = value.ToString();
         }
 
         public string GetContent(string key)
