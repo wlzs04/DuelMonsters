@@ -222,6 +222,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\AttackAnimationScript.cs" />
     <Compile Include="Assets\Script\AudioScript.cs" />
     <Compile Include="Assets\Script\Card\CardBase.cs" />
     <Compile Include="Assets\Script\Card\DuelCardScript.cs" />
@@ -249,12 +250,14 @@
     <Compile Include="Assets\Script\Net\Protocol.cs" />
     <Compile Include="Assets\Script\Net\ServerManager.cs" />
     <Compile Include="Assets\Script\Net\ServerProtocol.cs" />
+    <Compile Include="Assets\Script\Protocol\CAttackDirect.cs" />
     <Compile Include="Assets\Script\Protocol\CAttackMonster.cs" />
     <Compile Include="Assets\Script\Protocol\CCallMonster.cs" />
+    <Compile Include="Assets\Script\Protocol\CCallMonsterBySacrifice.cs" />
     <Compile Include="Assets\Script\Protocol\CCardGroup.cs" />
-    <Compile Include="Assets\Script\Protocol\CEnterDuelProcess.cs" />
     <Compile Include="Assets\Script\Protocol\CDrawCard.cs" />
     <Compile Include="Assets\Script\Protocol\CEndTurn.cs" />
+    <Compile Include="Assets\Script\Protocol\CEnterDuelProcess.cs" />
     <Compile Include="Assets\Script\Protocol\CGuessFirst.cs" />
     <Compile Include="Assets\Script\UserData.cs" />
   </ItemGroup>

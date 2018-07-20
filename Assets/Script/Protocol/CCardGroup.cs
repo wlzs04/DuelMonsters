@@ -9,7 +9,7 @@ namespace Assets.Script.Protocol
 {
     /// <summary>
     /// 卡组信息,包括卡牌的No和ID
-    /// key：cardGroupList,格式为"No-ID:No-ID"
+    /// key：cardGroupList(格式为"No-ID:No-ID")
     /// value：string("int-int:int-int")
     /// </summary>
     class CCardGroup : ClientProtocol

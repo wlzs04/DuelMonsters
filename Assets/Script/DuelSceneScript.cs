@@ -10,10 +10,10 @@ namespace Assets.Script
 {
     class DuelSceneScript : MonoBehaviour
     {
-        public GameObject monsterCardPre;
-        public GameObject magicTrapCardPre;
+        public GameObject monsterCardPre = null;
+        public GameObject magicTrapCardPre = null;
 
-        public Transform infoContentTransform;
+        public Transform infoContentTransform = null;
         Image cardImage;
 
         void Start()

@@ -35,6 +35,9 @@ namespace Assets.Script.Duel
         public static readonly int cardOnHandWidth = 80;
         public static readonly int cardOnHandHeight = 115;
 
-
+        public static readonly int myHeartPositionX = 0;
+        public static readonly int myHeartPositionY = -320;
+        public static readonly int opponentHeartPositionX = 0;
+        public static readonly int opponentHeartPositionY = 320;
     }
 }

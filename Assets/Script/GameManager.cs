@@ -210,6 +210,7 @@ namespace Assets.Script
             if (CurrentGameState != GameState.MainScene)
             {
                 CurrentGameState = GameState.MainScene;
+                SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
             }
             else
             {
@@ -241,7 +242,7 @@ namespace Assets.Script
         public void StartNet()
         {
             clientManager = ClientManager.GetSingleInstance();
-
+            
             clientManager.AddLegalProtocol(new CGuessFirst());
             clientManager.AddLegalProtocol(new CDrawCard());
             clientManager.AddLegalProtocol(new CCardGroup());
@@ -249,11 +250,14 @@ namespace Assets.Script
             clientManager.AddLegalProtocol(new CEndTurn());
             clientManager.AddLegalProtocol(new CEnterDuelProcess());
             clientManager.AddLegalProtocol(new CAttackMonster());
+            clientManager.AddLegalProtocol(new CAttackDirect());
+            clientManager.AddLegalProtocol(new CCallMonsterBySacrifice());
 
             if (ServerManager.GetInstance().GetHostIPV4().ToString() == ip )
             {
                 serverManager = ServerManager.GetInstance();
-                serverManager.AcceptNewSocketEvent += (Socket s) => { Debug.LogError("有新客户端"); };
+                serverManager.AcceptNewSocketEvent += (Socket s) => { Debug.LogError("有新客户端！"); };
+                serverManager.SocketDisconnectEvent += (Socket s) => { Debug.LogError("客户端断开！"); };
                 if (serverManager.StartListen(port))
                 {
                     serverManager.ProcessProtocolEvent += ProcessProtocolEvent;

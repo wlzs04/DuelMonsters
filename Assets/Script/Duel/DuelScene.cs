@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,7 @@ namespace Assets.Script.Duel
         public DuelProcess currentDuelProcess = DuelProcess.Unknown;//当前流程
 
         public Image duelBackImage = null;
+        public AttackAnimationScript attackAnimationScript = null;
         public Image environmentImage = null;
         public Image cardImage = null;
         public GameObject myHandCardPanel = null;
@@ -38,12 +40,18 @@ namespace Assets.Script.Duel
 
         void AddControlFromScene()
         {
-            GameObject go = GameObject.Find("duelBackImage");
+            duelBackImage = GameObject.Find("duelBackImage").GetComponent<Image>();
             environmentImage = GameObject.Find("environmentImage").GetComponent<Image>();
-            duelBackImage = go.GetComponent<Image>();
+            attackAnimationScript = GameObject.Find("attackImage").GetComponent<AttackAnimationScript>();
+            attackAnimationScript.StopPlay();
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
             myHandCardPanel = GameObject.Find("myHandCardPanel");
             opponentHandCardPanel = GameObject.Find("opponentHandCardPanel");
+        }
+
+        public int GetCurrentTurnNumber()
+        {
+            return currentTurnNumber;
         }
 
         /// <summary>
@@ -94,6 +102,11 @@ namespace Assets.Script.Duel
             }
         }
 
+        public void SetAttackAnimationFinishEvent(object v)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 选择另一张卡
         /// </summary>
@@ -103,7 +116,8 @@ namespace Assets.Script.Duel
             if(currentDuelProcess==DuelProcess.Battle)
             {
                 if(currentChooseCard.cardObject.GetComponent<DuelCardScript>().GetOwner()!= 
-                    card.cardObject.GetComponent<DuelCardScript>().GetOwner())
+                    card.cardObject.GetComponent<DuelCardScript>().GetOwner()&&
+                    ((MonsterCard)card).CanBeAttacked)
                 {
                     CAttackMonster cAttackMonster = new CAttackMonster();
                     cAttackMonster.AddContent("cardID",currentChooseCard.GetID());
@@ -111,7 +125,7 @@ namespace Assets.Script.Duel
 
                     ClientManager.GetSingleInstance().SendProtocol(cAttackMonster);
 
-                    Attack((MonsterCard)currentChooseCard, (MonsterCard)card);
+                    AttackMonster((MonsterCard)currentChooseCard, (MonsterCard)card);
                     currentChooseCard = null;
                 }
             }
@@ -122,7 +136,7 @@ namespace Assets.Script.Duel
         /// </summary>
         /// <param name="card1"></param>
         /// <param name="card2"></param>
-        void Attack(MonsterCard card1, MonsterCard card2)
+        void AttackMonster(MonsterCard card1, MonsterCard card2)
         {
             card1.cardObject.GetComponent<DuelCardScript>().Attack();
             int differenceValue = card1.GetAttackNumber() - card2.GetAttackNumber();
@@ -146,6 +160,25 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 直接攻击
+        /// </summary>
+        /// <param name="card"></param>
+        public void AttackDirect(MonsterCard card)
+        {
+            card.cardObject.GetComponent<DuelCardScript>().GetOwner().GetOpponentPlayer().ReduceLife(card.GetAttackNumber());
+        }
+
+        public void StartPlayAttackAnimation(Vector3 fromPosition,Vector3 toPosition)
+        {
+            attackAnimationScript.StartPlay(fromPosition, toPosition);
+        }
+
+        public void SetAttackAnimationFinishEvent(AttackAnimationScript.FinishEvent action)
+        {
+            attackAnimationScript.AnimationFinishEvent += action;
+        }
+
+        /// <summary>
         /// 检测胜负
         /// </summary>
         public void CheckWin()
@@ -159,7 +192,7 @@ namespace Assets.Script.Duel
 
             if (iWin && ilost)
             {
-                ShowMessage("平局");
+                WinAndLost();
             }
             else if(iWin)
             {
@@ -176,7 +209,9 @@ namespace Assets.Script.Duel
         /// </summary>
         public void IWin()
         {
-
+            ShowMessage("我赢了!");
+            Thread.Sleep(2000);
+            GameManager.GetSingleInstance().EnterMainScene();
         }
 
         /// <summary>
@@ -184,7 +219,19 @@ namespace Assets.Script.Duel
         /// </summary>
         public void ILost()
         {
+            ShowMessage("我输了!");
+            Thread.Sleep(2000);
+            GameManager.GetSingleInstance().EnterMainScene();
+        }
 
+        /// <summary>
+        /// 平局
+        /// </summary>
+        public void WinAndLost()
+        {
+            ShowMessage("平局！");
+            Thread.Sleep(2000);
+            GameManager.GetSingleInstance().EnterMainScene();
         }
 
         /// <summary>
@@ -295,6 +342,12 @@ namespace Assets.Script.Duel
         {
             myPlayer.SetLife(GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>());
             opponentPlayer.SetLife(GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>());
+
+            myPlayer.SetOpponentPlayer(opponentPlayer);
+            opponentPlayer.SetOpponentPlayer(myPlayer);
+
+            myPlayer.SetHeartPosition(new Vector3(DuelCommonValue.myHeartPositionX, DuelCommonValue.myHeartPositionY));
+            opponentPlayer.SetHeartPosition(new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY));
 
             InitCardGroup();
             ShowMessage("抽牌！");
@@ -489,6 +542,11 @@ namespace Assets.Script.Duel
             opponentPlayer.CallMonster(cardID, callType,fromCardGameState,toCardGameState,flag);
         }
 
+        public void OpponentCallMonsterBySacrifice(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag,string sacrificeInfo)
+        {
+            opponentPlayer.CallMonster(cardID, callType, fromCardGameState, toCardGameState, flag, sacrificeInfo);
+        }
+
         /// <summary>
         /// 对方进入某个流程
         /// </summary>
@@ -507,7 +565,17 @@ namespace Assets.Script.Duel
         {
             CardBase card1 = opponentPlayer.GetCardByID(cardID);
             CardBase card2 = myPlayer.GetCardByID(anotherCardID);
-            Attack((MonsterCard)card1, (MonsterCard)card2);
+            AttackMonster((MonsterCard)card1, (MonsterCard)card2);
+        }
+
+        /// <summary>
+        /// 对方怪兽直接攻击
+        /// </summary>
+        /// <param name="cardID"></param>
+        public void OpponentAttack(int cardID)
+        {
+            CardBase card1 = opponentPlayer.GetCardByID(cardID);
+            AttackDirect((MonsterCard)card1);
         }
     }
 }

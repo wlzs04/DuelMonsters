@@ -23,6 +23,7 @@ namespace Assets.Script.Card
     {
         Unknown,//未知
         Normal,//通常召唤
+        Sacrifice,//祭品召唤
         Special,//特殊召唤
     }
 

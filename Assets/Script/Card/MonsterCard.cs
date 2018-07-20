@@ -24,10 +24,45 @@ namespace Assets.Script.Card
         bool isNormal = true;//是否为通常怪
         int attackNumber = 1500;//攻击力
         int defenseNumber = 500;//防御力
+        int canBeSacrificedNumber = 1;//可被当成祭品的个数
+
+        bool canDirectAttack = true;//是否可以直接攻击
+        bool canBeAttacked = true;
 
         public MonsterCard()
         {
             cardType = CardType.Monster;
+        }
+
+        public bool CanDirectAttack
+        {
+            get
+            {
+                return canDirectAttack;
+            }
+
+            set
+            {
+                canDirectAttack = value;
+            }
+        }
+
+        public bool CanBeAttacked
+        {
+            get
+            {
+                return canBeAttacked;
+            }
+
+            set
+            {
+                canBeAttacked = value;
+            }
+        }
+
+        public int GetCanBeSacrificedNumber()
+        {
+            return canBeSacrificedNumber;
         }
 
         public int GetLevel()

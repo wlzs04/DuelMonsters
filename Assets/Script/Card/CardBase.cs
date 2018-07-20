@@ -40,6 +40,32 @@ namespace Assets.Script.Card
         protected int limitNumber = 3;//数量限制
 
         public GameObject cardObject=null;
+        
+        Dictionary<string, object> contentMap = new Dictionary<string, object>();
+
+        public void AddContent(string key, object value)
+        {
+            if(contentMap.ContainsKey(key))
+            {
+                Debug.LogError("已存在key：" + key + "value:" + value);
+            }
+            contentMap[key] = value;
+        }
+
+        public object GetContent(string key)
+        {
+            return contentMap[key];
+        }
+
+        public void RemoveContent(string key)
+        {
+            contentMap.Remove(key);
+        }
+
+        public void ClearAllContent()
+        {
+            contentMap.Clear();
+        }
 
         public int GetID()
         {

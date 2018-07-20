@@ -1,5 +1,7 @@
 ﻿using Assets.Script.Duel;
 using Assets.Script.Duel.Rule;
+using Assets.Script.Net;
+using Assets.Script.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,8 @@ namespace Assets.Script.Card
         bool isPrepareATK = false;
         GameObject atkImage = null;
 
+        bool haveBeChosen = false;
+
         void Start()
         {
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
@@ -37,6 +41,11 @@ namespace Assets.Script.Card
 
                 atkImage.transform.rotation = Quaternion.Euler(0,0, Mathf.Atan2(atkImagePosition.x - mousePosition.x, mousePosition.y - atkImagePosition.y) *180/Mathf.PI);
             }
+        }
+
+        public Vector3 GetPosition()
+        {
+            return transform.localPosition;
         }
 
         public void SetCard(CardBase card)
@@ -58,16 +67,44 @@ namespace Assets.Script.Card
         {
             if(ownerPlayer.IsMyTurn())
             {
-                if(ownerPlayer.CanCallMonster()&& card.GetCardType() == CardType.Monster)
+                if(card.GetCardGameState()== CardGameState.Hand&&ownerPlayer.CanCallMonster()&& card.GetCardType() == CardType.Monster&&ownerPlayer.GetPlayGameState()== PlayGameState.Normal)
                 {
                     ownerPlayer.CallMonster((MonsterCard)card);
                 }
                 else if(ownerPlayer.IsMyPlayer()&& !isPrepareATK && duelScene.currentDuelProcess == DuelProcess.Battle && CanATK())
                 {
-                    atkImage.SetActive(true);
-                    isPrepareATK = true;
-                    duelScene.SetCanChoose(true);
-                    duelScene.ChooseCard(card);
+                    Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
+                    if (opponentPlayer.CanBeDirectAttacked()&&
+                        !opponentPlayer.HaveBeAttackedMonster()&&
+                        ownerPlayer.CanDirectAttack&& ((MonsterCard)card).CanDirectAttack)
+                    {
+                        duelScene.SetAttackAnimationFinishEvent(() => {
+                            CAttackDirect cAttackDirect = new CAttackDirect();
+                            cAttackDirect.AddContent("cardID", card.GetID());
+
+                            ClientManager.GetSingleInstance().SendProtocol(cAttackDirect);
+
+                            duelScene.AttackDirect((MonsterCard)card); });
+                        duelScene.StartPlayAttackAnimation(GetPosition(),ownerPlayer.GetOpponentPlayer().GetHeartPosition());
+                    }
+                    else
+                    {
+                        atkImage.SetActive(true);
+                        isPrepareATK = true;
+                        duelScene.SetCanChoose(true);
+                        duelScene.ChooseCard(card);
+                    }
+                }
+                else if(ownerPlayer.GetPlayGameState()==PlayGameState.ChooseSacrifice&&haveBeChosen==false&&card.GetCardType() == CardType.Monster)
+                {
+                    int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
+                    if (tempInt > 0)
+                    {
+                        if(ownerPlayer.ChooseMonsterAsSacrifice((MonsterCard)card))
+                        {
+                            haveBeChosen = true;
+                        }
+                    }
                 }
             }
             duelScene.ChooseCard(card);

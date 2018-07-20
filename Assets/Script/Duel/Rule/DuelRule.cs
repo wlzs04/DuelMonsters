@@ -27,5 +27,8 @@ namespace Assets.Script.Duel.Rule
 
         public static readonly int startLife = 4000;
         public static readonly int lostLife = 0;
+
+
+        public static readonly int callMonsterWithoutOneSacrificeMaxLevel = 6;
     }
 }
