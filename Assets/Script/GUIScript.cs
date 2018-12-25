@@ -1,4 +1,4 @@
-﻿using Assets.Script;
+using Assets.Script;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,19 +8,19 @@ using UnityEngine.UI;
 public class GUIScript : MonoBehaviour {
 
     GameManager gameManager;
-
-	// Use this for initialization
-	void Start () {
+    
+	void Start ()
+    {
         gameManager = GameManager.GetSingleInstance();
-        if(gameManager.CurrentGameState==GameState.SettingScene)
+        if(gameManager.GetCurrentGameState()==GameState.SettingScene)
         {
-            float audioValue = gameManager.Userdata.audioValue;
+            float audioValue = gameManager.GetUserData().audioValue;
             GameObject.Find("AudioSlider").GetComponent<Slider>().value = audioValue;
         }
     }
 	
-	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 		if(Input.GetKeyUp(KeyCode.Escape))
         {
             gameManager.ReturnLastScene();

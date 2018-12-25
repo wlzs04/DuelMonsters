@@ -1,4 +1,4 @@
-﻿using Assets.Script.Helper;
+using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,27 +6,23 @@ using System.Text;
 
 namespace Assets.Script.Card
 {
+    /// <summary>
+    /// 魔法卡种类
+    /// </summary>
     enum MagicType
     {
         Unknown,//未知
         Normal,//通常
-        Quick,//速攻
-        Environment,//环境
         Equipment,//装备
-        Forever//永续
+        Terrain,//地形
+        Forever,//永续
+        Ceremony,//仪式
+        Quick,//速攻
     }
 
     /// <summary>
-    /// 召唤方式
+    /// 魔法卡
     /// </summary>
-    enum CallType
-    {
-        Unknown,//未知
-        Normal,//通常召唤
-        Sacrifice,//祭品召唤
-        Special,//特殊召唤
-    }
-
     class MagicCard : CardBase
     {
         public MagicCard()
@@ -38,10 +34,10 @@ namespace Assets.Script.Card
 
         public string GetMagicTypeString()
         {
-            return GetStringByMonsterType(magicType);
+            return GetStringByMagicType(magicType);
         }
 
-        public override void LoadInfo(string info)
+        protected override void LoadInfo(string info)
         {
             string[] keyValues = info.Split('\n');
             foreach (var item in keyValues)
@@ -94,7 +90,7 @@ namespace Assets.Script.Card
         /// </summary>
         /// <param name="monsterType"></param>
         /// <returns></returns>
-        public static string GetStringByMonsterType(MagicType magicType)
+        public static string GetStringByMagicType(MagicType magicType)
         {
             switch (magicType)
             {

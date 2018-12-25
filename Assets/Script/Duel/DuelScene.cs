@@ -1,4 +1,4 @@
-﻿using Assets.Script.Card;
+using Assets.Script.Card;
 using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -317,7 +317,7 @@ namespace Assets.Script.Duel
         {
             DuelCardGroup duelCardGroup = new DuelCardGroup();
             myPlayer = new Player("我方",duelCardGroup);
-            foreach (var item in GameManager.GetSingleInstance().Userdata.userCardGroupList)
+            foreach (var item in GameManager.GetSingleInstance().GetUserData().userCardGroupList)
             {
                 for (int i = 0; i < item.number; i++)
                 {

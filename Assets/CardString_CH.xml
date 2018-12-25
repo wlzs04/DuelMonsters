@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CardString>
+  <CardType>
+    <Record id="1" value="怪兽"/>
+    <Record id="2" value="魔法"/>
+    <Record id="3" value="陷阱"/>
+  </CardType>
+  <PropertyType>
+    <Record id="1" value="光"/>
+    <Record id="2" value="暗"/>
+    <Record id="3" value="地"/>
+    <Record id="4" value="风"/>
+    <Record id="5" value="水"/>
+    <Record id="6" value="炎"/>
+    <Record id="7" value="神"/>
+  </PropertyType>
+  <MonsterType>
+    <Record id="1" value="龙"/>
+    <Record id="2" value="海龙"/>
+    <Record id="3" value="幻龙"/>
+    <Record id="4" value="不死"/>
+    <Record id="5" value="恶魔"/>
+    <Record id="6" value="天使"/>
+    <Record id="7" value="机械"/>
+    <Record id="8" value="魔法师"/>
+    <Record id="9" value="战士"/>
+    <Record id="10" value="兽战士"/>
+    <Record id="11" value="水"/>
+    <Record id="12" value="炎"/>
+    <Record id="13" value="雷"/>
+    <Record id="14" value="岩石"/>
+    <Record id="15" value="爬虫"/>
+    <Record id="16" value="兽"/>
+    <Record id="17" value="鸟兽"/>
+    <Record id="18" value="鱼"/>
+    <Record id="19" value="恐龙"/>
+    <Record id="20" value="昆虫"/>
+    <Record id="21" value="植物"/>
+    <Record id="22" value="念动力"/>
+    <Record id="23" value="电子界"/>
+    <Record id="24" value="幻神兽"/>
+    <Record id="25" value="创造神"/>
+  </MonsterType>
+  <MagicType>
+    <Record id="1" value="通常"/>
+    <Record id="2" value="装备"/>
+    <Record id="3" value="地形"/>
+    <Record id="4" value="永续"/>
+    <Record id="5" value="仪式"/>
+    <Record id="6" value="速攻"/>
+  </MagicType>
+  <TrapType>
+    <Record id="1" value="通常"/>
+    <Record id="2" value="永续"/>
+    <Record id="3" value="反击"/>
+  </TrapType>
+</CardString>

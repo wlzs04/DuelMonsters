@@ -1,6 +1,7 @@
 CardType:怪兽
 Name:真龙拳士 雾动轰·铁拳
-MonsterType:水
+PropertyType:水
+MonsterType:幻龙族
 Level:6
 ATK:2500
 DEF:1200

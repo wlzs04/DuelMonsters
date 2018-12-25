@@ -1,4 +1,4 @@
-﻿using Assets.Script.Helper;
+using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,21 +6,74 @@ using System.Text;
 
 namespace Assets.Script.Card
 {
+    /// <summary>
+    /// 怪兽卡属性种类
+    /// </summary>
+    enum PropertyType
+    {
+        Unknown,
+        Light,//光
+        Dark,//暗
+        Soil,//地
+        Wind,//风
+        Water,//水
+        Fire,//炎
+        Gold,//神
+    }
+
+    /// <summary>
+    /// 怪兽卡种族
+    /// </summary>
     enum MonsterType
     {
         Unknown,
-        Water,
-        Fire,
-        Wind,
-        Soil,
-        Light,
-        Dark
+        Dragon,//龙
+        SeaDragon,//海龙
+        MagicDragon,//幻龙
+        Immortal,//不死
+        Devil,//恶魔
+        Angel,//天使
+        Machine,//机械
+        Magician,//魔法师
+        Warrior,//战士
+        BeastWarrior,//兽战士
+        Water,//水
+        Fire,//炎
+        Thunder,//雷
+        Rock,//岩石
+        Reptile,//爬虫
+        Beast,//兽
+        BirdBeast,//鸟兽
+        Fish,//鱼
+        Dinosaur,//恐龙
+        Insect,//昆虫
+        Plant,//植物
+        Psychokinesis,//念动力
+        Cyberse,//电子界
+        MagicGold,//幻神兽
+        CreateGold,//创造神
     }
-    
+
+    /// <summary>
+    /// 召唤方式
+    /// </summary>
+    enum CallType
+    {
+        Unknown,//未知
+        Normal,//通常召唤
+        Sacrifice,//祭品召唤
+        Special,//特殊召唤
+    }
+
+    /// <summary>
+    /// 怪兽卡
+    /// </summary>
     class MonsterCard : CardBase
     {
         int level = 4;//等级
-        MonsterType monsterType = MonsterType.Dark;//属性
+        PropertyType propertyType = PropertyType.Unknown;//属性
+        MonsterType monsterType = MonsterType.Unknown;//种族
+
         bool isNormal = true;//是否为通常怪
         int attackNumber = 1500;//攻击力
         int defenseNumber = 500;//防御力
@@ -85,17 +138,17 @@ namespace Assets.Script.Card
             return isNormal;
         }
 
-        public MonsterType GetMonsterType()
+        public PropertyType GetPropertyType()
         {
-            return monsterType;
+            return propertyType;
         }
 
-        public string GetMonsterTypeString()
+        public string GetPropertyTypeString()
         {
-            return GetStringByMonsterType(monsterType);
+            return GetStringByPropertyType(propertyType);
         }
 
-        public override void LoadInfo(string info)
+        protected override void LoadInfo(string info)
         {
             string[] keyValues = info.Split('\n');
             foreach (var item in keyValues)
@@ -106,6 +159,9 @@ namespace Assets.Script.Card
                 {
                     case "Name":
                         name = value;
+                        break;
+                    case "PropertyType":
+                        propertyType = GetPropertyTypeByString(value);
                         break;
                     case "MonsterType":
                         monsterType = GetMonsterTypeByString(value);
@@ -132,7 +188,59 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
-        /// 将汉字转换为怪物种类
+        /// 将汉字转换为属性种类
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static PropertyType GetPropertyTypeByString(string value)
+        {
+            switch (value)
+            {
+                case "水":
+                    return PropertyType.Water;
+                case "炎":
+                    return PropertyType.Fire;
+                case "风":
+                    return PropertyType.Wind;
+                case "地":
+                    return PropertyType.Soil;
+                case "光":
+                    return PropertyType.Light;
+                case "暗":
+                    return PropertyType.Dark;
+                default:
+                    return PropertyType.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// 将属性种类转换为汉字
+        /// </summary>
+        /// <param name="propertyType"></param>
+        /// <returns></returns>
+        public static string GetStringByPropertyType(PropertyType propertyType)
+        {
+            switch (propertyType)
+            {
+                case PropertyType.Water:
+                    return "水";
+                case PropertyType.Fire:
+                    return "炎";
+                case PropertyType.Wind:
+                    return "风";
+                case PropertyType.Soil:
+                    return "地";
+                case PropertyType.Light:
+                    return "光";
+                case PropertyType.Dark:
+                    return "暗";
+                default:
+                    return "未知";
+            }
+        }
+
+        /// <summary>
+        /// 将汉字转换为怪兽种族
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -141,48 +249,49 @@ namespace Assets.Script.Card
             switch (value)
             {
                 case "水":
-                    return MonsterType.Water;
+                    return PropertyType.Water;
                 case "炎":
-                    return MonsterType.Fire;
+                    return PropertyType.Fire;
                 case "风":
-                    return MonsterType.Wind;
+                    return PropertyType.Wind;
                 case "地":
-                    return MonsterType.Soil;
+                    return PropertyType.Soil;
                 case "光":
-                    return MonsterType.Light;
+                    return PropertyType.Light;
                 case "暗":
-                    return MonsterType.Dark;
+                    return PropertyType.Dark;
                 default:
-                    return MonsterType.Unknown;
+                    return PropertyType.Unknown;
             }
         }
 
         /// <summary>
-        /// 将怪物种类转换为汉字
+        /// 将怪兽种族转换为汉字
         /// </summary>
-        /// <param name="monsterType"></param>
+        /// <param name="propertyType"></param>
         /// <returns></returns>
-        public static string GetStringByMonsterType(MonsterType monsterType)
+        public static string GetStringByPropertyType(PropertyType propertyType)
         {
-            switch (monsterType)
+            switch (propertyType)
             {
-                case MonsterType.Water:
+                case PropertyType.Water:
                     return "水";
-                case MonsterType.Fire:
+                case PropertyType.Fire:
                     return "炎";
-                case MonsterType.Wind:
+                case PropertyType.Wind:
                     return "风";
-                case MonsterType.Soil:
+                case PropertyType.Soil:
                     return "地";
-                case MonsterType.Light:
+                case PropertyType.Light:
                     return "光";
-                case MonsterType.Dark:
+                case PropertyType.Dark:
                     return "暗";
                 default:
                     return "未知";
             }
         }
 
+        
         public override CardBase GetInstance()
         {
             MonsterCard monsterCard = new MonsterCard();
@@ -191,7 +300,7 @@ namespace Assets.Script.Card
             monsterCard.cardNo = cardNo;
             monsterCard.cardID = RandomHelper.random.Next();
             monsterCard.cardType = cardType;
-            monsterCard.monsterType = monsterType;
+            monsterCard.propertyType = propertyType;
             monsterCard.level = level;
             monsterCard.attackNumber = attackNumber;
             monsterCard.defenseNumber = defenseNumber;

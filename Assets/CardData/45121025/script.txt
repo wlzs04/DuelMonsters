@@ -1,6 +1,7 @@
 CardType:怪兽
 Name:黑影鬼王
-MonsterType:地
+PropertyType:地
+MonsterType:兽战士族
 Level:4
 ATK:1200
 DEF:1400

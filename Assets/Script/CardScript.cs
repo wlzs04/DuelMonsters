@@ -1,4 +1,4 @@
-﻿using Assets.Script;
+using Assets.Script;
 using Assets.Script.Card;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,19 +14,16 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     public Transform allCardTransform;
     public Transform cardGroupTransform;
 
-    //public GameObject allCardViewport;
-    //public GameObject cardGroupViewport;
-
     GameObject dragFromObject = null;
     GameObject dragToObject = null;
 
-    // Use this for initialization
-    void Start () {
+    void Start ()
+    {
 		
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 		
 	}
 

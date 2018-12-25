@@ -1,6 +1,7 @@
 CardType:怪兽
 Name:灰流丽
-MonsterType:炎
+PropertyType:炎
+MonsterType:不死族
 Level:3
 ATK:0
 DEF:1800

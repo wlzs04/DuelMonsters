@@ -1,4 +1,4 @@
-﻿using Assets.Script.Card;
+using Assets.Script.Card;
 using Assets.Script.Duel;
 using Assets.Script.Helper;
 using Assets.Script.Net;
@@ -17,55 +17,126 @@ using UnityEngine.UI;
 
 namespace Assets.Script
 {
+    /// <summary>
+    /// 游戏管理类
+    /// </summary>
     class GameManager
     {
+        //单例
         static GameManager gameManagerInstance = new GameManager();
-        string gameSavePath = "/UserDate.txt";
+
+        AudioScript audioScript;
+        GameState currentGameState;
+
+        #region 路径与文件名
+        string saveFileName = "UserDate.xml";
+        string cardResourceRootDirectory = "CardData";
         string bgmName = "DuelBGM";
         string duelBgmName = "光宗信吉-神々の戦い";
+        #endregion
 
-        string resourcesCardPath = "/CardData/";
-        string ip = "10.237.20.13";
-        int port = 7777;
+        #region 用户和卡组信息
+        UserData userData;
+        public Dictionary<int,CardBase> allCardInfoList { get; private set; }
+        #endregion
+
+        #region 决斗
+        DuelScene duelScene = null;
+        GuessEnum myGuessEnum ;
+        GuessEnum opponentGuessEnum;
+        #endregion
+
+        #region 网络
         ServerManager serverManager = null;
         ClientManager clientManager = null;
         Queue<ClientProtocol> protocolQueue = new Queue<ClientProtocol>();
         bool isServer = false;
-
-        public UserData Userdata { get; private set; }
-        public GameState CurrentGameState { get; private set; }
-
-        //AudioSource bgmPlayer;
-        AudioScript audioScript;
-
-        public Dictionary<int,CardBase> allCardInfoList { get; private set; }
-
-        DuelScene duelScene = null;
-        GuessEnum myGuessEnum ;
-        GuessEnum opponentGuessEnum;
+        #endregion
 
         private GameManager()
         {
-            CurrentGameState = GameState.MainScene;
+            currentGameState = GameState.MainScene;
             myGuessEnum = GuessEnum.Unknown;
 
             LoadUserData();
+            InitAudio();
             LoadAllCardData();
-
-            audioScript = GameObject.Find("BGMAudio").GetComponent<AudioScript>();
-            audioScript.Init();
-            audioScript.SetAudioByName(bgmName);
-            audioScript.SetVolume(Userdata.audioValue);
         }
-
+        
         public static GameManager GetSingleInstance()
         {
             return gameManagerInstance;
         }
 
-        public DuelScene GetDuelScene()
+        /// <summary>
+        /// 初始化声音
+        /// </summary>
+        void InitAudio()
         {
-            return duelScene;
+            audioScript = GameObject.Find("BGMAudio").GetComponent<AudioScript>();
+            audioScript.Init();
+            audioScript.SetAudioByName(bgmName);
+            audioScript.SetVolume(userData.audioValue);
+        }
+
+        /// <summary>
+        /// 获得用户存档路径
+        /// </summary>
+        /// <returns></returns>
+        public string GetUserDataPath()
+        {
+            return Application.dataPath + "/" + saveFileName;
+        }
+
+        /// <summary>
+        /// 加载玩家数据
+        /// </summary>
+        void LoadUserData()
+        {
+            if (File.Exists(GetUserDataPath()))
+            {
+                userData = XMLHelper.LoadDataFromXML<UserData>(GetUserDataPath());
+            }
+            else
+            {
+                Debug.LogError("LoadUserData,存档缺失！");
+                userData = new UserData();
+            }
+        }
+
+        /// <summary>
+        /// 保存玩家数据
+        /// </summary>
+        void SaveUserData()
+        {
+            XMLHelper.SaveDataToXML(GetUserDataPath(), userData);
+        }
+
+        /// <summary>
+        /// 获得玩家数据
+        /// </summary>
+        /// <returns></returns>
+        public UserData GetUserData()
+        {
+            return userData;
+        }
+
+        /// <summary>
+        /// 获得当前游戏状态
+        /// </summary>
+        /// <returns></returns>
+        public GameState GetCurrentGameState()
+        {
+            return currentGameState;
+        }
+
+        /// <summary>
+        /// 获得卡牌路径
+        /// </summary>
+        /// <returns></returns>
+        public string GetCardResourceRootPath()
+        {
+            return Application.dataPath + "/" + cardResourceRootDirectory + "/";
         }
 
         /// <summary>
@@ -74,11 +145,11 @@ namespace Assets.Script
         /// <param name="card"></param>
         public void RemoveCardFromCardGroup(CardBase card)
         {
-            foreach (var item in Userdata.userCardGroupList)
+            foreach (var item in userData.userCardGroupList)
             {
                 if(item.cardNo==card.GetCardNo())
                 {
-                    Userdata.userCardGroupList.Remove(item);
+                    userData.userCardGroupList.Remove(item);
                     break;
                 }
             }
@@ -90,7 +161,7 @@ namespace Assets.Script
         /// <param name="card"></param>
         public void AddCardToCardGroup(CardBase card)
         {
-            foreach (var item in Userdata.userCardGroupList)
+            foreach (var item in userData.userCardGroupList)
             {
                 if (item.cardNo == card.GetCardNo())
                 {
@@ -101,7 +172,7 @@ namespace Assets.Script
             UserCardData ucd = new UserCardData();
             ucd.cardNo = card.GetCardNo();
             ucd.number = 1;
-            Userdata.userCardGroupList.Add(ucd);
+            userData.userCardGroupList.Add(ucd);
         }
 
         /// <summary>
@@ -110,7 +181,8 @@ namespace Assets.Script
         /// <param name="value"></param>
         public void SetAudioVolume(float value)
         {
-            Userdata.audioValue = value;
+            value = Mathf.Clamp01(value);
+            userData.audioValue = value;
             audioScript.SetVolume(value);
         }
 
@@ -119,21 +191,21 @@ namespace Assets.Script
         /// </summary>
         public void ReturnLastScene()
         {
-            switch (CurrentGameState)
+            switch (currentGameState)
             {
                 case GameState.MainScene:
                     break;
                 case GameState.DuelScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
-                    CurrentGameState = GameState.MainScene;
+                    currentGameState = GameState.MainScene;
                     break;
                 case GameState.CardGroupScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
-                    CurrentGameState = GameState.MainScene;
+                    currentGameState = GameState.MainScene;
                     break;
                 case GameState.SettingScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
-                    CurrentGameState = GameState.MainScene;
+                    currentGameState = GameState.MainScene;
                     break;
                 default:
                     break;
@@ -141,65 +213,32 @@ namespace Assets.Script
         }
 
         /// <summary>
-        /// 加载玩家数据
-        /// </summary>
-        public void LoadUserData()
-        {
-            if (File.Exists(Application.dataPath + gameSavePath))
-            {
-                Userdata = XMLHelper.LoadDataFromXML<UserData>(Application.dataPath + gameSavePath);
-            }
-            else
-            {
-                Debug.LogError("LoadUserData,存档缺失！");
-                Userdata = new UserData();
-            }
-        }
-
-        /// <summary>
-        /// 保存玩家数据
-        /// </summary>
-        public void SaveUserData()
-        {
-            XMLHelper.SaveDataToXML(Application.dataPath + gameSavePath,Userdata);
-        }
-
-        /// <summary>
         /// 加载所有卡片信息
         /// </summary>
-        public void LoadAllCardData()
+        void LoadAllCardData()
         {
             allCardInfoList = new Dictionary<int, CardBase>();
-            int i = 1;
-            if(!Directory.Exists(Application.dataPath + resourcesCardPath))
+            if(!Directory.Exists(GetCardResourceRootPath()))
             {
-                Debug.LogError("此路径没有找到卡牌："+ Application.dataPath + resourcesCardPath);
+                Debug.LogError("卡牌资源路径不存在："+ GetCardResourceRootPath());
                 return;
             }
-            DirectoryInfo directoryInfo = new DirectoryInfo(Application.dataPath + resourcesCardPath);
 
+            int i = 1;
+            DirectoryInfo directoryInfo = new DirectoryInfo(GetCardResourceRootPath());
             foreach (var item in directoryInfo.GetDirectories())
             {
-                WWW www= new WWW(item.FullName + "\\image.jpg");
+                WWW www= new WWW(item.FullName + "/image.jpg");
                 Texture2D texture = new Texture2D(177,254);
                 www.LoadImageIntoTexture(texture);
                 Sprite image = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-                //Resources.Load<Sprite>(resourcesCardPath + item.Name + "/image");
                 
                 CardBase card = CardBase.LoadCardFromInfo(int.Parse(item.Name), File.ReadAllText(item.FullName + "/script.txt"));
                 card.SetImage(image);
                 i = int.Parse(item.Name);
                 allCardInfoList[i] = card;
             }
-            //foreach (var item in Directory.GetDirectories(Application.persistentDataPath + cardPath))
-            //{
-            //    string no = item.Substring(item.LastIndexOf('/') + 1);
-            //    Sprite image = Resources.Load<Sprite>(resourcesCardPath + no+"/image");
-            //    CardBase card = new CardBase();
-            //    card.SetImage(image);
-            //    i = int.Parse(no);
-            //    allCardInfoList[i] = card;
-            //}
+            Debug.Log("加载卡牌数量："+allCardInfoList.Count);
         }
 
         /// <summary>
@@ -207,33 +246,70 @@ namespace Assets.Script
         /// </summary>
         public void EnterMainScene()
         {
-            if (CurrentGameState != GameState.MainScene)
+            if (currentGameState != GameState.MainScene)
             {
-                CurrentGameState = GameState.MainScene;
+                currentGameState = GameState.MainScene;
                 SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
             }
             else
             {
-                Debug.LogError("EnterMainScene");
+                Debug.LogError("进入主场景失败，已经进入主场景。");
             }
         }
 
         /// <summary>
-        /// 进入决斗界面
+        /// 进入卡组场景
+        /// </summary>
+        public void EnterCardGroupScene()
+        {
+            if (currentGameState == GameState.MainScene)
+            {
+                currentGameState = GameState.CardGroupScene;
+                SceneManager.LoadScene("CardGroupScene", LoadSceneMode.Single);
+            }
+            else
+            {
+                Debug.LogError("进入卡组场景失败，只能由主场景进入，当前场景为：" + currentGameState.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 进入设置场景
+        /// </summary>
+        public void EnterSettingScene()
+        {
+            if (currentGameState == GameState.MainScene)
+            {
+                currentGameState = GameState.SettingScene;
+                SceneManager.LoadScene("SettingScene", LoadSceneMode.Single);
+            }
+            else
+            {
+                Debug.LogError("进入设置场景失败，只能由主场景进入，当前场景为：" + currentGameState.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 进入决斗场景
         /// </summary>
         public void EnterDuelScene()
         {
-            if (CurrentGameState == GameState.MainScene)
+            if (currentGameState == GameState.MainScene)
             {
-                CurrentGameState = GameState.DuelScene;
+                currentGameState = GameState.DuelScene;
                 SceneManager.LoadScene("GuessFirstScene", LoadSceneMode.Single);
                 duelScene = new DuelScene();
                 StartNet();
             }
             else
             {
-                Debug.LogError("EnterDuelScene");
+                Debug.LogError("进入决斗场景失败，只能由主场景进入，当前场景为："+ currentGameState.ToString());
             }
+        }
+
+        public DuelScene GetDuelScene()
+        {
+            return duelScene;
         }
 
         /// <summary>
@@ -253,12 +329,12 @@ namespace Assets.Script
             clientManager.AddLegalProtocol(new CAttackDirect());
             clientManager.AddLegalProtocol(new CCallMonsterBySacrifice());
 
-            if (ServerManager.GetInstance().GetHostIPV4().ToString() == ip )
+            if (ServerManager.GetInstance().GetHostIPV4().ToString() == userData.ip)
             {
                 serverManager = ServerManager.GetInstance();
                 serverManager.AcceptNewSocketEvent += (Socket s) => { Debug.LogError("有新客户端！"); };
                 serverManager.SocketDisconnectEvent += (Socket s) => { Debug.LogError("客户端断开！"); };
-                if (serverManager.StartListen(port))
+                if (serverManager.StartListen(userData.port))
                 {
                     serverManager.ProcessProtocolEvent += ProcessProtocolEvent;
                     isServer = true;
@@ -270,7 +346,7 @@ namespace Assets.Script
                 clientManager.ConnectSuccessEvent += (Socket s) => { Debug.LogError("连接成功！"); };
                 clientManager.ConnectFailEvent += (Socket s) => { Debug.LogError("连接失败！"); };
                 clientManager.DisconnectEvent += (Socket s) => { Debug.LogError("连接断开！"); };
-                clientManager.StartConnect(ip, port);
+                clientManager.StartConnect(userData.ip, userData.port);
                 clientManager.ProcessProtocolEvent += ProcessProtocolEvent;
             }
         }
@@ -382,38 +458,6 @@ namespace Assets.Script
         }
 
         /// <summary>
-        /// 进入卡组界面
-        /// </summary>
-        public void EnterCardGroupScene()
-        {
-            if (CurrentGameState == GameState.MainScene)
-            {
-                CurrentGameState = GameState.CardGroupScene;
-                SceneManager.LoadScene("CardGroupScene", LoadSceneMode.Single);
-            }
-            else
-            {
-                Debug.LogError("EnterCardGroupScene");
-            }
-        }
-
-        /// <summary>
-        /// 进入设置场景
-        /// </summary>
-        public void EnterSettingScene()
-        {
-            if (CurrentGameState == GameState.MainScene)
-            {
-                CurrentGameState = GameState.SettingScene;
-                SceneManager.LoadScene("SettingScene",LoadSceneMode.Single);
-            }
-            else
-            {
-                Debug.LogError("EnterSettingScene");
-            }
-        }
-
-        /// <summary>
         /// 退出游戏
         /// </summary>
         public void QuitGame()
@@ -422,13 +466,16 @@ namespace Assets.Script
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+            Application.Quit();
 #endif
         }
 
+        /// <summary>
+        /// 更新
+        /// </summary>
         public void Update()
         {
-            if(CurrentGameState==GameState.DuelScene)
+            if(currentGameState==GameState.DuelScene)
             {
                 ProcessProtocol();
             }

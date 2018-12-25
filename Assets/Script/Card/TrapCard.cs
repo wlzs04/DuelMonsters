@@ -1,4 +1,4 @@
-﻿using Assets.Script.Helper;
+using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Assets.Script.Card
 {
+    /// <summary>
+    /// 陷阱卡种类
+    /// </summary>
     enum TrapType
     {
         Unknown,//未知
@@ -14,6 +17,9 @@ namespace Assets.Script.Card
         BeatBack//反击
     }
 
+    /// <summary>
+    /// 陷阱卡
+    /// </summary>
     class TrapCard : CardBase
     {
         TrapType trapType = TrapType.Normal;
@@ -28,7 +34,7 @@ namespace Assets.Script.Card
             return GetStringByTrapType(trapType);
         }
 
-        public override void LoadInfo(string info)
+        protected override void LoadInfo(string info)
         {
             string[] keyValues = info.Split('\n');
             foreach (var item in keyValues)

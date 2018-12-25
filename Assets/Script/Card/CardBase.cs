@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Assets.Script.Card
 {
+    /// <summary>
+    /// 卡牌类型
+    /// </summary>
     public enum CardType
     {
         Unknown,//未知
@@ -14,6 +17,9 @@ namespace Assets.Script.Card
         Trap//陷阱
     }
 
+    /// <summary>
+    /// 在决斗中卡牌的状态
+    /// </summary>
     public enum CardGameState
     {
         Group,//在卡组中
@@ -25,6 +31,9 @@ namespace Assets.Script.Card
         Exclusion//被排除在游戏外
     }
 
+    /// <summary>
+    /// 卡牌基类
+    /// </summary>
     public abstract class CardBase
     {
         protected CardType cardType = CardType.Monster;//卡片类型
@@ -41,6 +50,7 @@ namespace Assets.Script.Card
 
         public GameObject cardObject=null;
         
+        //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
 
         public void AddContent(string key, object value)
@@ -54,6 +64,10 @@ namespace Assets.Script.Card
 
         public object GetContent(string key)
         {
+            if(!contentMap.ContainsKey(key))
+            {
+                return null;
+            }
             return contentMap[key];
         }
 
@@ -102,12 +116,12 @@ namespace Assets.Script.Card
             return effect;
         }
 
-        internal void SetImage(Sprite image)
+        public void SetImage(Sprite image)
         {
             this.image = image;
         }
 
-        internal Sprite GetImage()
+        public Sprite GetImage()
         {
             return image;
         }
@@ -122,7 +136,7 @@ namespace Assets.Script.Card
             return GetStringByCardType(cardType);
         }
 
-        public abstract void LoadInfo(string info);
+        protected abstract void LoadInfo(string info);
 
         public static CardBase LoadCardFromInfo(int cardNo,string info)
         {

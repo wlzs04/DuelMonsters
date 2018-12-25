@@ -1,4 +1,4 @@
-﻿using Assets.Script;
+using Assets.Script;
 using Assets.Script.Card;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,19 +9,20 @@ public class CardGroupScript : MonoBehaviour {
     GameManager gameManager;
     public Transform allCardScrollViewTransform;
     public Transform cardGroupScrollViewTransform;
-    public GameObject cardPre;
     public Transform infoContentTransform;
 
+    public GameObject cardPre;
     public GameObject monsterCardPre;
     public GameObject magicTrapCardPre;
 
     Image cardImage;
 
-    // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         gameManager = GameManager.GetSingleInstance();
 
-        UserData userData = gameManager.Userdata;
+        UserData userData = gameManager.GetUserData();
+
         foreach (var item in userData.userCardList)
         {
             for (int i = 0; i < item.number; i++)
@@ -73,9 +74,9 @@ public class CardGroupScript : MonoBehaviour {
             MonsterCard monsterCard = (MonsterCard)card;
             gameObject = Instantiate(monsterCardPre, infoContentTransform);
             gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + monsterCard.GetName();
-            gameObject.transform.GetChild(1).GetComponent<Text>().text = "等级：" + monsterCard.GetLevel();
+            gameObject.transform.GetChild(1).GetComponent<Text>().text = "属性：" + monsterCard.GetCardTypeString() + "/" + monsterCard.GetLevel();
             gameObject.transform.GetChild(2).GetComponent<Text>().text = "卡片类型：" + monsterCard.GetCardTypeString();
-            gameObject.transform.GetChild(3).GetComponent<Text>().text = "类型：" + monsterCard.GetMonsterTypeString();
+            gameObject.transform.GetChild(3).GetComponent<Text>().text = "类型：" + monsterCard.GetPropertyTypeString();
             gameObject.transform.GetChild(4).GetComponent<Text>().text = "攻击力：" + monsterCard.GetAttackNumber();
             gameObject.transform.GetChild(5).GetComponent<Text>().text = "防御力：" + monsterCard.GetDefenseNumber();
             gameObject.transform.GetChild(6).GetComponent<Text>().text = "效果：" + monsterCard.GetEffect();

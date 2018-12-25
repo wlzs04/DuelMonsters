@@ -1,6 +1,7 @@
 CardType:怪兽
 Name:净化施效者
-MonsterType:光
+PropertyType:光
+MonsterType:魔法师族
 Level:2
 ATK:0
 DEF:900

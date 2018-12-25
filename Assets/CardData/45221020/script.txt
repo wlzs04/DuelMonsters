@@ -1,6 +1,7 @@
 CardType:怪兽
 Name:寻宝熊猫
-MonsterType:地
+PropertyType:地
+MonsterType:兽族
 Level:4
 ATK:1100
 DEF:2000
