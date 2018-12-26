@@ -1,3 +1,4 @@
+using Assets.Script.Config;
 using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
@@ -65,17 +66,16 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static TrapType GetTrapTypeByString(string value)
         {
-            switch (value)
+            TrapTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("TrapType") as TrapTypeConfig;
+            int count = config.GetRecordCount();
+            for (int i = 0; i < count; i++)
             {
-                case "通常":
-                    return TrapType.Normal;
-                case "永续":
-                    return TrapType.Forever;
-                case "反击":
-                    return TrapType.BeatBack;
-                default:
-                    return TrapType.Unknown;
+                if (config.GetRecordById(i).value == value)
+                {
+                    return (TrapType)i;
+                }
             }
+            return 0;
         }
 
         /// <summary>
@@ -85,17 +85,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByTrapType(TrapType trapType)
         {
-            switch (trapType)
-            {
-                case TrapType.Normal:
-                    return "通常";
-                case TrapType.Forever:
-                    return "永续";
-                case TrapType.BeatBack:
-                    return "反击";
-                default:
-                    return "未知";
-            }
+            TrapTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("TrapType") as TrapTypeConfig;
+            return config.GetRecordById((int)trapType).value;
         }
 
         public override CardBase GetInstance()

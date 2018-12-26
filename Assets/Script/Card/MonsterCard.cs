@@ -1,3 +1,4 @@
+using Assets.Script.Config;
 using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
@@ -194,23 +195,16 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static PropertyType GetPropertyTypeByString(string value)
         {
-            switch (value)
+            PropertyTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("PropertyType") as PropertyTypeConfig;
+            int count = config.GetRecordCount();
+            for (int i = 0; i < count; i++)
             {
-                case "水":
-                    return PropertyType.Water;
-                case "炎":
-                    return PropertyType.Fire;
-                case "风":
-                    return PropertyType.Wind;
-                case "地":
-                    return PropertyType.Soil;
-                case "光":
-                    return PropertyType.Light;
-                case "暗":
-                    return PropertyType.Dark;
-                default:
-                    return PropertyType.Unknown;
+                if (config.GetRecordById(i).value == value)
+                {
+                    return (PropertyType)i;
+                }
             }
+            return 0;
         }
 
         /// <summary>
@@ -220,23 +214,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByPropertyType(PropertyType propertyType)
         {
-            switch (propertyType)
-            {
-                case PropertyType.Water:
-                    return "水";
-                case PropertyType.Fire:
-                    return "炎";
-                case PropertyType.Wind:
-                    return "风";
-                case PropertyType.Soil:
-                    return "地";
-                case PropertyType.Light:
-                    return "光";
-                case PropertyType.Dark:
-                    return "暗";
-                default:
-                    return "未知";
-            }
+            PropertyTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("PropertyType") as PropertyTypeConfig;
+            return config.GetRecordById((int)propertyType).value;
         }
 
         /// <summary>
@@ -246,23 +225,16 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static MonsterType GetMonsterTypeByString(string value)
         {
-            switch (value)
+            MonsterTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MonsterType") as MonsterTypeConfig;
+            int count = config.GetRecordCount();
+            for (int i = 0; i < count; i++)
             {
-                case "水":
-                    return PropertyType.Water;
-                case "炎":
-                    return PropertyType.Fire;
-                case "风":
-                    return PropertyType.Wind;
-                case "地":
-                    return PropertyType.Soil;
-                case "光":
-                    return PropertyType.Light;
-                case "暗":
-                    return PropertyType.Dark;
-                default:
-                    return PropertyType.Unknown;
+                if (config.GetRecordById(i).value == value)
+                {
+                    return (MonsterType)i;
+                }
             }
+            return 0;
         }
 
         /// <summary>
@@ -270,25 +242,10 @@ namespace Assets.Script.Card
         /// </summary>
         /// <param name="propertyType"></param>
         /// <returns></returns>
-        public static string GetStringByPropertyType(PropertyType propertyType)
+        public static string GetStringByMonsterType(MonsterType monsterType)
         {
-            switch (propertyType)
-            {
-                case PropertyType.Water:
-                    return "水";
-                case PropertyType.Fire:
-                    return "炎";
-                case PropertyType.Wind:
-                    return "风";
-                case PropertyType.Soil:
-                    return "地";
-                case PropertyType.Light:
-                    return "光";
-                case PropertyType.Dark:
-                    return "暗";
-                default:
-                    return "未知";
-            }
+            MonsterTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MonsterType") as MonsterTypeConfig;
+            return config.GetRecordById((int)monsterType).value;
         }
 
         

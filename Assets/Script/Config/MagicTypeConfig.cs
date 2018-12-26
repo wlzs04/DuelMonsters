@@ -6,9 +6,9 @@ using System.Text;
 namespace Assets.Script.Config
 {
     /// <summary>
-    /// 卡牌类型配置
+    /// 魔法卡类型配置
     /// </summary>
-    public struct CardTypeRecord
+    public struct MagicTypeRecord
     {
         [System.Xml.Serialization.XmlAttribute]
         public int id;
@@ -17,18 +17,18 @@ namespace Assets.Script.Config
         public string value;
     }
 
-    [System.Xml.Serialization.XmlRoot(ElementName = "CardType")]
-    public class CardTypeConfig :ConfigBase
+    [System.Xml.Serialization.XmlRoot(ElementName = "MagicType")]
+    public class MagicTypeConfig : ConfigBase
     {
         [System.Xml.Serialization.XmlElement(ElementName = "RecordList")]
-        public List<CardTypeRecord> recordList;
+        public List<MagicTypeRecord> recordList;
 
         public int GetRecordCount()
         {
             return recordList.Count;
         }
 
-        public CardTypeRecord GetRecordById(int id)
+        public MagicTypeRecord GetRecordById(int id)
         {
             return recordList[id];
         }

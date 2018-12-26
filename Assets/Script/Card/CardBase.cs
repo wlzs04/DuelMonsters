@@ -1,3 +1,4 @@
+using Assets.Script.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -176,17 +177,16 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static CardType GetCardTypeByString(string value)
         {
-            switch (value)
+            CardTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("CardType") as CardTypeConfig;
+            int count = config.GetRecordCount();
+            for (int i = 0; i < count; i++)
             {
-                case "怪兽":
-                    return CardType.Monster;
-                case "魔法":
-                    return CardType.Magic;
-                case "陷阱":
-                    return CardType.Trap;
-                default:
-                    return CardType.Unknown;
+                if(config.GetRecordById(i).value == value)
+                {
+                    return (CardType)i;
+                }
             }
+            return 0;
         }
 
         /// <summary>
@@ -196,17 +196,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByCardType(CardType cardType)
         {
-            switch (cardType)
-            {
-                case CardType.Monster:
-                    return "怪兽";
-                case CardType.Magic:
-                    return "魔法";
-                case CardType.Trap:
-                    return "陷阱";
-                default:
-                    return "未知";
-            }
+            CardTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("CardType") as CardTypeConfig;
+            return config.GetRecordById((int)cardType).value;
         }
     }
 }

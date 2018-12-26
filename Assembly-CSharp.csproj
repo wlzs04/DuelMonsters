@@ -71,8 +71,12 @@
     <Compile Include="Assets\Script\CardGroupScript.cs" />
     <Compile Include="Assets\Script\CardScript.cs" />
     <Compile Include="Assets\Script\Config\CardTypeConfig.cs" />
-    <Compile Include="Assets\Script\Config\MonsterType.cs" />
-    <Compile Include="Assets\Script\Config\PropertyType.cs" />
+    <Compile Include="Assets\Script\Config\ConfigBase.cs" />
+    <Compile Include="Assets\Script\Config\MagicTypeConfig.cs" />
+    <Compile Include="Assets\Script\Config\MonsterTypeConfig.cs" />
+    <Compile Include="Assets\Script\Config\PropertyTypeConfig.cs" />
+    <Compile Include="Assets\Script\Config\TrapTypeConfig.cs" />
+    <Compile Include="Assets\Script\ConfigManager.cs" />
     <Compile Include="Assets\Script\DestroySelfScript.cs" />
     <Compile Include="Assets\Script\Duel\DuelCardGroup.cs" />
     <Compile Include="Assets\Script\Duel\DuelCommonValue.cs" />
@@ -102,18 +106,24 @@
     <Compile Include="Assets\Script\Protocol\CEnterDuelProcess.cs" />
     <Compile Include="Assets\Script\Protocol\CGuessFirst.cs" />
     <Compile Include="Assets\Script\UserData.cs" />
-    <None Include="Assets\CardData\45159319\script.txt" />
-    <None Include="Assets\CardData\45221020\script.txt" />
-    <None Include="Assets\CardData\58518520\script.txt" />
-    <None Include="Assets\CardData\35618217\script.txt" />
-    <None Include="Assets\CardData\58984738\script.txt" />
-    <None Include="Assets\CardData\45121025\script.txt" />
-    <None Include="Assets\CardString_CH.xml" />
-    <None Include="Assets\CardData\14558127\script.txt" />
-    <None Include="Assets\CardData\09852718\script.txt" />
-    <None Include="Assets\CardData\87769556\script.txt" />
-    <None Include="Assets\UserDate.xml" />
-    <None Include="Assets\CardData\20155904\script.txt" />
+    <None Include="Assets\Artres\CardData\45159319\script.txt" />
+    <None Include="Assets\Artres\CardData\45221020\script.txt" />
+    <None Include="Assets\Artres\CardData\58518520\script.txt" />
+    <None Include="Assets\Artres\Config\MagicType.xml" />
+    <None Include="Assets\Artres\Config\MonsterType.xml" />
+    <None Include="Assets\Artres\CardData\35618217\script.txt" />
+    <None Include="Assets\Artres\CardData\58984738\script.txt" />
+    <None Include="Assets\Artres\CardData\45121025\script.txt" />
+    <None Include="Assets\Artres\Config\CardType.xml" />
+    <None Include="Assets\Artres\Config\PropertyType.xml" />
+    <None Include="Assets\Artres\Config\TrapType.xml" />
+    <None Include="Assets\Artres\CardData\14558127\script.txt" />
+    <None Include="Assets\Artres\CardData\09852718\script.txt" />
+    <None Include="Assets\Artres\CardData\87769556\script.txt" />
+    <None Include="Assets\Artres\UserDate.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Assets\Artres\CardData\20155904\script.txt" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>E:/tomb/Unity/DuelMonsters/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

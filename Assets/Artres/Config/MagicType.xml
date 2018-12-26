@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MagicType>
+  <RecordList>
+    <Record id="1" value="通常"/>
+    <Record id="2" value="装备"/>
+    <Record id="3" value="地形"/>
+    <Record id="4" value="永续"/>
+    <Record id="5" value="仪式"/>
+    <Record id="6" value="速攻"/>
+  </RecordList>
+</MagicType>

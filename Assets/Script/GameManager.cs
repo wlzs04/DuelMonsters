@@ -85,7 +85,7 @@ namespace Assets.Script
         /// <returns></returns>
         public string GetUserDataPath()
         {
-            return Application.dataPath + "/" + saveFileName;
+            return Application.dataPath + "/Artres/" + saveFileName;
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Assets.Script
         /// <returns></returns>
         public string GetCardResourceRootPath()
         {
-            return Application.dataPath + "/" + cardResourceRootDirectory + "/";
+            return Application.dataPath + "/Artres/" + cardResourceRootDirectory + "/";
         }
 
         /// <summary>

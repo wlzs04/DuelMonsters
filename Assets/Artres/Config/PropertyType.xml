@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PropertyType>
+  <RecordList>
+    <Record id="1" value="光"/>
+    <Record id="2" value="暗"/>
+    <Record id="3" value="地"/>
+    <Record id="4" value="风"/>
+    <Record id="5" value="水"/>
+    <Record id="6" value="炎"/>
+    <Record id="7" value="神"/>
+  </RecordList>
+</PropertyType>

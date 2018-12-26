@@ -1,20 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<CardString>
-  <CardType>
-    <Record id="1" value="怪兽"/>
-    <Record id="2" value="魔法"/>
-    <Record id="3" value="陷阱"/>
-  </CardType>
-  <PropertyType>
-    <Record id="1" value="光"/>
-    <Record id="2" value="暗"/>
-    <Record id="3" value="地"/>
-    <Record id="4" value="风"/>
-    <Record id="5" value="水"/>
-    <Record id="6" value="炎"/>
-    <Record id="7" value="神"/>
-  </PropertyType>
-  <MonsterType>
+<?xml version="1.0" encoding="utf-8" ?>
+<MonsterType>
+  <RecordList>
     <Record id="1" value="龙"/>
     <Record id="2" value="海龙"/>
     <Record id="3" value="幻龙"/>
@@ -40,18 +26,5 @@
     <Record id="23" value="电子界"/>
     <Record id="24" value="幻神兽"/>
     <Record id="25" value="创造神"/>
-  </MonsterType>
-  <MagicType>
-    <Record id="1" value="通常"/>
-    <Record id="2" value="装备"/>
-    <Record id="3" value="地形"/>
-    <Record id="4" value="永续"/>
-    <Record id="5" value="仪式"/>
-    <Record id="6" value="速攻"/>
-  </MagicType>
-  <TrapType>
-    <Record id="1" value="通常"/>
-    <Record id="2" value="永续"/>
-    <Record id="3" value="反击"/>
-  </TrapType>
-</CardString>
+  </RecordList>
+</MonsterType>

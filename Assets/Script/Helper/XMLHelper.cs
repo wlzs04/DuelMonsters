@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,6 +26,16 @@ namespace Assets.Script.Helper
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(T));
                 return serializer.Deserialize(sr) as T;
+            }
+        }
+
+        public static object LoadDataFromXML(Type type, string path)
+        {
+            string xmlStr = File.ReadAllText(path);
+            using (StringReader sr = new StringReader(xmlStr))
+            {
+                XmlSerializer serializer = new XmlSerializer(type);
+                return serializer.Deserialize(sr);
             }
         }
     }

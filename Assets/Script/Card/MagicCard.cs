@@ -1,3 +1,4 @@
+using Assets.Script.Config;
 using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
@@ -68,21 +69,16 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static MagicType GetMagicTypeByString(string value)
         {
-            switch (value)
+            MagicTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MagicType") as MagicTypeConfig;
+            int count = config.GetRecordCount();
+            for (int i = 0; i < count; i++)
             {
-                case "通常":
-                    return MagicType.Normal;
-                case "速攻":
-                    return MagicType.Quick;
-                case "环境":
-                    return MagicType.Environment;
-                case "装备":
-                    return MagicType.Equipment;
-                case "永续":
-                    return MagicType.Forever;
-                default:
-                    return MagicType.Unknown;
+                if (config.GetRecordById(i).value == value)
+                {
+                    return (MagicType)i;
+                }
             }
+            return 0;
         }
 
         /// <summary>
@@ -92,21 +88,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByMagicType(MagicType magicType)
         {
-            switch (magicType)
-            {
-                case MagicType.Normal:
-                    return "通常";
-                case MagicType.Quick:
-                    return "速攻";
-                case MagicType.Environment:
-                    return "环境";
-                case MagicType.Equipment:
-                    return "装备";
-                case MagicType.Forever:
-                    return "永续";
-                default:
-                    return "未知";
-            }
+            MagicTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MagicType") as MagicTypeConfig;
+            return config.GetRecordById((int)magicType).value;
         }
 
         public override CardBase GetInstance()
