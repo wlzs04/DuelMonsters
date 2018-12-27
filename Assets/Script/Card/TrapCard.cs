@@ -37,7 +37,7 @@ namespace Assets.Script.Card
 
         protected override void LoadInfo(string info)
         {
-            string[] keyValues = info.Split('\n');
+            string[] keyValues = info.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
             foreach (var item in keyValues)
             {
                 string key = item.Substring(0, item.IndexOf(':'));

@@ -1,7 +1,7 @@
 CardType:怪兽
 Name:月光彩雏
 PropertyType:暗
-MonsterType:兽战士族
+MonsterType:兽战士
 Level:4
 ATK:1400
 DEF:800

@@ -1,4 +1,4 @@
-﻿using Assets.Script.Card;
+using Assets.Script.Card;
 using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -65,6 +65,10 @@ namespace Assets.Script.Duel
 
         public Player(string name,DuelCardGroup duelCardGroup)
         {
+            if(this.name == "")
+            {
+                Debug.LogError("玩家姓名为空！");
+            }
             this.name = name;
             this.duelCardGroup = duelCardGroup;
             duelScene = GameManager.GetSingleInstance().GetDuelScene();

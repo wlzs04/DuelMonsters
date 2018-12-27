@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,17 +14,17 @@ namespace Assets.Script.Duel.Rule
         static int groupNumberLowerLimit = 40;//卡组数量下限
         static int sameCardMaxNumber = 3;//相同卡片数量上限
 
-        public static bool IsLegal(UserData userData)
+        public static bool IsLegal(UserCardGroup cardGroup)
         {
-            if (userData.userCardGroupList.Count > groupNumberUpperLimit)
+            if (cardGroup.userCardList.Count > groupNumberUpperLimit)
             {
                 return false;
             }
-            if (userData.userCardGroupList.Count < groupNumberLowerLimit)
+            if (cardGroup.userCardList.Count < groupNumberLowerLimit)
             {
                 return false;
             }
-            foreach (var item in userData.userCardGroupList)
+            foreach (var item in cardGroup.userCardList)
             {
                 if(item.number> sameCardMaxNumber)
                 {

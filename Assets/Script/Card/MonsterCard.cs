@@ -144,14 +144,27 @@ namespace Assets.Script.Card
             return propertyType;
         }
 
+        /// <summary>
+        /// 获得属性类型的文字描述
+        /// </summary>
+        /// <returns></returns>
         public string GetPropertyTypeString()
         {
             return GetStringByPropertyType(propertyType);
         }
 
+        /// <summary>
+        /// 获得种族类型的文字描述
+        /// </summary>
+        /// <returns></returns>
+        public string GetMonsterTypeString()
+        {
+            return GetStringByMonsterType(monsterType);
+        }
+
         protected override void LoadInfo(string info)
         {
-            string[] keyValues = info.Split('\n');
+            string[] keyValues = info.Split(new string[] { "\n", "\r\n" },StringSplitOptions.None);
             foreach (var item in keyValues)
             {
                 string key = item.Substring(0, item.IndexOf(':'));
@@ -248,7 +261,10 @@ namespace Assets.Script.Card
             return config.GetRecordById((int)monsterType).value;
         }
 
-        
+        /// <summary>
+        /// 获得当前卡牌的一个实例
+        /// </summary>
+        /// <returns></returns>
         public override CardBase GetInstance()
         {
             MonsterCard monsterCard = new MonsterCard();

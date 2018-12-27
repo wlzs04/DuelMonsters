@@ -7,9 +7,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler, IDragHandler,IEndDragHandler,IPointerEnterHandler,IPointerExitHandler{
-    float selectScale = 1.2f;//当鼠标移动到卡牌上时卡牌方法的倍数。
+    float selectScale = 1.2f;//当鼠标移动到卡牌上时卡牌放大的倍数。
     CardBase card;
-    CardGroupScript cardGroupScript;
+    CardGroupEditScript cardGroupEditScript;
 
     public Transform allCardTransform;
     public Transform cardGroupTransform;
@@ -32,9 +32,9 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
         this.card = card;
     }
 
-    public void SetRootScript(CardGroupScript cardGroupScript)
+    public void SetRootScript(CardGroupEditScript cardGroupScript)
     {
-        this.cardGroupScript = cardGroupScript;
+        this.cardGroupEditScript = cardGroupScript;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -51,17 +51,17 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            cardGroupScript.SetInfoContent(card);
+            cardGroupEditScript.SetInfoContent(card);
         }
         else if(eventData.button == PointerEventData.InputButton.Right)
         {
             if(gameObject.transform.parent==cardGroupTransform)
             {
-                cardGroupScript.RemoveCardFromCardGroup(gameObject,card);
+                cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
             }
             if (gameObject.transform.parent == allCardTransform)
             {
-                cardGroupScript.AddCardToCardGroup(card);
+                cardGroupEditScript.AddCardToCardGroup(card);
             }
         }
     }
@@ -81,11 +81,11 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
         dragToObject = eventData.pointerEnter.transform.GetChild(0).gameObject;
         if(dragFromObject== allCardTransform.gameObject && dragToObject == cardGroupTransform.gameObject)
         {
-            cardGroupScript.AddCardToCardGroup(card);
+            cardGroupEditScript.AddCardToCardGroup(card);
         }
         else if(dragFromObject == cardGroupTransform.gameObject && dragToObject == allCardTransform.gameObject)
         {
-            cardGroupScript.RemoveCardFromCardGroup(gameObject,card);
+            cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
         }
         dragFromObject = null;
         dragToObject = null;

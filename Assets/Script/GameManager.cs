@@ -143,13 +143,19 @@ namespace Assets.Script
         /// 从卡组中移除一张卡
         /// </summary>
         /// <param name="card"></param>
-        public void RemoveCardFromCardGroup(CardBase card)
+        public void RemoveCardFromCardGroup(string cardGroupName,CardBase card)
         {
-            foreach (var item in userData.userCardGroupList)
+            UserCardGroup userCardGroup = userData.GetCardGroupByName(cardGroupName);
+            if(userCardGroup==null)
+            {
+                Debug.LogError("在从卡组中删除卡牌时没有找到卡组："+ cardGroupName);
+                return;
+            }
+            foreach (var item in userCardGroup.userCardList)
             {
                 if(item.cardNo==card.GetCardNo())
                 {
-                    userData.userCardGroupList.Remove(item);
+                    userCardGroup.userCardList.Remove(item);
                     break;
                 }
             }
@@ -159,9 +165,15 @@ namespace Assets.Script
         /// 向卡组中添加一张卡
         /// </summary>
         /// <param name="card"></param>
-        public void AddCardToCardGroup(CardBase card)
+        public void AddCardToCardGroup(string cardGroupName, CardBase card)
         {
-            foreach (var item in userData.userCardGroupList)
+            UserCardGroup userCardGroup = userData.GetCardGroupByName(cardGroupName);
+            if (userCardGroup == null)
+            {
+                Debug.LogError("在从卡组中删除卡牌时没有找到卡组：" + cardGroupName);
+                return;
+            }
+            foreach (var item in userCardGroup.userCardList)
             {
                 if (item.cardNo == card.GetCardNo())
                 {
@@ -172,7 +184,7 @@ namespace Assets.Script
             UserCardData ucd = new UserCardData();
             ucd.cardNo = card.GetCardNo();
             ucd.number = 1;
-            userData.userCardGroupList.Add(ucd);
+            userCardGroup.userCardList.Add(ucd);
         }
 
         /// <summary>
@@ -206,6 +218,10 @@ namespace Assets.Script
                 case GameState.SettingScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
                     currentGameState = GameState.MainScene;
+                    break;
+                case GameState.CardGroupEditScene:
+                    SceneManager.LoadScene("CardGroupScene", LoadSceneMode.Single);
+                    currentGameState = GameState.CardGroupScene;
                     break;
                 default:
                     break;
@@ -485,6 +501,18 @@ namespace Assets.Script
                 {
                     duelScene.MouseRightButtonDown();
                 }
+            }
+        }
+
+        /// <summary>
+        /// 清空容器内控件
+        /// </summary>
+        public static void CleanPanelContent(Transform transform)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                GameObject go = transform.GetChild(i).gameObject;
+                UnityEngine.Object.DestroyImmediate(go);
             }
         }
     }

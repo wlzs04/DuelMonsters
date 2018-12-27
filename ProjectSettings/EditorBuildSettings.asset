@@ -13,6 +13,9 @@ EditorBuildSettings:
     guid: 6ce68f27c28e6e54dafe143a8880852a
   - enabled: 1
     path: Assets/Scene/CardGroupScene.unity
+    guid: 8c6fa3ada0165004a9d3fdf49b14efe5
+  - enabled: 1
+    path: Assets/Scene/CardGroupEditScene.unity
     guid: 459f3bb04387c01468bc526e3d6bcc52
   - enabled: 1
     path: Assets/Scene/GuessFirstScene.unity
@@ -20,3 +23,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/DuelScene.unity
     guid: aa91cff74f1bafd4a8c68377c8ea92bb
+  m_configObjects: {}

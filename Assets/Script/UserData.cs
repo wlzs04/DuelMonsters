@@ -3,37 +3,67 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Assets.Script
 {
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
+    /// <summary>
+    /// 用户卡牌
+    /// </summary>
     public class UserCardData
     {
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public int cardNo = 0;//编号
 
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public int number = 0;//数量
     }
 
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
+    /// <summary>
+    /// 用户卡组
+    /// </summary>
+    public class UserCardGroup
+    {
+        [XmlAttribute]
+        public string cardGroupName = "未命名";//卡组名称
+
+        [XmlArray("UserCardList")]
+        public List<UserCardData> userCardList = new List<UserCardData>();
+    }
+
+    /// <summary>
+    /// 用户数据
+    /// </summary>
     public class UserData
     {
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public string playerName = "LL";
 
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public float audioValue = 1;
 
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public string ip ="127.0.0.1";
 
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public int port = 7777;
 
+        [XmlArray("UserCardList")]
         public List<UserCardData> userCardList = new List<UserCardData>();
-        public List<UserCardData> userCardGroupList=new List<UserCardData>();
+
+        [XmlArray("UserCardGroupList")]
+        public List<UserCardGroup> userCardGroupList=new List<UserCardGroup>();
+
+        public UserCardGroup GetCardGroupByName(string cardGroupName)
+        {
+            foreach (var item in userCardGroupList)
+            {
+                if(item.cardGroupName==cardGroupName)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
     }
 }

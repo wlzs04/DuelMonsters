@@ -68,6 +68,8 @@
     <Compile Include="Assets\Script\Card\MagicCard.cs" />
     <Compile Include="Assets\Script\Card\MonsterCard.cs" />
     <Compile Include="Assets\Script\Card\TrapCard.cs" />
+    <Compile Include="Assets\Script\CardCroupItemScript.cs" />
+    <Compile Include="Assets\Script\CardGroupEditScript.cs" />
     <Compile Include="Assets\Script\CardGroupScript.cs" />
     <Compile Include="Assets\Script\CardScript.cs" />
     <Compile Include="Assets\Script\Config\CardTypeConfig.cs" />

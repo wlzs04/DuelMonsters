@@ -13,6 +13,7 @@ namespace Assets.Script
         MainScene,//主场景
         DuelScene,//决斗场景
         CardGroupScene,//卡组场景
+        CardGroupEditScene,//卡组编辑场景
         SettingScene,//设置场景
     }
 }

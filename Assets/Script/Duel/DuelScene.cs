@@ -317,7 +317,11 @@ namespace Assets.Script.Duel
         {
             DuelCardGroup duelCardGroup = new DuelCardGroup();
             myPlayer = new Player("我方",duelCardGroup);
-            foreach (var item in GameManager.GetSingleInstance().GetUserData().userCardGroupList)
+
+            UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
+            Debug.LogWarning("在卡组编辑界面暂时使用第一个卡组。");
+
+            foreach (var item in firstCardGroup.userCardList)
             {
                 for (int i = 0; i < item.number; i++)
                 {

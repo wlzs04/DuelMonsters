@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Assets.Script.Config
 {
@@ -10,17 +11,18 @@ namespace Assets.Script.Config
     /// </summary>
     public struct MagicTypeRecord
     {
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public int id;
 
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public string value;
     }
 
-    [System.Xml.Serialization.XmlRoot(ElementName = "MagicType")]
+    [XmlRoot("MagicType")]
     public class MagicTypeConfig : ConfigBase
     {
-        [System.Xml.Serialization.XmlElement(ElementName = "RecordList")]
+        [XmlArray("RecordList")]
+        [XmlArrayItem("Record")]
         public List<MagicTypeRecord> recordList;
 
         public int GetRecordCount()

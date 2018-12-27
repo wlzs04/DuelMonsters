@@ -1,7 +1,7 @@
 CardType:怪兽
 Name:石像迎击炮
 PropertyType:地
-MonsterType:岩石族
+MonsterType:岩石
 Level:4
 ATK:1100
 DEF:2000

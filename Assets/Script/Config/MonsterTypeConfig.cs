@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Assets.Script.Config
 {
@@ -10,17 +11,18 @@ namespace Assets.Script.Config
     /// </summary>
     public struct MonsterTypeRecord
     {
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public int id;
 
-        [System.Xml.Serialization.XmlAttribute]
+        [XmlAttribute]
         public string value;
     }
 
-    [System.Xml.Serialization.XmlRoot(ElementName = "MonsterType")]
+    [XmlRoot("MonsterType")]
     public class MonsterTypeConfig : ConfigBase
     {
-        [System.Xml.Serialization.XmlElement(ElementName = "RecordList")]
+        [XmlArray("RecordList")]
+        [XmlArrayItem("Record")]
         public List<MonsterTypeRecord> recordList;
 
         public int GetRecordCount()

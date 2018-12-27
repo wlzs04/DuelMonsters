@@ -1,83 +1,36 @@
-<?xml version="1.0" encoding="utf-16"?>
-<UserData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <playerName>LL</playerName>
-  <audioValue>0</audioValue>
-  <ip>10.237.40.95</ip>
-  <port>7777</port>
-  <userCardList>
-    <UserCardData>
-      <cardNo>9852718</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>14558127</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>20155904</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>35618217</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>45121025</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>45159319</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>45221020</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>58518520</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>58984738</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>87769556</cardNo>
-      <number>3</number>
-    </UserCardData>
-  </userCardList>
-  <userCardGroupList>
-    <UserCardData>
-      <cardNo>14558127</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>20155904</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>35618217</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>45121025</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>45159319</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>45221020</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>58518520</cardNo>
-      <number>3</number>
-    </UserCardData>
-    <UserCardData>
-      <cardNo>58984738</cardNo>
-      <number>3</number>
-    </UserCardData>
-  </userCardGroupList>
+<UserData playerName="LL" audioValue="0" ip="10.237.40.95" port="7777">
+  <UserCardList>
+    <UserCardData cardNo="9852718" number="3" />
+    <UserCardData cardNo="14558127" number="3" />
+    <UserCardData cardNo="20155904" number="3" />
+    <UserCardData cardNo="35618217" number="3" />
+    <UserCardData cardNo="45121025" number="3" />
+    <UserCardData cardNo="45159319" number="3" />
+    <UserCardData cardNo="45221020" number="3" />
+    <UserCardData cardNo="58518520" number="3" />
+    <UserCardData cardNo="58984738" number="3" />
+    <UserCardData cardNo="87769556" number="3" />
+  </UserCardList>
+  <UserCardGroupList>
+    <UserCardGroup cardGroupName="卡组1">
+      <UserCardData cardNo="14558127" number="3" />
+      <UserCardData cardNo="20155904" number="3" />
+      <UserCardData cardNo="35618217" number="3" />
+      <UserCardData cardNo="45121025" number="3" />
+      <UserCardData cardNo="45159319" number="3" />
+      <UserCardData cardNo="45221020" number="3" />
+      <UserCardData cardNo="58518520" number="3" />
+      <UserCardData cardNo="58984738" number="3" />
+    </UserCardGroup>
+    <UserCardGroup cardGroupName="卡组2">
+      <UserCardData cardNo="14558127" number="3" />
+      <UserCardData cardNo="20155904" number="3" />
+      <UserCardData cardNo="35618217" number="3" />
+      <UserCardData cardNo="45121025" number="3" />
+      <UserCardData cardNo="45159319" number="3" />
+      <UserCardData cardNo="45221020" number="3" />
+      <UserCardData cardNo="58518520" number="3" />
+      <UserCardData cardNo="58984738" number="3" />
+    </UserCardGroup>
+  </UserCardGroupList>
 </UserData>
