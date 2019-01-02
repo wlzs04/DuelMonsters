@@ -32,9 +32,9 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
         this.card = card;
     }
 
-    public void SetRootScript(CardGroupEditScript cardGroupScript)
+    public void SetRootScript(CardGroupEditScript cardGroupEditScript)
     {
-        this.cardGroupEditScript = cardGroupScript;
+        this.cardGroupEditScript = cardGroupEditScript;
     }
 
     public void OnPointerEnter(PointerEventData eventData)

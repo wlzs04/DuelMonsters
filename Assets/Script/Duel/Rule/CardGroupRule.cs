@@ -16,15 +16,15 @@ namespace Assets.Script.Duel.Rule
 
         public static bool IsLegal(UserCardGroup cardGroup)
         {
-            if (cardGroup.userCardList.Count > groupNumberUpperLimit)
+            if (cardGroup.mainCardList.Count > groupNumberUpperLimit)
             {
                 return false;
             }
-            if (cardGroup.userCardList.Count < groupNumberLowerLimit)
+            if (cardGroup.mainCardList.Count < groupNumberLowerLimit)
             {
                 return false;
             }
-            foreach (var item in cardGroup.userCardList)
+            foreach (var item in cardGroup.mainCardList)
             {
                 if(item.number> sameCardMaxNumber)
                 {

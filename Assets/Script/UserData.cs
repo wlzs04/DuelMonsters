@@ -27,8 +27,14 @@ namespace Assets.Script
         [XmlAttribute]
         public string cardGroupName = "未命名";//卡组名称
 
-        [XmlArray("UserCardList")]
-        public List<UserCardData> userCardList = new List<UserCardData>();
+        [XmlArray("Main")]
+        public List<UserCardData> mainCardList = new List<UserCardData>();
+
+        [XmlArray("Extra")]
+        public List<UserCardData> extraCardList = new List<UserCardData>();
+
+        [XmlArray("Deputy")]
+        public List<UserCardData> deputyCardList = new List<UserCardData>();
     }
 
     /// <summary>

@@ -151,11 +151,11 @@ namespace Assets.Script
                 Debug.LogError("在从卡组中删除卡牌时没有找到卡组："+ cardGroupName);
                 return;
             }
-            foreach (var item in userCardGroup.userCardList)
+            foreach (var item in userCardGroup.mainCardList)
             {
                 if(item.cardNo==card.GetCardNo())
                 {
-                    userCardGroup.userCardList.Remove(item);
+                    userCardGroup.mainCardList.Remove(item);
                     break;
                 }
             }
@@ -173,7 +173,7 @@ namespace Assets.Script
                 Debug.LogError("在从卡组中删除卡牌时没有找到卡组：" + cardGroupName);
                 return;
             }
-            foreach (var item in userCardGroup.userCardList)
+            foreach (var item in userCardGroup.mainCardList)
             {
                 if (item.cardNo == card.GetCardNo())
                 {
@@ -184,7 +184,7 @@ namespace Assets.Script
             UserCardData ucd = new UserCardData();
             ucd.cardNo = card.GetCardNo();
             ucd.number = 1;
-            userCardGroup.userCardList.Add(ucd);
+            userCardGroup.mainCardList.Add(ucd);
         }
 
         /// <summary>

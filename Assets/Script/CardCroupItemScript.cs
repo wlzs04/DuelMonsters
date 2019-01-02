@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
 {
-    float selectScale = 1f;//当鼠标移动到Item上时卡牌放大的倍数。
+    float selectScale = 1.05f;//当鼠标移动到Item上时卡牌放大的倍数。
     string cardCroupName = "未命名";
 
     //选中状态
@@ -15,13 +15,15 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
 
     InputField inputField = null;
 
+    CardGroupScript cardGroupScript = null;
+
     void Awake()
     {
         inputField = gameObject.transform.GetChild(0).GetComponent<InputField>();
         inputField.onEndEdit.AddListener((string value) => { SetCardGroupName(value); });
     }
-	
-	void Update ()
+
+    void Update ()
     {
 		
 	}
@@ -29,10 +31,11 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     /// <summary>
     /// 设置卡组名称
     /// </summary>
-    public void InitCardCroupName(string cardCroupName)
+    public void InitInfo(string cardCroupName,CardGroupScript cardGroupScript)
     {
         this.cardCroupName = cardCroupName;
         inputField.text = cardCroupName;
+        this.cardGroupScript = cardGroupScript;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -45,6 +48,8 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
         }
         else
         {
+            cardGroupScript.ClearAllSelectState();
+            cardGroupScript.SelectCardGroupByName(cardCroupName);
             SetSelectState(true);
         }
     }
@@ -57,7 +62,8 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
         isSelected = selectedState;
         if(!selectedState)
         {
-            inputField.interactable = false;
+            inputField.DeactivateInputField();
+            //inputField.interactable = false;
             gameObject.transform.localScale = Vector3.one;
         }
         else
@@ -72,7 +78,14 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     /// <param name="value"></param>
     public void SetCardGroupName(string value)
     {
-        if (GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(value)==null)
+        if(value == cardCroupName)
+        {
+        }
+        else if (value == "")
+        {
+            GameManager.ShowMessage("名称不能为空！");
+        }
+        else if (GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(value)==null)
         {
             GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(cardCroupName).cardGroupName = value;
             cardCroupName = value;
@@ -81,9 +94,15 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
         {
             GameManager.ShowMessage("当前名称已存在！");
         }
-        inputField.interactable = false;
+        inputField.DeactivateInputField();
+        //inputField.interactable = false;
         inputField.GetComponent<CanvasGroup>().interactable = false;
         inputField.GetComponent<CanvasGroup>().blocksRaycasts = false;
         inputField.text = cardCroupName;
+    }
+
+    public string GetCardGroupName()
+    {
+        return cardCroupName;
     }
 }

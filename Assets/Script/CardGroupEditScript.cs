@@ -47,7 +47,7 @@ public class CardGroupEditScript : MonoBehaviour {
 
         GameManager.CleanPanelContent(cardGroupScrollViewTransform);
 
-        foreach (var item in firstCardGroup.userCardList)
+        foreach (var item in firstCardGroup.mainCardList)
         {
             for (int i = 0; i < item.number; i++)
             {

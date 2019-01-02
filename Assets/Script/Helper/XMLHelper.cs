@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Assets.Script.Helper
@@ -11,10 +12,16 @@ namespace Assets.Script.Helper
     {
         public static void SaveDataToXML<T>(string path,T obj)
         {
-            using (StringWriter sw = new StringWriter())
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.OmitXmlDeclaration = true;
+            settings.Indent = true;
+            StringWriter sw = new StringWriter();
+            using (XmlWriter xw = XmlWriter.Create(sw, settings))
             {
+                XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+                namespaces.Add(string.Empty, string.Empty);
                 XmlSerializer serializer = new XmlSerializer(obj.GetType());
-                serializer.Serialize(sw, obj);
+                serializer.Serialize(xw, obj, namespaces);
                 File.WriteAllText(path, sw.ToString());
             }
         }

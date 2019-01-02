@@ -321,7 +321,7 @@ namespace Assets.Script.Duel
             UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
             Debug.LogWarning("在卡组编辑界面暂时使用第一个卡组。");
 
-            foreach (var item in firstCardGroup.userCardList)
+            foreach (var item in firstCardGroup.mainCardList)
             {
                 for (int i = 0; i < item.number; i++)
                 {
