@@ -1,5 +1,6 @@
 using Assets.Script;
 using Assets.Script.Card;
+using Assets.Script.Config;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,10 +39,7 @@ public class CardGroupScript : MonoBehaviour
 
         foreach (var item in userData.userCardGroupList)
         {
-            GameObject gameObject = Instantiate(cardGroupItemPrefab, cardGroupScrollViewTransform);
-            CardCroupItemScript cardCroupItemScript = gameObject.GetComponent<CardCroupItemScript>();
-            cardCroupItemList.Add(cardCroupItemScript);
-            cardCroupItemScript.InitInfo(item.cardGroupName,this);
+            AddCardGroupItemToScrollView(item);
         }
         if(cardCroupItemList.Count>0)
         {
@@ -74,17 +72,20 @@ public class CardGroupScript : MonoBehaviour
     /// </summary>
     public void SelectCardGroupByIndex(int index)
     {
-        if(currentSelectCardCroupIndex!=index && index>=0 && index<cardCroupItemList.Count)
+        if(currentSelectCardCroupIndex == index)
+        {
+            return;
+        }
+        if(index>=0 && index<cardCroupItemList.Count)
         {
             currentSelectCardCroupIndex = index;
             cardCroupItemList[currentSelectCardCroupIndex].SetSelectState(true);
 
             UserData userData = gameManager.GetUserData();
 
+            CleanCardPanel();
 
             //主卡组
-            GameManager.CleanPanelContent(mainPanelTransform);
-            mainCardList.Clear();
 
             int maxCountOneRow = 20;//一排最大数量
             float panelWidth = ((RectTransform)mainPanelTransform).rect.width / (maxCountOneRow+1);
@@ -110,8 +111,6 @@ public class CardGroupScript : MonoBehaviour
             mainTotalNumberText.GetComponent<Text>().text = "主卡组：" + mainCardList.Count;
 
             //额外卡组
-            GameManager.CleanPanelContent(extraPanelTransform);
-            extraCardList.Clear();
 
             maxCountOneRow = 15;//一排最大数量
             panelWidth = ((RectTransform)extraPanelTransform).rect.width / (maxCountOneRow + 1);
@@ -137,8 +136,6 @@ public class CardGroupScript : MonoBehaviour
             extraTotalNumberText.GetComponent<Text>().text = "额外卡组：" + extraCardList.Count;
 
             //副卡组
-            GameManager.CleanPanelContent(deputyPanelTransform);
-            deputyCardList.Clear();
 
             maxCountOneRow = 15;//一排最大数量
             panelWidth = ((RectTransform)deputyPanelTransform).rect.width / (maxCountOneRow + 1);
@@ -170,19 +167,93 @@ public class CardGroupScript : MonoBehaviour
     }
 
     /// <summary>
+    /// 添加卡组item到列表中
+    /// </summary>
+    void AddCardGroupItemToScrollView(UserCardGroup userCardGroup)
+    {
+        GameObject gameObject = Instantiate(cardGroupItemPrefab, cardGroupScrollViewTransform);
+        CardCroupItemScript cardCroupItemScript = gameObject.GetComponent<CardCroupItemScript>();
+        cardCroupItemList.Add(cardCroupItemScript);
+        cardCroupItemScript.InitInfo(userCardGroup.cardGroupName, this);
+    }
+
+    /// <summary>
     /// 新建卡组按钮点击事件
     /// </summary>
     public void NewCardGroupButtonClick()
     {
-        
+        UserData userData = gameManager.GetUserData();
+        UserCardGroup newCardGroup = userData.AddNewCardGroup();
+        AddCardGroupItemToScrollView(newCardGroup);
     }
 
     /// <summary>
-    /// 删除卡组按钮点击事件
+    /// 通过名称编辑卡组
     /// </summary>
-    public void DeleteCardGroupButtonClick()
+    public void EditCardGroupByName(string cardGroupName)
     {
+        gameManager.EnterCardGroupEditScene(cardGroupName);
+    }
 
+    /// <summary>
+    /// 通过名称删除卡组
+    /// </summary>
+    public void DeleteCardGroupByName(string cardGroupName)
+    {
+        for (int i = 0; i < cardCroupItemList.Count; i++)
+        {
+            if (cardCroupItemList[i].GetCardGroupName() == cardGroupName)
+            {
+                DeleteCardGroupByIndex(i);
+                return;
+            }
+        }
+    }
+    /// <summary>
+    /// 通过指数删除卡组
+    /// </summary>
+    public void DeleteCardGroupByIndex(int index)
+    {
+        if (index < 0 || index >= cardCroupItemList.Count)
+        {
+            return;
+        }
+
+        UserData userData = gameManager.GetUserData();
+        userData.DeleteCardGroupByName(cardCroupItemList[index].GetCardGroupName());
+
+        DestroyImmediate(cardCroupItemList[index].gameObject);
+        cardCroupItemList.RemoveAt(index);
+        if(currentSelectCardCroupIndex==index)
+        {
+            currentSelectCardCroupIndex = -1;
+            if (cardCroupItemList.Count>0)
+            {
+                SelectCardGroupByIndex(0);
+            }
+            else
+            {
+                CleanCardPanel();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 清理卡牌面板，一般用于将选中并展示的卡组内容从面板内清空。
+    /// </summary>
+    void CleanCardPanel()
+    {
+        GameManager.CleanPanelContent(mainPanelTransform);
+        mainCardList.Clear();
+        mainTotalNumberText.GetComponent<Text>().text = "主卡组：";
+
+        GameManager.CleanPanelContent(extraPanelTransform);
+        extraCardList.Clear();
+        extraTotalNumberText.GetComponent<Text>().text = "额外卡组：";
+
+        GameManager.CleanPanelContent(deputyPanelTransform);
+        deputyCardList.Clear();
+        deputyTotalNumberText.GetComponent<Text>().text = "副卡组：";
     }
 
     /// <summary>

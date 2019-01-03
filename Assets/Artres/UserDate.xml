@@ -12,7 +12,7 @@
     <UserCardData cardNo="87769556" number="3" />
   </UserCardList>
   <UserCardGroupList>
-    <UserCardGroup cardGroupName="卡组1">
+    <UserCardGroup cardGroupName="test">
       <Main>
         <UserCardData cardNo="14558127" number="3" />
         <UserCardData cardNo="20155904" number="3" />

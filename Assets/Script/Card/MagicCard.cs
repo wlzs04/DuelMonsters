@@ -69,7 +69,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static MagicType GetMagicTypeByString(string value)
         {
-            MagicTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MagicType") as MagicTypeConfig;
+            MagicTypeConfig config = ConfigManager.GetConfigByName("MagicType") as MagicTypeConfig;
             int count = config.GetRecordCount();
             for (int i = 0; i < count; i++)
             {
@@ -88,7 +88,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByMagicType(MagicType magicType)
         {
-            MagicTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MagicType") as MagicTypeConfig;
+            MagicTypeConfig config = ConfigManager.GetConfigByName("MagicType") as MagicTypeConfig;
             return config.GetRecordById((int)magicType).value;
         }
 

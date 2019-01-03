@@ -78,6 +78,7 @@
     <Compile Include="Assets\Script\Config\MonsterTypeConfig.cs" />
     <Compile Include="Assets\Script\Config\PropertyTypeConfig.cs" />
     <Compile Include="Assets\Script\Config\RuleConfig.cs" />
+    <Compile Include="Assets\Script\Config\StringResConfig.cs" />
     <Compile Include="Assets\Script\Config\TrapTypeConfig.cs" />
     <Compile Include="Assets\Script\ConfigManager.cs" />
     <Compile Include="Assets\Script\DestroySelfScript.cs" />
@@ -118,17 +119,14 @@
     <None Include="Assets\Artres\CardData\35618217\script.txt" />
     <None Include="Assets\Artres\CardData\58984738\script.txt" />
     <None Include="Assets\Artres\CardData\45121025\script.txt" />
-    <None Include="Assets\Artres\Config\CardType.xml">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Assets\Artres\Config\CardType.xml" />
     <None Include="Assets\Artres\Config\PropertyType.xml" />
     <None Include="Assets\Artres\Config\TrapType.xml" />
     <None Include="Assets\Artres\CardData\14558127\script.txt" />
     <None Include="Assets\Artres\CardData\09852718\script.txt" />
     <None Include="Assets\Artres\CardData\87769556\script.txt" />
-    <None Include="Assets\Artres\UserDate.xml">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Assets\Artres\UserDate.xml" />
+    <None Include="Assets\Artres\Config\StringRes.xml" />
     <None Include="Assets\Artres\CardData\20155904\script.txt" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>E:/tomb/Unity/DuelMonsters/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

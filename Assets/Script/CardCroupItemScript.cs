@@ -13,14 +13,21 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     //选中状态
     bool isSelected = false;
 
-    InputField inputField = null;
+    Text nameText = null;
+    Image editImage = null;
+    Image deleteImage = null;
 
     CardGroupScript cardGroupScript = null;
 
     void Awake()
     {
-        inputField = gameObject.transform.GetChild(0).GetComponent<InputField>();
-        inputField.onEndEdit.AddListener((string value) => { SetCardGroupName(value); });
+        nameText = gameObject.transform.GetChild(0).GetComponent<Text>();
+
+        editImage = gameObject.transform.GetChild(1).GetComponent<Image>();
+        editImage.GetComponent<Button>().onClick.AddListener(() => { EditCardGroup(); });
+
+        deleteImage = gameObject.transform.GetChild(2).GetComponent<Image>();
+        deleteImage.GetComponent<Button>().onClick.AddListener(() => { DeleteCardGroup(); });
     }
 
     void Update ()
@@ -34,19 +41,13 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     public void InitInfo(string cardCroupName,CardGroupScript cardGroupScript)
     {
         this.cardCroupName = cardCroupName;
-        inputField.text = cardCroupName;
+        nameText.text = cardCroupName;
         this.cardGroupScript = cardGroupScript;
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (isSelected)
-        {
-            inputField.interactable = true;
-            inputField.GetComponent<CanvasGroup>().interactable = true;
-            inputField.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        }
-        else
+        if (!isSelected)
         {
             cardGroupScript.ClearAllSelectState();
             cardGroupScript.SelectCardGroupByName(cardCroupName);
@@ -62,8 +63,6 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
         isSelected = selectedState;
         if(!selectedState)
         {
-            inputField.DeactivateInputField();
-            //inputField.interactable = false;
             gameObject.transform.localScale = Vector3.one;
         }
         else
@@ -94,15 +93,27 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
         {
             GameManager.ShowMessage("当前名称已存在！");
         }
-        inputField.DeactivateInputField();
-        //inputField.interactable = false;
-        inputField.GetComponent<CanvasGroup>().interactable = false;
-        inputField.GetComponent<CanvasGroup>().blocksRaycasts = false;
-        inputField.text = cardCroupName;
+        nameText.text = cardCroupName;
     }
 
     public string GetCardGroupName()
     {
         return cardCroupName;
+    }
+    
+    /// <summary>
+    /// 编辑当前卡组
+    /// </summary>
+    public void EditCardGroup()
+    {
+        cardGroupScript.EditCardGroupByName(cardCroupName);
+    }
+
+    /// <summary>
+    /// 删除当前卡组
+    /// </summary>
+    public void DeleteCardGroup()
+    {
+        cardGroupScript.DeleteCardGroupByName(cardCroupName);
     }
 }

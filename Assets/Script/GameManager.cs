@@ -53,6 +53,8 @@ namespace Assets.Script
         bool isServer = false;
         #endregion
 
+        string cardGroupNameForCardGroupEditScene = "";
+
         private GameManager()
         {
             currentGameState = GameState.MainScene;
@@ -155,7 +157,14 @@ namespace Assets.Script
             {
                 if(item.cardNo==card.GetCardNo())
                 {
-                    userCardGroup.mainCardList.Remove(item);
+                    if(item.number>1)
+                    {
+                        item.number--;
+                    }
+                    else
+                    {
+                        userCardGroup.mainCardList.Remove(item);
+                    }
                     break;
                 }
             }
@@ -290,6 +299,23 @@ namespace Assets.Script
         }
 
         /// <summary>
+        /// 进入卡组编辑场景
+        /// </summary>
+        public void EnterCardGroupEditScene(string cardGroupName)
+        {
+            if (currentGameState == GameState.CardGroupScene)
+            {
+                currentGameState = GameState.CardGroupEditScene;
+                SceneManager.LoadScene("CardGroupEditScene", LoadSceneMode.Single);
+                cardGroupNameForCardGroupEditScene = cardGroupName;
+            }
+            else
+            {
+                Debug.LogError("进入卡组编辑场景失败，只能由卡组场景进入，当前场景为：" + currentGameState.ToString());
+            }
+        }
+
+        /// <summary>
         /// 进入设置场景
         /// </summary>
         public void EnterSettingScene()
@@ -321,6 +347,11 @@ namespace Assets.Script
             {
                 Debug.LogError("进入决斗场景失败，只能由主场景进入，当前场景为："+ currentGameState.ToString());
             }
+        }
+
+        public string GetCardGroupNameForCardGroupEditScene()
+        {
+            return cardGroupNameForCardGroupEditScene;
         }
 
         public DuelScene GetDuelScene()
@@ -509,7 +540,7 @@ namespace Assets.Script
         /// </summary>
         public static void CleanPanelContent(Transform transform)
         {
-            for (int i = 0; i < transform.childCount; i++)
+            for (int i = transform.childCount - 1; i >= 0; i--)
             {
                 GameObject go = transform.GetChild(i).gameObject;
                 UnityEngine.Object.DestroyImmediate(go);

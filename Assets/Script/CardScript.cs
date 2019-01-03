@@ -6,7 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler, IDragHandler,IEndDragHandler,IPointerEnterHandler,IPointerExitHandler{
+public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler, IDragHandler,IEndDragHandler,IPointerEnterHandler,IPointerExitHandler
+{
     float selectScale = 1.2f;//当鼠标移动到卡牌上时卡牌放大的倍数。
     CardBase card;
     CardGroupEditScript cardGroupEditScript;
@@ -51,7 +52,7 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            cardGroupEditScript.SetInfoContent(card);
+            cardGroupEditScript.ShowCardDetailInfo(card);
         }
         else if(eventData.button == PointerEventData.InputButton.Right)
         {
@@ -78,7 +79,15 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        dragToObject = eventData.pointerEnter.transform.GetChild(0).gameObject;
+        if (eventData.pointerEnter.transform.childCount==0)
+        {
+            dragToObject= eventData.pointerEnter.transform.parent.gameObject;
+        }
+        else
+        {
+            dragToObject = eventData.pointerEnter.transform.GetChild(0).gameObject;
+        }
+        
         if(dragFromObject== allCardTransform.gameObject && dragToObject == cardGroupTransform.gameObject)
         {
             cardGroupEditScript.AddCardToCardGroup(card);

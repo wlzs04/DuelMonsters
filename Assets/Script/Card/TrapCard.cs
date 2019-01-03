@@ -66,7 +66,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static TrapType GetTrapTypeByString(string value)
         {
-            TrapTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("TrapType") as TrapTypeConfig;
+            TrapTypeConfig config = ConfigManager.GetConfigByName("TrapType") as TrapTypeConfig;
             int count = config.GetRecordCount();
             for (int i = 0; i < count; i++)
             {
@@ -85,7 +85,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByTrapType(TrapType trapType)
         {
-            TrapTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("TrapType") as TrapTypeConfig;
+            TrapTypeConfig config = ConfigManager.GetConfigByName("TrapType") as TrapTypeConfig;
             return config.GetRecordById((int)trapType).value;
         }
 

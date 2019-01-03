@@ -177,7 +177,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static CardType GetCardTypeByString(string value)
         {
-            CardTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("CardType") as CardTypeConfig;
+            CardTypeConfig config = ConfigManager.GetConfigByName("CardType") as CardTypeConfig;
             int count = config.GetRecordCount();
             for (int i = 0; i < count; i++)
             {
@@ -196,7 +196,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByCardType(CardType cardType)
         {
-            CardTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("CardType") as CardTypeConfig;
+            CardTypeConfig config = ConfigManager.GetConfigByName("CardType") as CardTypeConfig;
             return config.GetRecordById((int)cardType).value;
         }
     }

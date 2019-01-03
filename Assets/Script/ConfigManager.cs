@@ -18,22 +18,22 @@ namespace Assets.Script
         //单例
         static ConfigManager configManagerInstance = new ConfigManager();
 
-        Dictionary<string, ConfigBase> allConfigMap = new Dictionary<string, ConfigBase>();
+        static Dictionary<string, ConfigBase> allConfigMap = new Dictionary<string, ConfigBase>();
 
         private ConfigManager()
         {
         }
 
-        public static ConfigManager GetSingleInstance()
-        {
-            return configManagerInstance;
-        }
+        //public static ConfigManager GetSingleInstance()
+        //{
+        //    return configManagerInstance;
+        //}
 
         /// <summary>
         /// 获得配置根路径
         /// </summary>
         /// <returns></returns>
-        public string GetConfigRootPath()
+        public static string GetConfigRootPath()
         {
             return Application.dataPath + "/Artres/Config/";
         }
@@ -51,7 +51,7 @@ namespace Assets.Script
         /// </summary>
         /// <param name="configName"></param>
         /// <returns></returns>
-        public ConfigBase GetConfigByName(string configName)
+        public static ConfigBase GetConfigByName(string configName)
         {
             if (allConfigMap.ContainsKey(configName))
             {
@@ -75,7 +75,7 @@ namespace Assets.Script
         /// <summary>
         /// 加载指定配置
         /// </summary>
-        public void LoadConfigByName(string configName)
+        public static void LoadConfigByName(string configName)
         {
             string configPath = GetConfigRootPath() + configName + ".xml";
             if (File.Exists(configPath))

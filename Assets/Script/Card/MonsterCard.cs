@@ -208,7 +208,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static PropertyType GetPropertyTypeByString(string value)
         {
-            PropertyTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("PropertyType") as PropertyTypeConfig;
+            PropertyTypeConfig config = ConfigManager.GetConfigByName("PropertyType") as PropertyTypeConfig;
             int count = config.GetRecordCount();
             for (int i = 0; i < count; i++)
             {
@@ -227,7 +227,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByPropertyType(PropertyType propertyType)
         {
-            PropertyTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("PropertyType") as PropertyTypeConfig;
+            PropertyTypeConfig config = ConfigManager.GetConfigByName("PropertyType") as PropertyTypeConfig;
             return config.GetRecordById((int)propertyType).value;
         }
 
@@ -238,7 +238,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static MonsterType GetMonsterTypeByString(string value)
         {
-            MonsterTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MonsterType") as MonsterTypeConfig;
+            MonsterTypeConfig config = ConfigManager.GetConfigByName("MonsterType") as MonsterTypeConfig;
             int count = config.GetRecordCount();
             for (int i = 0; i < count; i++)
             {
@@ -257,7 +257,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public static string GetStringByMonsterType(MonsterType monsterType)
         {
-            MonsterTypeConfig config = ConfigManager.GetSingleInstance().GetConfigByName("MonsterType") as MonsterTypeConfig;
+            MonsterTypeConfig config = ConfigManager.GetConfigByName("MonsterType") as MonsterTypeConfig;
             return config.GetRecordById((int)monsterType).value;
         }
 

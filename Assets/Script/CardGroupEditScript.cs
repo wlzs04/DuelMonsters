@@ -8,8 +8,12 @@ using UnityEngine.UI;
 public class CardGroupEditScript : MonoBehaviour {
     GameManager gameManager;
     public Transform allCardScrollViewTransform;
-    public Transform cardGroupScrollViewTransform;
+    public Transform mainPanelTransform;
+    public Transform extraPanelTransform;
+    public Transform deputyPanelTransform;
     public Transform infoContentTransform;
+
+    public InputField cardGroupNameInputField;
 
     public GameObject cardPre;
     public GameObject monsterCardPre;
@@ -38,26 +42,34 @@ public class CardGroupEditScript : MonoBehaviour {
                 go.GetComponent<CardScript>().SetRootScript(this);
                 go.GetComponent<CardScript>().SetCard(card);
                 go.GetComponent<CardScript>().allCardTransform = allCardScrollViewTransform;
-                go.GetComponent<CardScript>().cardGroupTransform = cardGroupScrollViewTransform;
+                go.GetComponent<CardScript>().cardGroupTransform = mainPanelTransform;
             }
         }
 
-        UserCardGroup firstCardGroup = userData.userCardGroupList[0];
-        Debug.LogWarning("在卡组编辑界面暂时使用第一个卡组。");
+        currentCardGroupName = gameManager.GetCardGroupNameForCardGroupEditScene();
+        cardGroupNameInputField.text = currentCardGroupName;
+        cardGroupNameInputField.onEndEdit.AddListener((value)=> { ChangeCardGroupName(value); });
+        UserCardGroup cardGroup = userData.GetCardGroupByName(currentCardGroupName);
+        if(cardGroup==null)
+        {
+            Debug.LogError("卡组:"+ currentCardGroupName + "不存在！");
+            gameManager.ReturnLastScene();
+            return;
+        }
 
-        GameManager.CleanPanelContent(cardGroupScrollViewTransform);
+        GameManager.CleanPanelContent(mainPanelTransform);
 
-        foreach (var item in firstCardGroup.mainCardList)
+        foreach (var item in cardGroup.mainCardList)
         {
             for (int i = 0; i < item.number; i++)
             {
-                GameObject go = Instantiate(cardPre, cardGroupScrollViewTransform);
+                GameObject go = Instantiate(cardPre, mainPanelTransform);
                 CardBase card = gameManager.allCardInfoList[item.cardNo];
                 go.GetComponent<Image>().sprite = card.GetImage();
                 go.GetComponent<CardScript>().SetRootScript(this);
                 go.GetComponent<CardScript>().SetCard(card);
                 go.GetComponent<CardScript>().allCardTransform = allCardScrollViewTransform;
-                go.GetComponent<CardScript>().cardGroupTransform = cardGroupScrollViewTransform;
+                go.GetComponent<CardScript>().cardGroupTransform = mainPanelTransform;
             }
         }
 
@@ -68,8 +80,12 @@ public class CardGroupEditScript : MonoBehaviour {
     {
 		
 	}
-
-    public void SetInfoContent(CardBase card)
+    
+    /// <summary>
+    /// 显示详细信息
+    /// </summary>
+    /// <param name="card"></param>
+    public void ShowCardDetailInfo(CardBase card)
     {
         cardImage.sprite = card.GetImage();
         GameManager.CleanPanelContent(infoContentTransform);
@@ -110,17 +126,43 @@ public class CardGroupEditScript : MonoBehaviour {
     public void AddCardToCardGroup(CardBase card)
     {
         gameManager.AddCardToCardGroup(currentCardGroupName,card);
-        GameObject go = Instantiate(cardPre, cardGroupScrollViewTransform);
+        GameObject go = Instantiate(cardPre, mainPanelTransform);
         go.GetComponent<Image>().sprite = card.GetImage();
         go.GetComponent<CardScript>().SetRootScript(this);
         go.GetComponent<CardScript>().SetCard(card);
         go.GetComponent<CardScript>().allCardTransform = allCardScrollViewTransform;
-        go.GetComponent<CardScript>().cardGroupTransform = cardGroupScrollViewTransform;
+        go.GetComponent<CardScript>().cardGroupTransform = mainPanelTransform;
     }
 
     public void RemoveCardFromCardGroup(GameObject gameObject, CardBase card)
     {
         gameManager.RemoveCardFromCardGroup(currentCardGroupName,card);
         Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// 更换当前卡组的名称
+    /// </summary>
+    /// <param name="newName"></param>
+    void ChangeCardGroupName(string newName)
+    {
+        if (newName == currentCardGroupName)
+        {
+        }
+        else if (newName == "")
+        {
+            GameManager.ShowMessage("名称不能为空！");
+        }
+        else if (GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(newName) == null)
+        {
+            GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(currentCardGroupName).cardGroupName = newName;
+            currentCardGroupName = newName;
+            cardGroupNameInputField.text = newName;
+        }
+        else
+        {
+            GameManager.ShowMessage("当前名称已存在！");
+        }
+        cardGroupNameInputField.text = currentCardGroupName;
     }
 }
