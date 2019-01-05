@@ -10,9 +10,9 @@ namespace Assets.Script.Duel.Rule
     /// </summary>
     class CardGroupRule
     {
-        static int groupNumberUpperLimit = 80;//卡组数量上限
-        static int groupNumberLowerLimit = 40;//卡组数量下限
-        static int sameCardMaxNumber = 3;//相同卡片数量上限
+        public static readonly int groupNumberUpperLimit = 80;//卡组数量上限
+        public static readonly int groupNumberLowerLimit = 40;//卡组数量下限
+        public static readonly int sameCardMaxNumber = 3;//相同卡片数量上限
 
         public static bool IsLegal(UserCardGroup cardGroup)
         {

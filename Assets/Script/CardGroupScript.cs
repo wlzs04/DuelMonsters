@@ -4,6 +4,7 @@ using Assets.Script.Config;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CardGroupScript : MonoBehaviour
@@ -23,9 +24,6 @@ public class CardGroupScript : MonoBehaviour
     public GameObject cardPrefab;
 
     List<CardCroupItemScript> cardCroupItemList = new List<CardCroupItemScript>();
-    List<CardScript> mainCardList = new List<CardScript>();
-    List<CardScript> extraCardList = new List<CardScript>();
-    List<CardScript> deputyCardList = new List<CardScript>();
 
     //当前选中的卡组指数
     int currentSelectCardCroupIndex = -1;
@@ -101,14 +99,13 @@ public class CardGroupScript : MonoBehaviour
                     gameObject.GetComponent<Image>().sprite = card.GetImage();
                     CardScript cardScript = gameObject.GetComponent<CardScript>();
                     cardScript.SetCard(card);
-                    mainCardList.Add(cardScript);
                     float row = -(cardIndex / maxCountOneRow) - 0.5f;
                     float col = cardIndex % maxCountOneRow + 1;
                     gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
                     cardIndex++;
                 }
             }
-            mainTotalNumberText.GetComponent<Text>().text = "主卡组：" + mainCardList.Count;
+            mainTotalNumberText.GetComponent<Text>().text = "主卡组：" + mainPanelTransform.childCount;
 
             //额外卡组
 
@@ -126,14 +123,13 @@ public class CardGroupScript : MonoBehaviour
                     gameObject.GetComponent<Image>().sprite = card.GetImage();
                     CardScript cardScript = gameObject.GetComponent<CardScript>();
                     cardScript.SetCard(card);
-                    extraCardList.Add(cardScript);
                     float row = -(cardIndex / maxCountOneRow) - 0.5f;
                     float col = cardIndex % maxCountOneRow + 1;
                     gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
                     cardIndex++;
                 }
             }
-            extraTotalNumberText.GetComponent<Text>().text = "额外卡组：" + extraCardList.Count;
+            extraTotalNumberText.GetComponent<Text>().text = "额外卡组：" + extraPanelTransform.childCount;
 
             //副卡组
 
@@ -151,14 +147,13 @@ public class CardGroupScript : MonoBehaviour
                     gameObject.GetComponent<Image>().sprite = card.GetImage();
                     CardScript cardScript = gameObject.GetComponent<CardScript>();
                     cardScript.SetCard(card);
-                    deputyCardList.Add(cardScript);
                     float row = -(cardIndex / maxCountOneRow) - 0.5f;
                     float col = cardIndex % maxCountOneRow + 1;
                     gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
                     cardIndex++;
                 }
             }
-            deputyTotalNumberText.GetComponent<Text>().text = "副卡组：" + deputyCardList.Count;
+            deputyTotalNumberText.GetComponent<Text>().text = "副卡组：" + deputyPanelTransform.childCount;
         }
         else
         {
@@ -244,15 +239,12 @@ public class CardGroupScript : MonoBehaviour
     void CleanCardPanel()
     {
         GameManager.CleanPanelContent(mainPanelTransform);
-        mainCardList.Clear();
         mainTotalNumberText.GetComponent<Text>().text = "主卡组：";
 
         GameManager.CleanPanelContent(extraPanelTransform);
-        extraCardList.Clear();
         extraTotalNumberText.GetComponent<Text>().text = "额外卡组：";
 
         GameManager.CleanPanelContent(deputyPanelTransform);
-        deputyCardList.Clear();
         deputyTotalNumberText.GetComponent<Text>().text = "副卡组：";
     }
 

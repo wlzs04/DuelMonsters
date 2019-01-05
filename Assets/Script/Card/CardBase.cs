@@ -15,7 +15,18 @@ namespace Assets.Script.Card
         Unknown,//未知
         Monster,//怪兽
         Magic,//魔法
-        Trap//陷阱
+        Trap,//陷阱
+    }
+
+    /// <summary>
+    /// 卡组类型
+    /// </summary>
+    public enum CardGroupType
+    {
+        Unknown,//未知
+        Main,//主卡组
+        Extra,//额外卡组
+        Deputy,//副卡组
     }
 
     /// <summary>
@@ -23,13 +34,14 @@ namespace Assets.Script.Card
     /// </summary>
     public enum CardGameState
     {
+        Unknown,//未知
         Group,//在卡组中
         Hand,//手牌中
         FrontATK,//表侧表示攻击
         FrontDEF,//表侧表示防守
         Back,//覆盖表示
         Tomb,//在墓地中
-        Exclusion//被排除在游戏外
+        Exclusion,//被排除在游戏外
     }
 
     /// <summary>
@@ -39,6 +51,7 @@ namespace Assets.Script.Card
     {
         protected CardType cardType = CardType.Monster;//卡片类型
         CardGameState cardGameState = CardGameState.Group;
+        CardGroupType cardGroupType = CardGroupType.Unknown;
         Sprite image;
         protected string name = "未命名";//名称
         protected int cardNo = 0;//唯一编号，0代表为假卡。

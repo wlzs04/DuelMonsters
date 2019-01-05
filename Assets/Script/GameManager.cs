@@ -142,61 +142,6 @@ namespace Assets.Script
         }
 
         /// <summary>
-        /// 从卡组中移除一张卡
-        /// </summary>
-        /// <param name="card"></param>
-        public void RemoveCardFromCardGroup(string cardGroupName,CardBase card)
-        {
-            UserCardGroup userCardGroup = userData.GetCardGroupByName(cardGroupName);
-            if(userCardGroup==null)
-            {
-                Debug.LogError("在从卡组中删除卡牌时没有找到卡组："+ cardGroupName);
-                return;
-            }
-            foreach (var item in userCardGroup.mainCardList)
-            {
-                if(item.cardNo==card.GetCardNo())
-                {
-                    if(item.number>1)
-                    {
-                        item.number--;
-                    }
-                    else
-                    {
-                        userCardGroup.mainCardList.Remove(item);
-                    }
-                    break;
-                }
-            }
-        }
-        
-        /// <summary>
-        /// 向卡组中添加一张卡
-        /// </summary>
-        /// <param name="card"></param>
-        public void AddCardToCardGroup(string cardGroupName, CardBase card)
-        {
-            UserCardGroup userCardGroup = userData.GetCardGroupByName(cardGroupName);
-            if (userCardGroup == null)
-            {
-                Debug.LogError("在从卡组中删除卡牌时没有找到卡组：" + cardGroupName);
-                return;
-            }
-            foreach (var item in userCardGroup.mainCardList)
-            {
-                if (item.cardNo == card.GetCardNo())
-                {
-                    item.number++;
-                    return;
-                }
-            }
-            UserCardData ucd = new UserCardData();
-            ucd.cardNo = card.GetCardNo();
-            ucd.number = 1;
-            userCardGroup.mainCardList.Add(ucd);
-        }
-
-        /// <summary>
         /// 设置音量大小
         /// </summary>
         /// <param name="value"></param>

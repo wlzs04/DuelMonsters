@@ -11,12 +11,9 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     float selectScale = 1.2f;//当鼠标移动到卡牌上时卡牌放大的倍数。
     CardBase card;
     CardGroupEditScript cardGroupEditScript;
-
-    public Transform allCardTransform;
-    public Transform cardGroupTransform;
-
-    GameObject dragFromObject = null;
-    GameObject dragToObject = null;
+    
+    //GameObject dragFromObject = null;
+    //GameObject dragToObject = null;
 
     void Start ()
     {
@@ -31,6 +28,12 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     public void SetCard(CardBase card)
     {
         this.card = card;
+        GetComponent<Image>().sprite = card.GetImage();
+    }
+
+    public CardBase GetCard()
+    {
+        return card;
     }
 
     public void SetRootScript(CardGroupEditScript cardGroupEditScript)
@@ -54,22 +57,22 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
         {
             cardGroupEditScript.ShowCardDetailInfo(card);
         }
-        else if(eventData.button == PointerEventData.InputButton.Right)
-        {
-            if(gameObject.transform.parent==cardGroupTransform)
-            {
-                cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
-            }
-            if (gameObject.transform.parent == allCardTransform)
-            {
-                cardGroupEditScript.AddCardToCardGroup(card);
-            }
-        }
+        //else if(eventData.button == PointerEventData.InputButton.Right)
+        //{
+        //    if(gameObject.transform.parent==cardGroupTransform)
+        //    {
+        //        cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
+        //    }
+        //    if (gameObject.transform.parent == allCardTransform)
+        //    {
+        //        cardGroupEditScript.AddCardToCardGroup(card);
+        //    }
+        //}
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        dragFromObject = transform.parent.gameObject;
+        //dragFromObject = transform.parent.gameObject;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -79,24 +82,24 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (eventData.pointerEnter.transform.childCount==0)
-        {
-            dragToObject= eventData.pointerEnter.transform.parent.gameObject;
-        }
-        else
-        {
-            dragToObject = eventData.pointerEnter.transform.GetChild(0).gameObject;
-        }
+        //if (eventData.pointerEnter.transform.childCount==0)
+        //{
+        //    dragToObject= eventData.pointerEnter.transform.parent.gameObject;
+        //}
+        //else
+        //{
+        //    dragToObject = eventData.pointerEnter.transform.GetChild(0).gameObject;
+        //}
         
-        if(dragFromObject== allCardTransform.gameObject && dragToObject == cardGroupTransform.gameObject)
-        {
-            cardGroupEditScript.AddCardToCardGroup(card);
-        }
-        else if(dragFromObject == cardGroupTransform.gameObject && dragToObject == allCardTransform.gameObject)
-        {
-            cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
-        }
-        dragFromObject = null;
-        dragToObject = null;
+        //if(dragFromObject== allCardTransform.gameObject && dragToObject == cardGroupTransform.gameObject)
+        //{
+            
+        //}
+        //else if(dragFromObject == cardGroupTransform.gameObject && dragToObject == allCardTransform.gameObject)
+        //{
+        //    cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
+        //}
+        //dragFromObject = null;
+        //dragToObject = null;
     }
 }
