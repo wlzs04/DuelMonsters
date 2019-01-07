@@ -25,7 +25,12 @@ public class GUIScript : MonoBehaviour {
         {
             gameManager.ReturnLastScene();
         }
-	}
+    }
+    
+    public void SelectModeButtonClick()
+    {
+        gameManager.EnterSelectModeScene();
+    }
 
     public void DuelButtonClick()
     {
@@ -55,5 +60,15 @@ public class GUIScript : MonoBehaviour {
     public void AudioSliderChange()
     {
         gameManager.SetAudioVolume(GameObject.Find("AudioSlider").GetComponent<Slider>().value);
+    }
+
+    public void SingleButton()
+    {
+        gameManager.SetSingleMode();
+    }
+
+    public void NetButton()
+    {
+        gameManager.SetNetMode();
     }
 }

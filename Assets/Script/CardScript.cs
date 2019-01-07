@@ -12,8 +12,7 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     CardBase card;
     CardGroupEditScript cardGroupEditScript;
     
-    //GameObject dragFromObject = null;
-    //GameObject dragToObject = null;
+    GameObject dragObject = null;
 
     void Start ()
     {
@@ -24,6 +23,14 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     {
 		
 	}
+
+    void OnDestroy()
+    {
+        if(dragObject)
+        {
+            DestroyImmediate(dragObject);
+        }
+    }
 
     public void SetCard(CardBase card)
     {
@@ -57,49 +64,30 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
         {
             cardGroupEditScript.ShowCardDetailInfo(card);
         }
-        //else if(eventData.button == PointerEventData.InputButton.Right)
-        //{
-        //    if(gameObject.transform.parent==cardGroupTransform)
-        //    {
-        //        cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
-        //    }
-        //    if (gameObject.transform.parent == allCardTransform)
-        //    {
-        //        cardGroupEditScript.AddCardToCardGroup(card);
-        //    }
-        //}
+        else
+        {
+            cardGroupEditScript.RemoveCardFromCardGroup(this);
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        //dragFromObject = transform.parent.gameObject;
+        dragObject = Instantiate(cardGroupEditScript.cardPre, GameObject.Find("Canvas").transform);
+        dragObject.GetComponent<CardScript>().SetCard(card);
+        dragObject.GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
+        CanvasGroup canvasGroup = dragObject.AddComponent<CanvasGroup>();
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+        dragObject.transform.position = new Vector3(eventData.position.x, eventData.position.y, 0);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        
+        dragObject.transform.position = new Vector3(eventData.position.x, eventData.position.y, 0);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        //if (eventData.pointerEnter.transform.childCount==0)
-        //{
-        //    dragToObject= eventData.pointerEnter.transform.parent.gameObject;
-        //}
-        //else
-        //{
-        //    dragToObject = eventData.pointerEnter.transform.GetChild(0).gameObject;
-        //}
-        
-        //if(dragFromObject== allCardTransform.gameObject && dragToObject == cardGroupTransform.gameObject)
-        //{
-            
-        //}
-        //else if(dragFromObject == cardGroupTransform.gameObject && dragToObject == allCardTransform.gameObject)
-        //{
-        //    cardGroupEditScript.RemoveCardFromCardGroup(gameObject,card);
-        //}
-        //dragFromObject = null;
-        //dragToObject = null;
+        DestroyImmediate(dragObject);
     }
 }

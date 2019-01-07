@@ -42,8 +42,6 @@ namespace Assets.Script
 
         #region 决斗
         DuelScene duelScene = null;
-        GuessEnum myGuessEnum ;
-        GuessEnum opponentGuessEnum;
         #endregion
 
         #region 网络
@@ -53,12 +51,13 @@ namespace Assets.Script
         bool isServer = false;
         #endregion
 
+        List<TimerFunction> timerFunctions = new List<TimerFunction>();
+
         string cardGroupNameForCardGroupEditScene = "";
 
         private GameManager()
         {
             currentGameState = GameState.MainScene;
-            myGuessEnum = GuessEnum.Unknown;
 
             LoadUserData();
             InitAudio();
@@ -160,6 +159,10 @@ namespace Assets.Script
             switch (currentGameState)
             {
                 case GameState.MainScene:
+                    break;
+                case GameState.SeleteDuelModeScene:
+                    SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+                    currentGameState = GameState.MainScene;
                     break;
                 case GameState.DuelScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
@@ -277,20 +280,50 @@ namespace Assets.Script
         }
 
         /// <summary>
+        /// 进入选择模式场景
+        /// </summary>
+        public void EnterSelectModeScene()
+        {
+            if (currentGameState == GameState.MainScene)
+            {
+                currentGameState = GameState.SeleteDuelModeScene;
+                SceneManager.LoadScene("SeleteDuelModeScene", LoadSceneMode.Single);
+            }
+            else
+            {
+                Debug.LogError("进入决斗场景失败，只能由主场景进入，当前场景为：" + currentGameState.ToString());
+            }
+        }
+
+        /// <summary>
         /// 进入决斗场景
         /// </summary>
         public void EnterDuelScene()
         {
-            if (currentGameState == GameState.MainScene)
+            if (currentGameState == GameState.GuessFirstScene)
             {
                 currentGameState = GameState.DuelScene;
-                SceneManager.LoadScene("GuessFirstScene", LoadSceneMode.Single);
-                duelScene = new DuelScene();
-                StartNet();
+                SceneManager.LoadScene("DuelScene", LoadSceneMode.Single);
             }
             else
             {
-                Debug.LogError("进入决斗场景失败，只能由主场景进入，当前场景为："+ currentGameState.ToString());
+                Debug.LogError("进入决斗场景失败，只能由猜先场景进入，当前场景为：" + currentGameState.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 进入猜先场景
+        /// </summary>
+        public void EnterGuessFirstScene()
+        {
+            if (currentGameState == GameState.SeleteDuelModeScene)
+            {
+                currentGameState = GameState.GuessFirstScene;
+                SceneManager.LoadScene("GuessFirstScene", LoadSceneMode.Single);
+            }
+            else
+            {
+                Debug.LogError("进入决斗场景失败，只能由选择决斗模式场景进入，当前场景为：" + currentGameState.ToString());
             }
         }
 
@@ -366,12 +399,14 @@ namespace Assets.Script
         {
             if (duelScene != null)
             {
-                if(myGuessEnum == GuessEnum.Unknown)
+                if(duelScene.myPlayer.SetGuessEnum(guessEnum))
                 {
-                    myGuessEnum = guessEnum;
-                    CGuessFirst guessFirst = new CGuessFirst();
-                    guessFirst.AddContent("guess", myGuessEnum.ToString());
-                    clientManager.SendProtocol(guessFirst);
+                    if(duelScene.GetDuelMode()==DuelMode.Net)
+                    {
+                        CGuessFirst guessFirst = new CGuessFirst();
+                        guessFirst.AddContent("guess", duelScene.myPlayer.GetGuessEnum().ToString());
+                        clientManager.SendProtocol(guessFirst);
+                    }
                     DecideGuessFirst();
                     return true;
                 }
@@ -395,19 +430,24 @@ namespace Assets.Script
         {
             if (duelScene != null)
             {
-                opponentGuessEnum = opponentGuess;
-                GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuess-1).GetComponent<GuessFirstScript>().SetChooseState();
-                DecideGuessFirst();
+                if (duelScene.opponentPlayer.SetGuessEnum(opponentGuess))
+                {
+                    GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuess - 1).GetComponent<GuessFirstScript>().SetChooseState();
+                    DecideGuessFirst();
+                }
             }
         }
 
+        /// <summary>
+        /// 清空猜先选择
+        /// </summary>
         public void ClearChoose()
         {
-            GameObject.Find("myPanel").transform.GetChild((int)myGuessEnum - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-            GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuessEnum - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-            
-            myGuessEnum = GuessEnum.Unknown;
-            opponentGuessEnum = GuessEnum.Unknown;
+            GameObject.Find("myPanel").transform.GetChild((int)duelScene.myPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+
+            duelScene.myPlayer.SetGuessEnum(GuessEnum.Unknown);
+            duelScene.opponentPlayer.SetGuessEnum(GuessEnum.Unknown);
         }
 
         /// <summary>
@@ -415,27 +455,48 @@ namespace Assets.Script
         /// </summary>
         void DecideGuessFirst()
         {
-            if(myGuessEnum!=GuessEnum.Unknown&&opponentGuessEnum!=GuessEnum.Unknown)
+            if(duelScene.GetDuelMode()==DuelMode.Single)
             {
-                if(myGuessEnum==opponentGuessEnum)
+                duelScene.opponentPlayer.SetGuessEnum((GuessEnum)UnityEngine.Random.Range(1, 4));
+                GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
+            }
+            GuessEnum myGuessEnum = duelScene.myPlayer.GetGuessEnum();
+            GuessEnum opponentGuessEnum = duelScene.opponentPlayer.GetGuessEnum();
+            if (myGuessEnum!=GuessEnum.Unknown&&opponentGuessEnum!=GuessEnum.Unknown)
+            {
+                if(myGuessEnum == opponentGuessEnum)
                 {
-                    ClearChoose();
-                    ShowMessage("重新选择！");
+                    TimerFunction reguessTimeFunction = new TimerFunction();
+                    reguessTimeFunction.SetFunction(1, () =>
+                    {
+                        ClearChoose();
+                    });
+
+                    AddTimerFunction(reguessTimeFunction);
+                    ShowMessage("双方选择相同，需重新选择！");
+
                     return;
                 }
-                SceneManager.LoadScene("DuelScene",LoadSceneMode.Single);
-                audioScript.SetAudioByName(duelBgmName);
-                int tempValue = (int)myGuessEnum - (int)opponentGuessEnum;
-                if(tempValue == 1|| tempValue == - 2)
+
+                TimerFunction timeFunction =  new TimerFunction();
+                timeFunction.SetFunction(1,()=> 
                 {
-                    ShowMessage("您先手！");
-                    duelScene.SetFirst(true);
-                }
-                else
-                {
-                    ShowMessage("您后手！");
-                    duelScene.SetFirst(false);
-                }
+                    EnterDuelScene();
+                    audioScript.SetAudioByName(duelBgmName);
+                    int tempValue = (int)myGuessEnum - (int)opponentGuessEnum;
+                    if (tempValue == 1 || tempValue == -2)
+                    {
+                        ShowMessage("您先手！");
+                        duelScene.SetFirst(true);
+                    }
+                    else
+                    {
+                        ShowMessage("您后手！");
+                        duelScene.SetFirst(false);
+                    }
+                });
+
+                AddTimerFunction(timeFunction);
             }
         }
 
@@ -467,7 +528,8 @@ namespace Assets.Script
         /// </summary>
         public void Update()
         {
-            if(currentGameState==GameState.DuelScene)
+            CheckTimerFunction();
+            if (currentGameState==GameState.DuelScene)
             {
                 ProcessProtocol();
             }
@@ -476,6 +538,22 @@ namespace Assets.Script
                 if(duelScene!=null)
                 {
                     duelScene.MouseRightButtonDown();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 检测计时器时间
+        /// </summary>
+        void CheckTimerFunction()
+        {
+            for (int i = timerFunctions.Count - 1; i >= 0; i--)
+            {
+                timerFunctions[i].Update(Time.deltaTime);
+                if(timerFunctions[i].GetRemainTime()<=0)
+                {
+                    timerFunctions[i].DoFunction();
+                    timerFunctions.RemoveAt(i);
                 }
             }
         }
@@ -490,6 +568,32 @@ namespace Assets.Script
                 GameObject go = transform.GetChild(i).gameObject;
                 UnityEngine.Object.DestroyImmediate(go);
             }
+        }
+
+        /// <summary>
+        /// 设置单人模式
+        /// </summary>
+        public void SetSingleMode()
+        {
+            duelScene = new DuelScene(DuelMode.Single);
+            EnterGuessFirstScene();
+        }
+
+        /// <summary>
+        /// 设置网络模式
+        /// </summary>
+        public void SetNetMode()
+        {
+            duelScene = new DuelScene(DuelMode.Net);
+            EnterGuessFirstScene();
+        }
+
+        /// <summary>
+        /// 添加计时器
+        /// </summary>
+        public static void AddTimerFunction(TimerFunction timerFunction)
+        {
+            gameManagerInstance.timerFunctions.Add(timerFunction);
         }
     }
 }

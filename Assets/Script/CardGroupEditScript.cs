@@ -210,7 +210,6 @@ public class CardGroupEditScript : MonoBehaviour
             return false;
         }
         int cardNumberLimit = CardGroupRule.sameCardMaxNumber;
-        Transform panelTransform = null;
         List<UserCardData> typrCardGroup = null;
         switch (cardGroupType)
         {
@@ -218,15 +217,12 @@ public class CardGroupEditScript : MonoBehaviour
                 Debug.LogError("未知卡组类型！");
                 return false;
             case CardGroupType.Main:
-                panelTransform = mainPanelTransform;
                 typrCardGroup = cardGroup.mainCardList;
                 break;
             case CardGroupType.Extra:
-                panelTransform = extraPanelTransform;
                 typrCardGroup = cardGroup.extraCardList;
                 break;
             case CardGroupType.Deputy:
-                panelTransform = deputyPanelTransform;
                 typrCardGroup = cardGroup.deputyCardList;
                 break;
             default:
@@ -251,7 +247,7 @@ public class CardGroupEditScript : MonoBehaviour
         {
             if (userCardData.number >= cardNumberLimit)
             {
-                Debug.LogError("卡组中" + card.GetName() + "数量超过最大值！");
+                GameManager.ShowMessage("卡组中" + card.GetName() + "数量超过最大值！");
                 return false;
             }
             else
@@ -291,7 +287,6 @@ public class CardGroupEditScript : MonoBehaviour
             Debug.LogError("在从卡组中删除卡牌时没有找到卡组：" + currentCardGroupName);
             return false;
         }
-        Transform panelTransform = null;
         List<UserCardData> typeCardGroup = null;
         switch (cardGroupType)
         {
@@ -299,20 +294,18 @@ public class CardGroupEditScript : MonoBehaviour
                 Debug.LogError("未知卡组类型！");
                 return false;
             case CardGroupType.Main:
-                panelTransform = mainPanelTransform;
                 typeCardGroup = cardGroup.mainCardList;
                 break;
             case CardGroupType.Extra:
-                panelTransform = extraPanelTransform;
                 typeCardGroup = cardGroup.extraCardList;
                 break;
             case CardGroupType.Deputy:
-                panelTransform = deputyPanelTransform;
                 typeCardGroup = cardGroup.deputyCardList;
                 break;
             default:
                 break;
         }
+        bool found = false;
         foreach (var item in typeCardGroup)
         {
             if (item.cardNo == card.GetCardNo())
@@ -325,24 +318,50 @@ public class CardGroupEditScript : MonoBehaviour
                 {
                     typeCardGroup.Remove(item);
                 }
-                return true;
+                found = true;
+                break;
             }
         }
-        switch (cardGroupType)
+        if(found)
         {
-            case CardGroupType.Unknown:
-                break;
-            case CardGroupType.Main:
-                ResetMainCardGroup();
-                break;
-            case CardGroupType.Extra:
-                ResetExtraCardGroup();
-                break;
-            case CardGroupType.Deputy:
-                ResetDeputyCardGroup();
-                break;
-            default:
-                break;
+            switch (cardGroupType)
+            {
+                case CardGroupType.Unknown:
+                    break;
+                case CardGroupType.Main:
+                    ResetMainCardGroup();
+                    break;
+                case CardGroupType.Extra:
+                    ResetExtraCardGroup();
+                    break;
+                case CardGroupType.Deputy:
+                    ResetDeputyCardGroup();
+                    break;
+                default:
+                    break;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 从指定卡组中移除卡牌
+    /// </summary>
+    /// <param name="cardScript"></param>
+    /// <returns></returns>
+    public bool RemoveCardFromCardGroup(CardScript cardScript)
+    {
+        if (cardScript.transform.parent == mainPanelTransform)
+        {
+            return RemoveCardFromCardGroup(CardGroupType.Main, cardScript.GetCard());
+        }
+        else if(cardScript.transform.parent == extraPanelTransform)
+        {
+            return RemoveCardFromCardGroup(CardGroupType.Extra, cardScript.GetCard());
+        }
+        else if (cardScript.transform.parent == deputyPanelTransform)
+        {
+            return RemoveCardFromCardGroup(CardGroupType.Deputy, cardScript.GetCard());
         }
         return false;
     }
@@ -381,12 +400,8 @@ public class CardGroupEditScript : MonoBehaviour
     {
         CardScript cardScript = eventData.pointerDrag.GetComponent<CardScript>();
         
-        if (cardScript != null)
+        if (cardScript != null && cardScript.transform.parent != mainPanelTransform)
         {
-            if (cardScript.transform.parent == mainPanelTransform)
-            {
-                return;
-            }
             bool addSucccess = AddCardToCardGroup(CardGroupType.Main,cardScript.GetCard());
             if(addSucccess)
             {
@@ -394,7 +409,7 @@ public class CardGroupEditScript : MonoBehaviour
                 {
                     RemoveCardFromCardGroup(CardGroupType.Extra, cardScript.GetCard());
                 }
-                if (cardScript.transform.parent == deputyPanelTransform)
+                else if (cardScript.transform.parent == deputyPanelTransform)
                 {
                     RemoveCardFromCardGroup(CardGroupType.Deputy, cardScript.GetCard());
                 }
@@ -409,7 +424,7 @@ public class CardGroupEditScript : MonoBehaviour
     void OnDropToExtraPanel(PointerEventData eventData)
     {
         CardScript cardScript = eventData.pointerDrag.GetComponent<CardScript>();
-        if (cardScript != null)
+        if (cardScript != null && cardScript.transform.parent != extraPanelTransform)
         {
             bool addSucccess = AddCardToCardGroup(CardGroupType.Extra, cardScript.GetCard());
             if (addSucccess)
@@ -433,7 +448,7 @@ public class CardGroupEditScript : MonoBehaviour
     void OnDropToDeputyPanel(PointerEventData eventData)
     {
         CardScript cardScript = eventData.pointerDrag.GetComponent<CardScript>();
-        if (cardScript != null)
+        if (cardScript != null && cardScript.transform.parent != deputyPanelTransform)
         {
             bool addSucccess = AddCardToCardGroup(CardGroupType.Deputy, cardScript.GetCard());
             if (addSucccess)

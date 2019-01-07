@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/DuelScene.unity
     guid: aa91cff74f1bafd4a8c68377c8ea92bb
+  - enabled: 1
+    path: Assets/Scene/SeleteDuelModeScene.unity
+    guid: 866b1eda93559734c8f1268ad515f9fb
   m_configObjects: {}

@@ -15,19 +15,11 @@ namespace Assets.Script
     /// </summary>
     class ConfigManager
     {
-        //单例
-        static ConfigManager configManagerInstance = new ConfigManager();
-
         static Dictionary<string, ConfigBase> allConfigMap = new Dictionary<string, ConfigBase>();
 
         private ConfigManager()
         {
         }
-
-        //public static ConfigManager GetSingleInstance()
-        //{
-        //    return configManagerInstance;
-        //}
 
         /// <summary>
         /// 获得配置根路径

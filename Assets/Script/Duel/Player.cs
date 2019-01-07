@@ -48,6 +48,8 @@ namespace Assets.Script.Duel
 
         MonsterCard needSacrificeMonster = null;
 
+        GuessEnum guessEnum = GuessEnum.Unknown;
+
         public bool CanDirectAttack
         {
             get
@@ -63,20 +65,38 @@ namespace Assets.Script.Duel
 
         int normalCallNumber = DuelRule.drawCardNumberEveryTurn;
 
-        public Player(string name,DuelCardGroup duelCardGroup)
+        public Player(string name)
         {
             if(this.name == "")
             {
-                Debug.LogError("玩家姓名为空！");
+                this.name = "玩家";
             }
-            this.name = name;
-            this.duelCardGroup = duelCardGroup;
+            else
+            {
+                this.name = name;
+            }
+            
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
         }
-
-        public Player(DuelCardGroup duelCardGroup):this("玩家", duelCardGroup)
+        
+        public GuessEnum GetGuessEnum()
         {
-
+            return guessEnum;
+        }
+        
+        public bool SetGuessEnum(GuessEnum guessEnum)
+        {
+            if(this.guessEnum == GuessEnum.Unknown || guessEnum == GuessEnum.Unknown)
+            {
+                this.guessEnum = guessEnum;
+                return true;
+            }
+            return false;
+        }
+        
+        public void SetCardGroup(DuelCardGroup duelCardGroup)
+        {
+            this.duelCardGroup = duelCardGroup;
         }
 
         public void SetHeartPosition(Vector3 heartPosition)

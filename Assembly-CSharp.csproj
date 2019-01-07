@@ -83,9 +83,11 @@
     <Compile Include="Assets\Script\ConfigManager.cs" />
     <Compile Include="Assets\Script\DestroySelfScript.cs" />
     <Compile Include="Assets\Script\DropToPanelScript.cs" />
+    <Compile Include="Assets\Script\Duel\ComputerPlayer.cs" />
     <Compile Include="Assets\Script\Duel\DuelCardGroup.cs" />
     <Compile Include="Assets\Script\Duel\DuelCommonValue.cs" />
     <Compile Include="Assets\Script\Duel\DuelScene.cs" />
+    <Compile Include="Assets\Script\Duel\NetPlayer.cs" />
     <Compile Include="Assets\Script\Duel\Player.cs" />
     <Compile Include="Assets\Script\Duel\Rule\CardGroupRule.cs" />
     <Compile Include="Assets\Script\Duel\Rule\DuelRule.cs" />
@@ -110,14 +112,13 @@
     <Compile Include="Assets\Script\Protocol\CEndTurn.cs" />
     <Compile Include="Assets\Script\Protocol\CEnterDuelProcess.cs" />
     <Compile Include="Assets\Script\Protocol\CGuessFirst.cs" />
+    <Compile Include="Assets\Script\TimerFunction.cs" />
     <Compile Include="Assets\Script\UserData.cs" />
     <None Include="Assets\Artres\Config\Rule.xml" />
     <None Include="Assets\Artres\CardData\45159319\script.txt" />
     <None Include="Assets\Artres\CardData\45221020\script.txt" />
     <None Include="Assets\Artres\CardData\58518520\script.txt" />
-    <None Include="Assets\Artres\Config\MagicType.xml">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Assets\Artres\Config\MagicType.xml" />
     <None Include="Assets\Artres\Config\MonsterType.xml" />
     <None Include="Assets\Artres\CardData\35618217\script.txt" />
     <None Include="Assets\Artres\CardData\58984738\script.txt" />

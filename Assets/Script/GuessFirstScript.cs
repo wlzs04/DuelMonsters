@@ -1,4 +1,4 @@
-﻿using Assets.Script;
+using Assets.Script;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,14 +17,12 @@ public class GuessFirstScript : MonoBehaviour, IPointerClickHandler
     public GuessEnum selectGuessEnum;
     float selectScale = 1.2f;
     public bool isMyChoose = false;
-
-    // Use this for initialization
+    
     void Start()
     {
 
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
 

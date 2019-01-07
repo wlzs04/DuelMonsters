@@ -12,13 +12,24 @@ using UnityEngine.UI;
 
 namespace Assets.Script.Duel
 {
+    /// <summary>
+    /// 决斗模式
+    /// </summary>
+    enum DuelMode
+    {
+        Unknown,//未知
+        Single,//单人
+        Net//网络
+    }
+
     class DuelScene
     {
         string cardPrefabPath = "Prefab/CardPre";
         GameObject cardPre = null;
+        DuelMode duelMode;
 
-        public Player myPlayer;//我方玩家
-        public Player opponentPlayer;//敌方玩家
+        public Player myPlayer = null;//我方玩家
+        public Player opponentPlayer = null;//敌方玩家
 
         public bool myFirst = false;
         public Player currentPlayer;//当前玩家
@@ -38,6 +49,26 @@ namespace Assets.Script.Duel
         CardBase currentChooseCard = null;
         bool canChoose = false;
 
+        public DuelScene(DuelMode duelMode)
+        {
+            this.duelMode = duelMode;
+            myPlayer = new Player("玩家");
+            switch (duelMode)
+            {
+                case DuelMode.Unknown:
+                    Debug.LogError("未选择决斗模式！");
+                    return;
+                case DuelMode.Single:
+                    opponentPlayer = new ComputerPlayer();
+                    break;
+                case DuelMode.Net:
+                    opponentPlayer = new NetPlayer();
+                    break;
+                default:
+                    break;
+            }
+        }
+
         void AddControlFromScene()
         {
             duelBackImage = GameObject.Find("duelBackImage").GetComponent<Image>();
@@ -52,6 +83,11 @@ namespace Assets.Script.Duel
         public int GetCurrentTurnNumber()
         {
             return currentTurnNumber;
+        }
+
+        public DuelMode GetDuelMode()
+        {
+            return duelMode;
         }
 
         /// <summary>
@@ -251,7 +287,26 @@ namespace Assets.Script.Duel
         {
             AddControlFromScene();
             SetMyCardGroup();
-            SendCardGroupToOpponent();
+            if(duelMode==DuelMode.Net)
+            {
+                SendCardGroupToOpponent();
+            }
+            else
+            {
+                DuelCardGroup duelCardGroup = new DuelCardGroup();
+                opponentPlayer.SetCardGroup(duelCardGroup);
+                UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
+                Debug.LogWarning("电脑暂时使用第一个卡组。");
+
+                foreach (var item in firstCardGroup.mainCardList)
+                {
+                    for (int i = 0; i < item.number; i++)
+                    {
+                        duelCardGroup.AddCard(item.cardNo);
+                    }
+                }
+                ShuffleCardGroup();
+            }
             CheckPlayInit();
         }
 
@@ -283,13 +338,13 @@ namespace Assets.Script.Duel
         {
             CCardGroup cCardGroup = new CCardGroup();
             StringBuilder stringBuilder = new StringBuilder();
-            List<CardBase> cards=myPlayer.GetDuelCardGroup().GetCards();
+            List<CardBase> cards = myPlayer.GetDuelCardGroup().GetCards();
 
-            for (int i = 0; i < cards.Count-1; i++)
+            for (int i = 0; i < cards.Count - 1; i++)
             {
-                stringBuilder.Append(cards[i].GetCardNo() + "-"+cards[i].GetID() + ":");
+                stringBuilder.Append(cards[i].GetCardNo() + "-" + cards[i].GetID() + ":");
             }
-            stringBuilder.Append(cards[cards.Count - 1].GetCardNo()+"-" + cards[cards.Count - 1].GetID());
+            stringBuilder.Append(cards[cards.Count - 1].GetCardNo() + "-" + cards[cards.Count - 1].GetID());
 
             cCardGroup.AddContent("cardGroupList", stringBuilder.ToString());
             ClientManager.GetSingleInstance().SendProtocol(cCardGroup);
@@ -301,7 +356,7 @@ namespace Assets.Script.Duel
         public void SetCardGroupFromOpponent(string cardGroupInfo)
         {
             DuelCardGroup duelCardGroup = new DuelCardGroup();
-            opponentPlayer = new Player("对方",duelCardGroup);
+            opponentPlayer.SetCardGroup(duelCardGroup);
             string[] cardNos = cardGroupInfo.Split(':');
             foreach (var item in cardNos)
             {
@@ -316,10 +371,10 @@ namespace Assets.Script.Duel
         void SetMyCardGroup()
         {
             DuelCardGroup duelCardGroup = new DuelCardGroup();
-            myPlayer = new Player("我方",duelCardGroup);
+            myPlayer.SetCardGroup(duelCardGroup);
 
             UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
-            Debug.LogWarning("在卡组编辑界面暂时使用第一个卡组。");
+            Debug.LogWarning("我方暂时使用第一个卡组。");
 
             foreach (var item in firstCardGroup.mainCardList)
             {
