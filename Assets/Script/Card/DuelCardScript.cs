@@ -1,4 +1,4 @@
-﻿using Assets.Script.Duel;
+using Assets.Script.Duel;
 using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Assets.Script.Card
 {
@@ -24,12 +25,16 @@ namespace Assets.Script.Card
         bool isPrepareATK = false;
         GameObject atkImage = null;
 
+        Sprite backImage = null;
+        Sprite frontImage = null;
+
         bool haveBeChosen = false;
 
         void Start()
         {
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
             atkImage = gameObject.transform.GetChild(0).gameObject;
+            backImage = gameObject.GetComponent<Image>().sprite;
         }
 
         void Update()
@@ -51,6 +56,23 @@ namespace Assets.Script.Card
         public void SetCard(CardBase card)
         {
             this.card = card;
+            frontImage = card.GetImage();
+        }
+
+        /// <summary>
+        /// 显示背面
+        /// </summary>
+        public void ShowBack()
+        {
+            gameObject.GetComponent<Image>().sprite = backImage;
+        }
+
+        /// <summary>
+        /// 显示正面
+        /// </summary>
+        public void ShowFront()
+        {
+            gameObject.GetComponent<Image>().sprite = frontImage;
         }
 
         public void SetOwner(Player player)
@@ -67,7 +89,7 @@ namespace Assets.Script.Card
         {
             if(ownerPlayer.IsMyTurn())
             {
-                if(card.GetCardGameState()== CardGameState.Hand&&ownerPlayer.CanCallMonster()&& card.GetCardType() == CardType.Monster&&ownerPlayer.GetPlayGameState()== PlayGameState.Normal)
+                if(CanCall())
                 {
                     ownerPlayer.CallMonster((MonsterCard)card);
                 }
@@ -162,6 +184,33 @@ namespace Assets.Script.Card
         {
             isPrepareATK = false;
             atkImage.SetActive(false);
+        }
+
+        /// <summary>
+        /// 判断当前是否可以召唤
+        /// </summary>
+        /// <returns></returns>
+        public bool CanCall()
+        {
+            if(card.GetCardGameState() == CardGameState.Hand && 
+                ownerPlayer.CanCallMonster() && 
+                card.GetCardType() == CardType.Monster && 
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+            {
+                MonsterCard monsterCard = (MonsterCard)card;
+                if (monsterCard.GetLevel()<= DuelRule.callMonsterWithoutSacrificeMaxLevel)
+                {
+                    return true;
+                }
+                else
+                {
+                    if(ownerPlayer.GetCanBeSacrificeMonsterNumber()>0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

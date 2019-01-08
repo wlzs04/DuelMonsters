@@ -22,17 +22,17 @@ namespace Assets.Script.Duel
     class Player
     {
         string name = "玩家";
-        DuelCardGroup duelCardGroup;
-        List<CardBase> handCards = new List<CardBase>();
-        List<CardBase> tombCards = new List<CardBase>();
-        List<CardBase> exceptCards = new List<CardBase>();
+        protected DuelCardGroup duelCardGroup;
+        protected List<CardBase> handCards = new List<CardBase>();
+        protected List<CardBase> tombCards = new List<CardBase>();
+        protected List<CardBase> exceptCards = new List<CardBase>();
         
         List<MonsterCard> sacrificeCards = new List<MonsterCard>();
 
         CardBase[] monsterCardArea = new CardBase[DuelRule.monsterAreaNumber];
         CardBase[] magicTrapCardArea = new CardBase[DuelRule.monsterAreaNumber];
 
-        DuelScene duelScene = null;
+        protected DuelScene duelScene = null;
         GameObject handPanel = null;
         Scrollbar lifeScrollBar = null;
         int life = 4000;
@@ -65,7 +65,7 @@ namespace Assets.Script.Duel
 
         int normalCallNumber = DuelRule.drawCardNumberEveryTurn;
 
-        public Player(string name)
+        public Player(string name, DuelScene duelScene)
         {
             if(this.name == "")
             {
@@ -75,10 +75,24 @@ namespace Assets.Script.Duel
             {
                 this.name = name;
             }
-            
-            duelScene = GameManager.GetSingleInstance().GetDuelScene();
+
+            this.duelScene = duelScene;
         }
-        
+
+        public virtual void InitCardGroup()
+        {
+            List<CardBase> myCards = duelCardGroup.GetCards();
+            for (int i = 0; i < myCards.Count; i++)
+            {
+                GameObject go = GameObject.Instantiate(duelScene.cardPre, duelScene.duelBackImage.transform);
+                go.GetComponent<DuelCardScript>().SetCard(myCards[i]);
+                go.GetComponent<DuelCardScript>().SetOwner(this);
+                myCards[i].cardObject = go;
+                go.transform.SetParent(duelScene.duelBackImage.transform);
+                go.transform.localPosition = new Vector3(DuelCommonValue.myCardGroupPositionX, DuelCommonValue.myCardGroupPositionY, 0);
+            }
+        }
+
         public GuessEnum GetGuessEnum()
         {
             return guessEnum;
@@ -218,24 +232,58 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 决斗开始时抽卡
+        /// </summary>
+        public void DrawAtFirst()
+        {
+            for (int i = 0; i < DuelRule.drawCardNumberOnFirstDraw; i++)
+            {
+                Draw();
+            }
+        }
+
+        /// <summary>
         /// 抽卡
         /// </summary>
-        public void Draw()
+        public virtual void Draw()
         {
             CardBase card = GetDuelCardGroup().GetCards()[0];
             card.cardObject.transform.SetParent(handPanel.transform);
-            //((RectTransform)(card.cardObject.transform)).sizeDelta=new Vector2(DuelCommonValue.cardOnHandWidth, DuelCommonValue.cardOnHandHeight);
             duelCardGroup.GetCards().RemoveAt(0);
             handCards.Add(card);
             card.SetCardGameState(CardGameState.Hand);
-
+            
             if (this==duelScene.myPlayer)
             {
-                card.cardObject.gameObject.GetComponent<Image>().sprite = card.GetImage();
+                card.cardObject.gameObject.GetComponent<DuelCardScript>().ShowFront();
                 card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
-                CDrawCard cDrawCard = new CDrawCard();
-                ClientManager.GetSingleInstance().SendProtocol(cDrawCard);
             }
+
+            //opponentPlayer.DrawNotify();
+        }
+
+        /// <summary>
+        /// 抽卡通知，用于让对方知道，同步网络信息和抽卡事件。
+        /// </summary>
+        public virtual void DrawNotify()
+        {
+
+        }
+
+        /// <summary>
+        /// 进入流程通知，
+        /// </summary>
+        public virtual void EnterDuelNotify(DuelProcess duelProcess)
+        {
+
+        }
+
+        /// <summary>
+        /// 进入流程通知，
+        /// </summary>
+        public virtual void EndTurnNotify()
+        {
+
         }
 
         /// <summary>
@@ -257,6 +305,15 @@ namespace Assets.Script.Duel
             duelScene.EnterNextDuelProcess();
             duelScene.EnterNextDuelProcess();
             playGameState = PlayGameState.Normal;
+            ThinkAction();
+        }
+
+        /// <summary>
+        /// 思考行动
+        /// </summary>
+        public virtual void ThinkAction()
+        {
+
         }
         
         /// <summary>
@@ -343,13 +400,7 @@ namespace Assets.Script.Duel
                         handCards.Remove(monsterCard);
                         normalCallNumber--;
 
-                        CCallMonster cCallMonster = new CCallMonster();
-                        cCallMonster.AddContent("cardID", monsterCard.GetID());
-                        cCallMonster.AddContent("callType", CallType.Normal);
-                        cCallMonster.AddContent("fromCardGameState", CardGameState.Hand);
-                        cCallMonster.AddContent("toCardGameState", CardGameState.FrontATK);
-                        cCallMonster.AddContent("flag", index);
-                        ClientManager.GetSingleInstance().SendProtocol(cCallMonster);
+                        CallMonsterNotify(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontATK, index);
                     }
                     else//使用祭品召唤
                     {
@@ -366,6 +417,11 @@ namespace Assets.Script.Duel
                     }
                 }
             }
+        }
+
+        public virtual void CallMonsterNotify(int id,CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState,int flag)
+        {
+
         }
 
         /// <summary>

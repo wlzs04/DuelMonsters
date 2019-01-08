@@ -37,26 +37,26 @@ namespace Assets.Script
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.Surrender();
         }
 
+        /// <summary>
+        /// 设置卡片详细信息
+        /// </summary>
+        /// <param name="card"></param>
         public void SetInfoContent(CardBase card)
         {
+            GameManager.CleanPanelContent(infoContentTransform);
+
             cardImage.sprite = card.GetImage();
-            for (int i = 0; i < infoContentTransform.childCount; i++)
-            {
-                GameObject go = infoContentTransform.GetChild(i).gameObject;
-                Destroy(go);
-            }
+
             GameObject gameObject = null;
             if (card.GetCardType() == CardType.Monster)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
                 gameObject = Instantiate(monsterCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + monsterCard.GetName();
-                gameObject.transform.GetChild(1).GetComponent<Text>().text = "等级：" + monsterCard.GetLevel();
-                gameObject.transform.GetChild(2).GetComponent<Text>().text = "卡片类型：" + monsterCard.GetCardTypeString();
-                gameObject.transform.GetChild(3).GetComponent<Text>().text = "类型：" + monsterCard.GetPropertyTypeString();
-                gameObject.transform.GetChild(4).GetComponent<Text>().text = "攻击力：" + monsterCard.GetAttackNumber();
-                gameObject.transform.GetChild(5).GetComponent<Text>().text = "防御力：" + monsterCard.GetDefenseNumber();
-                gameObject.transform.GetChild(6).GetComponent<Text>().text = "效果：" + monsterCard.GetEffect();
+                gameObject.transform.GetChild(1).GetComponent<Text>().text = "属性：" + monsterCard.GetPropertyTypeString() + "/" + monsterCard.GetMonsterTypeString() + "/" + monsterCard.GetLevel();
+                gameObject.transform.GetChild(2).GetComponent<Text>().text = "攻击力：" + monsterCard.GetAttackNumber();
+                gameObject.transform.GetChild(3).GetComponent<Text>().text = "防御力：" + monsterCard.GetDefenseNumber();
+                gameObject.transform.GetChild(4).GetComponent<Text>().text = "效果：" + monsterCard.GetEffect();
             }
             else if (card.GetCardType() == CardType.Magic)
             {
@@ -64,9 +64,8 @@ namespace Assets.Script
                 MagicCard magicCard = (MagicCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + magicCard.GetName();
-                gameObject.transform.GetChild(1).GetComponent<Text>().text = "卡片类型：" + magicCard.GetCardTypeString();
-                gameObject.transform.GetChild(2).GetComponent<Text>().text = "类型：" + magicCard.GetMagicTypeString();
-                gameObject.transform.GetChild(3).GetComponent<Text>().text = "效果：" + magicCard.GetEffect();
+                gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + magicCard.GetMagicTypeString() + magicCard.GetCardTypeString();
+                gameObject.transform.GetChild(2).GetComponent<Text>().text = "效果：" + magicCard.GetEffect();
             }
             else if (card.GetCardType() == CardType.Trap)
             {
@@ -74,9 +73,8 @@ namespace Assets.Script
                 TrapCard trapCard = (TrapCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + trapCard.GetName();
-                gameObject.transform.GetChild(1).GetComponent<Text>().text = "卡片类型：" + trapCard.GetCardTypeString();
-                gameObject.transform.GetChild(2).GetComponent<Text>().text = "类型：" + trapCard.GetTrapTypeString();
-                gameObject.transform.GetChild(3).GetComponent<Text>().text = "效果：" + trapCard.GetEffect();
+                gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + trapCard.GetTrapTypeString() + trapCard.GetCardTypeString();
+                gameObject.transform.GetChild(2).GetComponent<Text>().text = "效果：" + trapCard.GetEffect();
             }
             else
             {

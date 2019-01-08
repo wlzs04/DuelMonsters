@@ -274,6 +274,7 @@ namespace Assets.Script.Card
             monsterCard.cardID = RandomHelper.random.Next();
             monsterCard.cardType = cardType;
             monsterCard.propertyType = propertyType;
+            monsterCard.monsterType = monsterType;
             monsterCard.level = level;
             monsterCard.attackNumber = attackNumber;
             monsterCard.defenseNumber = defenseNumber;

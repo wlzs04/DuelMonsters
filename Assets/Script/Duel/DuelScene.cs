@@ -25,8 +25,8 @@ namespace Assets.Script.Duel
     class DuelScene
     {
         string cardPrefabPath = "Prefab/CardPre";
-        GameObject cardPre = null;
-        DuelMode duelMode;
+        public GameObject cardPre = null;
+        DuelMode duelMode = DuelMode.Unknown;
 
         public Player myPlayer = null;//我方玩家
         public Player opponentPlayer = null;//敌方玩家
@@ -52,17 +52,17 @@ namespace Assets.Script.Duel
         public DuelScene(DuelMode duelMode)
         {
             this.duelMode = duelMode;
-            myPlayer = new Player("玩家");
+            myPlayer = new Player("玩家", this);
             switch (duelMode)
             {
                 case DuelMode.Unknown:
                     Debug.LogError("未选择决斗模式！");
                     return;
                 case DuelMode.Single:
-                    opponentPlayer = new ComputerPlayer();
+                    opponentPlayer = new ComputerPlayer(this);
                     break;
                 case DuelMode.Net:
-                    opponentPlayer = new NetPlayer();
+                    opponentPlayer = new NetPlayer(this);
                     break;
                 default:
                     break;
@@ -282,7 +282,6 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 初始化决斗场景
         /// </summary>
-        /// <param name="myFirst"></param>
         public void Init()
         {
             AddControlFromScene();
@@ -410,15 +409,12 @@ namespace Assets.Script.Duel
 
             InitCardGroup();
             ShowMessage("抽牌！");
-            for (int i = 0; i < DuelRule.drawCardNumberOnFirstDraw; i++)
-            {
-                myPlayer.Draw();
-            }
+
+            myPlayer.DrawAtFirst();
+            opponentPlayer.DrawAtFirst();
+
             ShowMessage("决斗开始！");
-            if(myFirst)
-            {
-                currentPlayer.StartTurn();
-            }
+            startPlayer.StartTurn();
         }
 
         void EndDuel()
@@ -434,19 +430,12 @@ namespace Assets.Script.Duel
             EnterDuelProcess(DuelProcess.End);
             if (currentPlayer == myPlayer)
             {
-                CEndTurn cEndTurn = new CEndTurn();
-                ClientManager.GetSingleInstance().SendProtocol(cEndTurn);
+                opponentPlayer.EndTurnNotify();
             }
-            if (currentPlayer!= startPlayer)
-            {
-                currentTurnNumber++;
-            }
+            currentTurnNumber++;
             currentDuelProcess = DuelProcess.Unknown;
             currentPlayer = currentPlayer == myPlayer ? opponentPlayer : myPlayer;
-            if(currentPlayer==myPlayer)
-            {
-                myPlayer.StartTurn();
-            }
+            currentPlayer.StartTurn();
         }
 
         public void Battle()
@@ -457,27 +446,8 @@ namespace Assets.Script.Duel
         void InitCardGroup()
         {
             cardPre = Resources.Load<GameObject>(cardPrefabPath);
-            List<CardBase> myCards = myPlayer.GetDuelCardGroup().GetCards();
-            for (int i = 0; i < myCards.Count; i++)
-            {
-                GameObject go = GameObject.Instantiate(cardPre, duelBackImage.transform);
-                go.GetComponent<DuelCardScript>().SetCard(myCards[i]);
-                go.GetComponent<DuelCardScript>().SetOwner(myPlayer);
-                myCards[i].cardObject = go;
-                go.transform.SetParent(duelBackImage.transform);
-                go.transform.localPosition = new Vector3(DuelCommonValue.myCardGroupPositionX, DuelCommonValue.myCardGroupPositionY,0);
-            }
-
-            List<CardBase> opponentCards = opponentPlayer.GetDuelCardGroup().GetCards();
-            for (int i = 0; i < opponentCards.Count; i++)
-            {
-                GameObject go = GameObject.Instantiate(cardPre, duelBackImage.transform);
-                go.GetComponent<DuelCardScript>().SetCard(opponentCards[i]);
-                go.GetComponent<DuelCardScript>().SetOwner(opponentPlayer);
-                opponentCards[i].cardObject = go;
-                go.transform.SetParent(duelBackImage.transform);
-                go.transform.localPosition = new Vector3(DuelCommonValue.opponentCardGroupPositionX, DuelCommonValue.opponentCardGroupPositionY, 0);
-            }
+            myPlayer.InitCardGroup();
+            opponentPlayer.InitCardGroup();
         }
 
         /// <summary>
@@ -525,7 +495,6 @@ namespace Assets.Script.Duel
                 default:
                     break;
             }
-            EnterDuelProcess(currentDuelProcess);
         }
 
         /// <summary>
@@ -564,9 +533,7 @@ namespace Assets.Script.Duel
             }
             if(myPlayer.IsMyTurn())
             {
-                CEnterDuelProcess cEnterDuelProcess = new CEnterDuelProcess();
-                cEnterDuelProcess.AddContent("duelProcess", currentDuelProcess);
-                ClientManager.GetSingleInstance().SendProtocol(cEnterDuelProcess);
+                opponentPlayer.EnterDuelNotify(currentDuelProcess);
             }
         }
 
