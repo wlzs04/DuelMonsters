@@ -29,8 +29,8 @@ namespace Assets.Script.Duel
         
         List<MonsterCard> sacrificeCards = new List<MonsterCard>();
 
-        CardBase[] monsterCardArea = new CardBase[DuelRule.monsterAreaNumber];
-        CardBase[] magicTrapCardArea = new CardBase[DuelRule.monsterAreaNumber];
+        public CardBase[] monsterCardArea = new CardBase[DuelRule.monsterAreaNumber];
+        protected CardBase[] magicTrapCardArea = new CardBase[DuelRule.monsterAreaNumber];
 
         protected DuelScene duelScene = null;
         GameObject handPanel = null;
@@ -150,6 +150,30 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 判断玩家是否可以进入战斗流程
+        /// </summary>
+        /// <returns></returns>
+        public bool CanBattle()
+        {
+            if(duelScene.currentDuelProcess!=DuelProcess.Main)
+            {
+                return false;
+            }
+            foreach (var item in monsterCardArea)
+            {
+                if(item!=null)
+                {
+                    DuelCardScript duelCardScript = item.cardObject.GetComponent<DuelCardScript>();
+                    if (duelCardScript.CanAttack())
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 判断玩家是否可以被直接攻击
         /// </summary>
         /// <returns></returns>
@@ -201,8 +225,22 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool CanCallMonster()
         {
-            return (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second)&&normalCallNumber>0;
+            bool duelProcessCheck = IsMyTurn() && duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second;
+
+            bool callNumberCheck = normalCallNumber > 0;
+
+            bool canCall = false;
+            foreach (var item in handCards)
+            {
+                if(item.cardObject.GetComponent<DuelCardScript>().CanCall())
+                {
+                    canCall = true;
+                    break;
+                }
+            }
+
+            return duelProcessCheck&& callNumberCheck&&(canCall);
         }
 
         /// <summary>
@@ -287,6 +325,14 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 受到怪兽攻击通知
+        /// </summary>
+        public virtual void BeAttackedMonsterNotify(int attackCardId,int beAttackedCardId)
+        {
+
+        }
+
+        /// <summary>
         /// 选择流程
         /// </summary>
         public void ChooseProcess()
@@ -354,7 +400,7 @@ namespace Assets.Script.Duel
             {
                 if(item!=null)
                 {
-                    item.cardObject.GetComponent<DuelCardScript>().SetATKNumber();
+                    item.cardObject.GetComponent<DuelCardScript>().SetAttackNumber();
                 }
             }
         }
@@ -405,7 +451,7 @@ namespace Assets.Script.Duel
                     else//使用祭品召唤
                     {
                         int monsterLevel = monsterCard.GetLevel();
-                        if(monsterLevel<=DuelRule.callMonsterWithoutOneSacrificeMaxLevel&&GetCanBeSacrificeMonsterNumber()>=1)
+                        if(monsterLevel<=DuelRule.callMonsterWithOneSacrificeMaxLevel&&GetCanBeSacrificeMonsterNumber()>=1)
                         {
                             playGameState = PlayGameState.ChooseSacrifice;
                             needSacrificeMonster = monsterCard;
@@ -511,7 +557,7 @@ namespace Assets.Script.Duel
         /// <param name="toCardGameState"></param>
         /// <param name="flag"></param>
         /// <param name="sacrificeList"></param>
-        public void CallMonster(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeinfo = null)
+        public void CallMonsterByProtocol(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeinfo = null)
         {
             if(fromCardGameState!=CardGameState.Hand)
             {
@@ -541,15 +587,14 @@ namespace Assets.Script.Duel
 
             int index = DuelRule.monsterAreaNumber - flag - 1;
 
-            monsterCardArea[index] = monsterCard;
-            monsterCard.AddContent("monsterCardAreaIndex", index);
+            monsterCardArea[flag] = monsterCard;
+            monsterCard.AddContent("monsterCardAreaIndex", flag);
             monsterCard.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
             monsterCard.SetCardGameState(toCardGameState);
             monsterCard.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
             monsterCard.cardObject.transform.localPosition = new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.opponentMonsterCardPositionY, 1);
             monsterCard.cardObject.transform.localRotation = Quaternion.Euler(0,0,180);
             monsterCard.cardObject.GetComponent<Image>().sprite = monsterCard.GetImage();
-            //((RectTransform)(monsterCard.cardObject.transform)).sizeDelta = new Vector2(DuelCommonValue.cardOnBackWidth, DuelCommonValue.cardOnBackHeight);
             handCards.Remove(monsterCard);
             normalCallNumber--;
         }

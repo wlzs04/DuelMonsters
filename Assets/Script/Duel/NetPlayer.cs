@@ -62,5 +62,13 @@ namespace Assets.Script.Duel
             CEndTurn cEndTurn = new CEndTurn();
             ClientManager.GetSingleInstance().SendProtocol(cEndTurn);
         }
+
+        public override void BeAttackedMonsterNotify(int attackCardId, int beAttackedCardId)
+        {
+            CAttackMonster cAttackMonster = new CAttackMonster();
+            cAttackMonster.AddContent("cardID", attackCardId);
+            cAttackMonster.AddContent("anotherCardID", beAttackedCardId);
+            ClientManager.GetSingleInstance().SendProtocol(cAttackMonster);
+        }
     }
 }

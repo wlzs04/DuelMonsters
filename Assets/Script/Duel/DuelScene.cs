@@ -155,12 +155,8 @@ namespace Assets.Script.Duel
                     card.cardObject.GetComponent<DuelCardScript>().GetOwner()&&
                     ((MonsterCard)card).CanBeAttacked)
                 {
-                    CAttackMonster cAttackMonster = new CAttackMonster();
-                    cAttackMonster.AddContent("cardID",currentChooseCard.GetID());
-                    cAttackMonster.AddContent("anotherCardID", card.GetID());
-
-                    ClientManager.GetSingleInstance().SendProtocol(cAttackMonster);
-
+                    opponentPlayer.BeAttackedMonsterNotify(currentChooseCard.GetID(), card.GetID());
+                    
                     AttackMonster((MonsterCard)currentChooseCard, (MonsterCard)card);
                     currentChooseCard = null;
                 }
@@ -304,7 +300,7 @@ namespace Assets.Script.Duel
                         duelCardGroup.AddCard(item.cardNo);
                     }
                 }
-                ShuffleCardGroup();
+                opponentPlayer.ShuffleCardGroup();
             }
             CheckPlayInit();
         }
@@ -382,16 +378,16 @@ namespace Assets.Script.Duel
                     duelCardGroup.AddCard(item.cardNo);
                 }
             }
-            ShuffleCardGroup();
+            myPlayer.ShuffleCardGroup();
         }
 
         /// <summary>
         /// 洗牌
         /// </summary>
-        void ShuffleCardGroup()
-        {
-            myPlayer.ShuffleCardGroup();
-        }
+        //void ShuffleCardGroup()
+        //{
+            
+        //}
 
         /// <summary>
         /// 开始决斗
@@ -501,7 +497,7 @@ namespace Assets.Script.Duel
         /// 向玩家显示当前流程
         /// </summary>
         /// <param name="duelProcess"></param>
-        void EnterDuelProcess(DuelProcess duelProcess)
+        public void EnterDuelProcess(DuelProcess duelProcess)
         {
             currentDuelProcess = duelProcess;
             string ex = currentPlayer == myPlayer ? "我方进入" : "对方进入";
@@ -535,6 +531,10 @@ namespace Assets.Script.Duel
             {
                 opponentPlayer.EnterDuelNotify(currentDuelProcess);
             }
+            if(opponentPlayer.IsMyTurn())
+            {
+                opponentPlayer.ThinkAction();
+            }
         }
 
         /// <summary>
@@ -565,12 +565,12 @@ namespace Assets.Script.Duel
         /// <param name="flag"></param>
         public void OpponentCallMonster(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState,int flag)
         {
-            opponentPlayer.CallMonster(cardID, callType,fromCardGameState,toCardGameState,flag);
+            opponentPlayer.CallMonsterByProtocol(cardID, callType,fromCardGameState,toCardGameState,flag);
         }
 
         public void OpponentCallMonsterBySacrifice(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag,string sacrificeInfo)
         {
-            opponentPlayer.CallMonster(cardID, callType, fromCardGameState, toCardGameState, flag, sacrificeInfo);
+            opponentPlayer.CallMonsterByProtocol(cardID, callType, fromCardGameState, toCardGameState, flag, sacrificeInfo);
         }
 
         /// <summary>

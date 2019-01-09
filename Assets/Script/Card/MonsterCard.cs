@@ -1,4 +1,5 @@
 using Assets.Script.Config;
+using Assets.Script.Duel.Rule;
 using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
@@ -117,6 +118,26 @@ namespace Assets.Script.Card
         public int GetCanBeSacrificedNumber()
         {
             return canBeSacrificedNumber;
+        }
+
+        /// <summary>
+        /// 召唤需要的祭品数量
+        /// </summary>
+        /// <returns></returns>
+        public int NeedSacrificeMonsterNumer()
+        {
+            if(GetLevel()>DuelRule.callMonsterWithoutSacrificeMaxLevel)
+            {
+                if(GetLevel() > DuelRule.callMonsterWithOneSacrificeMaxLevel)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            return 0;
         }
 
         public int GetLevel()

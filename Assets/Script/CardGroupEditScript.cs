@@ -77,7 +77,7 @@ public class CardGroupEditScript : MonoBehaviour
     void ResetMainCardGroup()
     {
         GameManager.CleanPanelContent(mainPanelTransform);
-        int maxCountOneRow = 20;//一排最大数量
+        int maxCountOneRow = 15;//一排最大数量
         float panelWidth = ((RectTransform)mainPanelTransform).rect.width / (maxCountOneRow + 1);
         float panelHeight = ((RectTransform)mainPanelTransform).rect.height / 4;
 

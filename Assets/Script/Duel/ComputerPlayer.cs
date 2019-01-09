@@ -1,4 +1,5 @@
 using Assets.Script.Card;
+using Assets.Script.Duel.Rule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,25 +34,84 @@ namespace Assets.Script.Duel
 
         }
 
+        public override void BeAttackedMonsterNotify(int attackCardId, int beAttackedCardId)
+        {
+            base.BeAttackedMonsterNotify(attackCardId, beAttackedCardId);
+        }
+
         /// <summary>
         /// 电脑思考行动，暂时制作简单处理。
         /// </summary>
         public override void ThinkAction()
         {
-            //先召唤怪兽
-            if(CanCallMonster())
+            //在主要流程中
+            if (duelScene.currentDuelProcess == DuelProcess.Main)
             {
-                foreach (var item in handCards)
+                //先召唤怪兽
+                if (CanCallMonster())
                 {
-                    DuelCardScript duelCardScript = item.cardObject.GetComponent<DuelCardScript>();
-                    if (duelCardScript.CanCall())
+                    foreach (var item in handCards)
                     {
-                        CallMonster((MonsterCard)item);
-                        return;
+                        DuelCardScript duelCardScript = item.cardObject.GetComponent<DuelCardScript>();
+                        if (duelCardScript.CanCall())
+                        {
+                            MonsterCard monsterCard = (MonsterCard)item;
+                            //有问题
+                            int sacrificeMonsterNumer = monsterCard.NeedSacrificeMonsterNumer();
+                            if(sacrificeMonsterNumer>0)
+                            {
+                                string sacrificeInfo = "";
+                                int index = 0;
+                                for (int i = 0; i < DuelRule.monsterAreaNumber; i++)
+                                {
+                                    if (monsterCardArea[i] != null)
+                                    {
+                                        sacrificeInfo += monsterCardArea[i].GetID()+":";
+                                        sacrificeMonsterNumer--;
+                                        index = i;
+                                        if (sacrificeMonsterNumer<=0)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(sacrificeInfo.EndsWith(":"))
+                                {
+                                    sacrificeInfo = sacrificeInfo.Substring(0, sacrificeInfo.Length - 1);
+                                }
+                                CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontATK, index,sacrificeInfo);
+                            }
+                            else
+                            {
+                                for (int i = 0; i < DuelRule.monsterAreaNumber; i++)
+                                {
+                                    if (monsterCardArea[i] == null)
+                                    {
+                                        CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontATK, i);
+                                        return;
+                                    }
+                                }
+                            }
+                            return;
+                        }
                     }
                 }
+                if (CanBattle())
+                {
+                    duelScene.EnterDuelProcess(DuelProcess.Battle);
+                    return;
+                }
             }
-            EndTurn();
+            else if(duelScene.currentDuelProcess == DuelProcess.Battle)
+            {
+
+            }
+            if(duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Battle ||
+                duelScene.currentDuelProcess == DuelProcess.Second)
+            {
+                EndTurn();
+            }
         }
     }
 }

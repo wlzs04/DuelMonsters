@@ -87,13 +87,13 @@ namespace Assets.Script.Card
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if(ownerPlayer.IsMyTurn())
+            if(ownerPlayer.CanCallMonster())
             {
                 if(CanCall())
                 {
                     ownerPlayer.CallMonster((MonsterCard)card);
                 }
-                else if(ownerPlayer.IsMyPlayer()&& !isPrepareATK && duelScene.currentDuelProcess == DuelProcess.Battle && CanATK())
+                else if(ownerPlayer.IsMyPlayer()&& !isPrepareATK && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
                 {
                     Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
                     if (opponentPlayer.CanBeDirectAttacked()&&
@@ -146,12 +146,12 @@ namespace Assets.Script.Card
             gameObject.transform.localScale = Vector3.one;
         }
 
-        public void SetATKNumber()
+        public void SetAttackNumber()
         {
             atkNumber = DuelRule.monsterATKNumberEveryTurn;
         }
 
-        public int GetATKNumber()
+        public int GetAttackNumber()
         {
             return atkNumber;
         }
@@ -167,9 +167,13 @@ namespace Assets.Script.Card
             ClearPrepareATKState();
         }
 
-        public bool CanATK()
+        /// <summary>
+        /// 判断当前卡牌是否可以攻击
+        /// </summary>
+        /// <returns></returns>
+        public bool CanAttack()
         {
-            return atkNumber > 0;
+            return card.GetCardType() == CardType.Monster && atkNumber > 0;
         }
 
         public void SetCanShowInfo(bool canShowInfo)
@@ -193,18 +197,25 @@ namespace Assets.Script.Card
         public bool CanCall()
         {
             if(card.GetCardGameState() == CardGameState.Hand && 
-                ownerPlayer.CanCallMonster() && 
                 card.GetCardType() == CardType.Monster && 
                 ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
                 if (monsterCard.GetLevel()<= DuelRule.callMonsterWithoutSacrificeMaxLevel)
                 {
-                    return true;
+                    bool monsterAreaFull = true;
+                    foreach (var item in ownerPlayer.monsterCardArea)
+                    {
+                        if (item == null)
+                        {
+                            monsterAreaFull = false;
+                        }
+                    }
+                    return !monsterAreaFull;
                 }
                 else
                 {
-                    if(ownerPlayer.GetCanBeSacrificeMonsterNumber()>0)
+                    if(ownerPlayer.GetCanBeSacrificeMonsterNumber()> monsterCard.NeedSacrificeMonsterNumer())
                     {
                         return true;
                     }

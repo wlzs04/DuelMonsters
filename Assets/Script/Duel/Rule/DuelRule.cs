@@ -21,6 +21,7 @@ namespace Assets.Script.Duel.Rule
         public static readonly int drawCardNumberOnFirstDraw = 5;
         public static readonly int drawCardNumberEveryTurn = 1;
         public static readonly int callMonsterWithoutSacrificeMaxLevel = 4;
+        public static readonly int callMonsterWithOneSacrificeMaxLevel = 6;
 
         public static readonly int monsterAreaNumber = 5;
         public static readonly int monsterATKNumberEveryTurn = 1;
@@ -29,6 +30,5 @@ namespace Assets.Script.Duel.Rule
         public static readonly int lostLife = 0;
 
 
-        public static readonly int callMonsterWithoutOneSacrificeMaxLevel = 6;
     }
 }
