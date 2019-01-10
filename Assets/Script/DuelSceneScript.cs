@@ -1,4 +1,5 @@
 using Assets.Script.Card;
+using Assets.Script.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,34 +8,91 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Script
-{
+{ 
     class DuelSceneScript : MonoBehaviour
     {
         public GameObject monsterCardPre = null;
         public GameObject magicTrapCardPre = null;
 
         public Transform infoContentTransform = null;
+
+        GameObject durlProcessPanel = null;
         Image cardImage;
 
         void Start()
         {
             GameManager.GetSingleInstance().GetDuelScene().Init();
             cardImage= GameObject.Find("cardImage").GetComponent<Image>();
+            durlProcessPanel= GameObject.Find("DuelProcessPanel");
+
+            DuelProcessConfig duelProcessConfig = ConfigManager.GetConfigByName("DuelProcess") as DuelProcessConfig;
+
+            for (int i = 1; i < durlProcessPanel.transform.childCount; i++)
+            {
+                durlProcessPanel.transform.GetChild(i).GetComponent<Text>().text = duelProcessConfig.GetRecordById(i).value;
+            }
+
+            durlProcessPanel.SetActive(false);
         }
 
         public void EnterBattleProcessEvent()
         {
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.Battle();
+            durlProcessPanel.SetActive(false);
+        }
+
+        public void EnterSecondProcessEvent()
+        {
+            GameManager.GetSingleInstance().GetDuelScene().myPlayer.Second();
+            durlProcessPanel.SetActive(false);
         }
 
         public void EndProcessEvent()
         {
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.EndTurn();
+            durlProcessPanel.SetActive(false);
         }
 
         public void SurrenderEvent()
         {
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.Surrender();
+        }
+
+        public void SetDuelProcessPanel(bool show)
+        {
+            durlProcessPanel.SetActive(show);
+            if(show)
+            {
+                ResetDuelProcessPanelInfo();
+            }
+        }
+
+        /// <summary>
+        /// 重新设置决斗流程面板信息面板
+        /// </summary>
+        public void ResetDuelProcessPanelInfo()
+        {
+            Color color = GameManager.GetSingleInstance().GetDuelScene().myPlayer.IsMyTurn() ? Color.green : Color.red;
+            
+            for (int i = 1; i < durlProcessPanel.transform.childCount; i++)
+            {
+                if((int)GameManager.GetSingleInstance().GetDuelScene().currentDuelProcess>i)
+                {
+                    if(durlProcessPanel.transform.GetChild(i).GetComponent<Button>()!=null)
+                    {
+                        durlProcessPanel.transform.GetChild(i).GetComponent<Button>().interactable = false;
+                    }
+                    durlProcessPanel.transform.GetChild(i).GetComponent<Text>().color = Color.gray;
+                }
+                else
+                {
+                    if (durlProcessPanel.transform.GetChild(i).GetComponent<Button>() != null)
+                    {
+                        durlProcessPanel.transform.GetChild(i).GetComponent<Button>().interactable = true;
+                    }
+                    durlProcessPanel.transform.GetChild(i).GetComponent<Text>().color = color;
+                }
+            }
         }
 
         /// <summary>

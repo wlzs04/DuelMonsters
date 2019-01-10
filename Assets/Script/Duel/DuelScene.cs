@@ -37,6 +37,8 @@ namespace Assets.Script.Duel
         public int currentTurnNumber = 1;//当前回合数
         public DuelProcess currentDuelProcess = DuelProcess.Unknown;//当前流程
 
+        bool inSpecialState = false;//在特殊状态，例如进入流程选择界面
+
         public Image duelBackImage = null;
         public AttackAnimationScript attackAnimationScript = null;
         public Image environmentImage = null;
@@ -104,9 +106,21 @@ namespace Assets.Script.Duel
             GameManager.ShowMessage(value);
         }
 
+        /// <summary>
+        /// 右键点击
+        /// </summary>
         public void MouseRightButtonDown()
         {
-
+            if(!inSpecialState)
+            {
+                duelSceneScript.SetDuelProcessPanel(true);
+                inSpecialState = true;
+            }
+            else
+            {
+                duelSceneScript.SetDuelProcessPanel(false);
+                inSpecialState = false;
+            }
         }
 
         /// <summary>
@@ -252,8 +266,16 @@ namespace Assets.Script.Duel
         public void ILost()
         {
             ShowMessage("我输了!");
-            Thread.Sleep(2000);
-            GameManager.GetSingleInstance().EnterMainScene();
+            
+            TimerFunction timerFunction = new TimerFunction();
+
+            timerFunction.SetFunction(2, () =>
+            {
+                Thread.Sleep(2000);
+                GameManager.GetSingleInstance().EnterMainScene();
+            });
+
+            GameManager.AddTimerFunction(timerFunction);
         }
 
         /// <summary>
@@ -380,15 +402,7 @@ namespace Assets.Script.Duel
             }
             myPlayer.ShuffleCardGroup();
         }
-
-        /// <summary>
-        /// 洗牌
-        /// </summary>
-        //void ShuffleCardGroup()
-        //{
-            
-        //}
-
+        
         /// <summary>
         /// 开始决斗
         /// </summary>

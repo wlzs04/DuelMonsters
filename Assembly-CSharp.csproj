@@ -74,6 +74,7 @@
     <Compile Include="Assets\Script\CardScript.cs" />
     <Compile Include="Assets\Script\Config\CardTypeConfig.cs" />
     <Compile Include="Assets\Script\Config\ConfigBase.cs" />
+    <Compile Include="Assets\Script\Config\DuelProcessConfig.cs" />
     <Compile Include="Assets\Script\Config\MagicTypeConfig.cs" />
     <Compile Include="Assets\Script\Config\MonsterTypeConfig.cs" />
     <Compile Include="Assets\Script\Config\PropertyTypeConfig.cs" />
@@ -129,6 +130,7 @@
     <None Include="Assets\Artres\CardData\14558127\script.txt" />
     <None Include="Assets\Artres\CardData\09852718\script.txt" />
     <None Include="Assets\Artres\CardData\87769556\script.txt" />
+    <None Include="Assets\Artres\Config\DuelProcess.xml" />
     <None Include="Assets\Artres\UserDate.xml" />
     <None Include="Assets\Artres\Config\StringRes.xml" />
     <None Include="Assets\Artres\CardData\20155904\script.txt" />

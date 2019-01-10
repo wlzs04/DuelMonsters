@@ -5,15 +5,18 @@ using System.Text;
 
 namespace Assets.Script.Duel.Rule
 {
+    /// <summary>
+    /// 回合中的流程阶段
+    /// </summary>
     enum DuelProcess
     {
-        Unknown,
-        Draw,
-        Prepare,
-        Main,
-        Battle,
-        Second,
-        End
+        Unknown,//未知
+        Draw,//抽卡
+        Prepare,//准备
+        Main,//主要
+        Battle,//战斗
+        Second,//第二主要
+        End//结束
     }
 
     class DuelRule

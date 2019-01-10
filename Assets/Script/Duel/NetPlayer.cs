@@ -57,6 +57,18 @@ namespace Assets.Script.Duel
             ClientManager.GetSingleInstance().SendProtocol(cCallMonster);
         }
 
+        public override void CallMonsterWithSacrificeNotify(int id, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeInfo)
+        {
+            CCallMonsterBySacrifice cCallMonsterBySacrifice = new CCallMonsterBySacrifice();
+            cCallMonsterBySacrifice.AddContent("cardID", id);
+            cCallMonsterBySacrifice.AddContent("callType", callType);
+            cCallMonsterBySacrifice.AddContent("fromCardGameState", fromCardGameState);
+            cCallMonsterBySacrifice.AddContent("toCardGameState", toCardGameState);
+            cCallMonsterBySacrifice.AddContent("flag", flag);
+            cCallMonsterBySacrifice.AddContent("sacrificeInfo", sacrificeInfo);
+            ClientManager.GetSingleInstance().SendProtocol(cCallMonsterBySacrifice);
+        }
+
         public override void EndTurnNotify()
         {
             CEndTurn cEndTurn = new CEndTurn();
@@ -69,6 +81,13 @@ namespace Assets.Script.Duel
             cAttackMonster.AddContent("cardID", attackCardId);
             cAttackMonster.AddContent("anotherCardID", beAttackedCardId);
             ClientManager.GetSingleInstance().SendProtocol(cAttackMonster);
+        }
+
+        public override void BeDirectAttackedNotify(int attackCardId)
+        {
+            CAttackDirect cAttackDirect = new CAttackDirect();
+            cAttackDirect.AddContent("cardID", attackCardId);
+            ClientManager.GetSingleInstance().SendProtocol(cAttackDirect);
         }
     }
 }

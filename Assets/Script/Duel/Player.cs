@@ -155,7 +155,7 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool CanBattle()
         {
-            if(duelScene.currentDuelProcess!=DuelProcess.Main)
+            if(duelScene.currentDuelProcess!=DuelProcess.Battle)
             {
                 return false;
             }
@@ -266,7 +266,7 @@ namespace Assets.Script.Duel
         /// </summary>
         public void Surrender()
         {
-            
+            duelScene.ILost();
         }
 
         /// <summary>
@@ -291,9 +291,10 @@ namespace Assets.Script.Duel
             handCards.Add(card);
             card.SetCardGameState(CardGameState.Hand);
             
+            card.cardObject.gameObject.GetComponent<DuelCardScript>().ShowFront();
+
             if (this==duelScene.myPlayer)
             {
-                card.cardObject.gameObject.GetComponent<DuelCardScript>().ShowFront();
                 card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
             }
 
@@ -325,9 +326,17 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 受到怪兽攻击通知
+        /// 怪兽受到怪兽攻击通知
         /// </summary>
         public virtual void BeAttackedMonsterNotify(int attackCardId,int beAttackedCardId)
+        {
+
+        }
+
+        /// <summary>
+        /// 受到怪兽直接攻击通知
+        /// </summary>
+        public virtual void BeDirectAttackedNotify(int attackCardId)
         {
 
         }
@@ -345,13 +354,12 @@ namespace Assets.Script.Duel
         /// </summary>
         public void StartTurn()
         {
+            playGameState = PlayGameState.Normal;
             duelScene.EnterNextDuelProcess();
             normalCallNumber = DuelRule.drawCardNumberEveryTurn;
             Draw();
             duelScene.EnterNextDuelProcess();
             duelScene.EnterNextDuelProcess();
-            playGameState = PlayGameState.Normal;
-            ThinkAction();
         }
 
         /// <summary>
@@ -376,18 +384,31 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 战斗
+        /// 进入第二主要流程
         /// </summary>
-        public void Battle()
+        public void Second()
         {
-            if (duelScene.GetCurrentTurnNumber()==1&&duelScene.startPlayer==this)
-            {
-                duelScene.ShowMessage("第一回合先攻者不能攻击！");
-                return;
-            }
             if (!IsMyTurn())
             {
                 duelScene.ShowMessage("不是你的回合！");
+                return;
+            }
+            duelScene.EnterDuelProcess(DuelProcess.Second);
+        }
+
+        /// <summary>
+        /// 进入战斗
+        /// </summary>
+        public void Battle()
+        {
+            if (!IsMyTurn())
+            {
+                duelScene.ShowMessage("不是你的回合！");
+                return;
+            }
+            if (duelScene.GetCurrentTurnNumber()==1&&duelScene.startPlayer==this)
+            {
+                duelScene.ShowMessage("第一回合先攻者不能攻击！");
                 return;
             }
             if(duelScene.currentDuelProcess != DuelProcess.Main)
@@ -447,6 +468,7 @@ namespace Assets.Script.Duel
                         normalCallNumber--;
 
                         CallMonsterNotify(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontATK, index);
+                        playGameState = PlayGameState.Normal;
                     }
                     else//使用祭品召唤
                     {
@@ -466,6 +488,11 @@ namespace Assets.Script.Duel
         }
 
         public virtual void CallMonsterNotify(int id,CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState,int flag)
+        {
+
+        }
+
+        public virtual void CallMonsterWithSacrificeNotify(int id, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeInfo)
         {
 
         }
@@ -500,23 +527,20 @@ namespace Assets.Script.Duel
 
                 playGameState = PlayGameState.Normal;
 
-                CCallMonsterBySacrifice cCallMonsterBySacrifice = new CCallMonsterBySacrifice();
-                cCallMonsterBySacrifice.AddContent("cardID", monsterCard.GetID());
-                cCallMonsterBySacrifice.AddContent("callType", CallType.Normal);
-                cCallMonsterBySacrifice.AddContent("fromCardGameState", CardGameState.Hand);
-                cCallMonsterBySacrifice.AddContent("toCardGameState", CardGameState.FrontATK);
-                cCallMonsterBySacrifice.AddContent("flag", index);
-
                 StringBuilder sacrificeInfo = new StringBuilder();
-
-                foreach (var item in sacrificeCards)
+                for (int i = 0; i < sacrificeCards.Count; i++)
                 {
-                    sacrificeInfo.Append(item.GetID());
+                    if(i== sacrificeCards.Count-1)
+                    {
+                        sacrificeInfo.Append(sacrificeCards[i].GetID());
+                    }
+                    else
+                    {
+                        sacrificeInfo.Append(sacrificeCards[i].GetID() + ":");
+                    }
                 }
-
-                cCallMonsterBySacrifice.AddContent("sacrificeInfo", sacrificeInfo.ToString());
-                ClientManager.GetSingleInstance().SendProtocol(cCallMonsterBySacrifice);
-
+                opponentPlayer.CallMonsterWithSacrificeNotify(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontATK, index, sacrificeInfo.ToString());
+                
                 sacrificeCards.Clear();
             }
         }
@@ -597,6 +621,8 @@ namespace Assets.Script.Duel
             monsterCard.cardObject.GetComponent<Image>().sprite = monsterCard.GetImage();
             handCards.Remove(monsterCard);
             normalCallNumber--;
+
+            ThinkAction();
         }
 
         /// <summary>

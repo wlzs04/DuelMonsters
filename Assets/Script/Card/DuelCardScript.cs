@@ -93,21 +93,35 @@ namespace Assets.Script.Card
                 {
                     ownerPlayer.CallMonster((MonsterCard)card);
                 }
-                else if(ownerPlayer.IsMyPlayer()&& !isPrepareATK && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
+            }
+            else if(ownerPlayer.GetPlayGameState() == PlayGameState.ChooseSacrifice && !haveBeChosen && card.GetCardType() == CardType.Monster)
+            {
+                int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
+                if (tempInt > 0)
+                {
+                    if (ownerPlayer.ChooseMonsterAsSacrifice((MonsterCard)card))
+                    {
+                        haveBeChosen = true;
+                    }
+                }
+            }
+            if(ownerPlayer.CanBattle())
+            {
+                if (ownerPlayer.IsMyPlayer() && !isPrepareATK && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
                 {
                     Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
-                    if (opponentPlayer.CanBeDirectAttacked()&&
-                        !opponentPlayer.HaveBeAttackedMonster()&&
-                        ownerPlayer.CanDirectAttack&& ((MonsterCard)card).CanDirectAttack)
+                    if (opponentPlayer.CanBeDirectAttacked() &&
+                        !opponentPlayer.HaveBeAttackedMonster() &&
+                        ownerPlayer.CanDirectAttack && ((MonsterCard)card).CanDirectAttack)
                     {
-                        duelScene.SetAttackAnimationFinishEvent(() => {
-                            CAttackDirect cAttackDirect = new CAttackDirect();
-                            cAttackDirect.AddContent("cardID", card.GetID());
+                        duelScene.SetAttackAnimationFinishEvent(() =>
+                        {
+                            //有问题
+                            ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(card.GetID());
 
-                            ClientManager.GetSingleInstance().SendProtocol(cAttackDirect);
-
-                            duelScene.AttackDirect((MonsterCard)card); });
-                        duelScene.StartPlayAttackAnimation(GetPosition(),ownerPlayer.GetOpponentPlayer().GetHeartPosition());
+                            duelScene.AttackDirect((MonsterCard)card);
+                        });
+                        duelScene.StartPlayAttackAnimation(GetPosition(), ownerPlayer.GetOpponentPlayer().GetHeartPosition());
                     }
                     else
                     {
@@ -115,17 +129,6 @@ namespace Assets.Script.Card
                         isPrepareATK = true;
                         duelScene.SetCanChoose(true);
                         duelScene.ChooseCard(card);
-                    }
-                }
-                else if(ownerPlayer.GetPlayGameState()==PlayGameState.ChooseSacrifice&&haveBeChosen==false&&card.GetCardType() == CardType.Monster)
-                {
-                    int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
-                    if (tempInt > 0)
-                    {
-                        if(ownerPlayer.ChooseMonsterAsSacrifice((MonsterCard)card))
-                        {
-                            haveBeChosen = true;
-                        }
                     }
                 }
             }
@@ -209,13 +212,14 @@ namespace Assets.Script.Card
                         if (item == null)
                         {
                             monsterAreaFull = false;
+                            break;
                         }
                     }
                     return !monsterAreaFull;
                 }
                 else
                 {
-                    if(ownerPlayer.GetCanBeSacrificeMonsterNumber()> monsterCard.NeedSacrificeMonsterNumer())
+                    if(ownerPlayer.GetCanBeSacrificeMonsterNumber()>= monsterCard.NeedSacrificeMonsterNumer())
                     {
                         return true;
                     }
