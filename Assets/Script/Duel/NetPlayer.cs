@@ -89,5 +89,17 @@ namespace Assets.Script.Duel
             cAttackDirect.AddContent("cardID", attackCardId);
             ClientManager.GetSingleInstance().SendProtocol(cAttackDirect);
         }
+
+        public override void StopDuelNotify()
+        {
+            CStopDuel cStopDuel = new CStopDuel();
+            ClientManager.GetSingleInstance().SendProtocol(cStopDuel);
+        }
+
+        public override void SurrenderNotify()
+        {
+            CSurrender cSurrender = new CSurrender();
+            ClientManager.GetSingleInstance().SendProtocol(cSurrender);
+        }
     }
 }

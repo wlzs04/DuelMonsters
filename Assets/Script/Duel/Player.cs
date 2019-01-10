@@ -46,7 +46,7 @@ namespace Assets.Script.Duel
 
         PlayGameState playGameState;
 
-        MonsterCard needSacrificeMonster = null;
+        MonsterCard needSacrificeCallMonster = null;
 
         GuessEnum guessEnum = GuessEnum.Unknown;
 
@@ -266,7 +266,8 @@ namespace Assets.Script.Duel
         /// </summary>
         public void Surrender()
         {
-            duelScene.ILost();
+            opponentPlayer.SurrenderNotify();
+            duelScene.SetWinner(opponentPlayer);
         }
 
         /// <summary>
@@ -473,14 +474,10 @@ namespace Assets.Script.Duel
                     else//使用祭品召唤
                     {
                         int monsterLevel = monsterCard.GetLevel();
-                        if(monsterLevel<=DuelRule.callMonsterWithOneSacrificeMaxLevel&&GetCanBeSacrificeMonsterNumber()>=1)
+                        if(GetCanBeSacrificeMonsterNumber()>=1)
                         {
                             playGameState = PlayGameState.ChooseSacrifice;
-                            needSacrificeMonster = monsterCard;
-                        }
-                        else if(GetCanBeSacrificeMonsterNumber() >= 2)
-                        {
-                            Debug.LogError("暂时不允许召唤需要使用超过两只祭品的怪兽！");
+                            needSacrificeCallMonster = monsterCard;
                         }
                     }
                 }
@@ -741,11 +738,37 @@ namespace Assets.Script.Duel
             {
                 Debug.LogError("ChooseMonsterAsSacrifice 已经选中了此怪兽:"+card.GetName());
             }
-            if(sacrificeCards.Count>=needSacrificeMonster.GetCanBeSacrificedNumber())
+
+            if (sacrificeCards.Count>= needSacrificeCallMonster.NeedSacrificeMonsterNumer())
             {
-                CallMonsterWithSacrifice(needSacrificeMonster);
+                CallMonsterWithSacrifice(needSacrificeCallMonster);
             }
             return true;
+        }
+
+        /// <summary>
+        /// 玩家主动停止决斗
+        /// </summary>
+        public void StopDuel()
+        {
+            opponentPlayer.StopDuelNotify();
+            GameManager.GetSingleInstance().StopDuel();
+        }
+
+        /// <summary>
+        /// 停止决斗通知
+        /// </summary>
+        public virtual void StopDuelNotify()
+        {
+
+        }
+
+        /// <summary>
+        /// 玩家投降通知
+        /// </summary>
+        public virtual void SurrenderNotify()
+        {
+
         }
     }
 }

@@ -116,7 +116,6 @@ namespace Assets.Script.Card
                     {
                         duelScene.SetAttackAnimationFinishEvent(() =>
                         {
-                            //有问题
                             ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(card.GetID());
 
                             duelScene.AttackDirect((MonsterCard)card);

@@ -14,6 +14,11 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     
     GameObject dragObject = null;
 
+    /// <summary>
+    /// 是否已拥有此卡片
+    /// </summary>
+    bool ownedCard = true;
+
     void Start ()
     {
 		
@@ -32,10 +37,20 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
         }
     }
 
-    public void SetCard(CardBase card)
+    public void SetCard(CardBase card,bool ownedCard = true)
     {
         this.card = card;
+        this.ownedCard = ownedCard;
         GetComponent<Image>().sprite = card.GetImage();
+        if (!ownedCard)
+        {
+            GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
+        }
+    }
+
+    public bool IsOwnedCard()
+    {
+        return ownedCard;
     }
 
     public CardBase GetCard()
@@ -51,6 +66,7 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     public void OnPointerEnter(PointerEventData eventData)
     {
         gameObject.transform.localScale = new Vector3(selectScale, selectScale, 1);
+        cardGroupEditScript.ShowCardDetailInfo(card);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -60,11 +76,7 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            cardGroupEditScript.ShowCardDetailInfo(card);
-        }
-        else
+        if (eventData.button == PointerEventData.InputButton.Right)
         {
             cardGroupEditScript.RemoveCardFromCardGroup(this);
         }
@@ -72,22 +84,31 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        dragObject = Instantiate(cardGroupEditScript.cardPre, GameObject.Find("Canvas").transform);
-        dragObject.GetComponent<CardScript>().SetCard(card);
-        dragObject.GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
-        CanvasGroup canvasGroup = dragObject.AddComponent<CanvasGroup>();
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
-        dragObject.transform.position = new Vector3(eventData.position.x, eventData.position.y, 0);
+        if(ownedCard)
+        {
+            dragObject = Instantiate(cardGroupEditScript.cardPre, GameObject.Find("Canvas").transform);
+            dragObject.GetComponent<CardScript>().SetCard(card);
+            dragObject.GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
+            CanvasGroup canvasGroup = dragObject.AddComponent<CanvasGroup>();
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            dragObject.transform.position = new Vector3(eventData.position.x, eventData.position.y, 0);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        dragObject.transform.position = new Vector3(eventData.position.x, eventData.position.y, 0);
+        if (ownedCard)
+        {
+            dragObject.transform.position = new Vector3(eventData.position.x, eventData.position.y, 0);
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        DestroyImmediate(dragObject);
+        if (ownedCard)
+        {
+            DestroyImmediate(dragObject);
+        }
     }
 }

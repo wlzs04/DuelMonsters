@@ -69,6 +69,9 @@ namespace Assets.Script.Duel
                 default:
                     break;
             }
+
+            myPlayer.SetOpponentPlayer(opponentPlayer);
+            opponentPlayer.SetOpponentPlayer(myPlayer);
         }
 
         void AddControlFromScene()
@@ -238,35 +241,37 @@ namespace Assets.Script.Duel
 
             if (iWin && ilost)
             {
-                WinAndLost();
+                SetWinner(null);
             }
             else if(iWin)
             {
-                IWin();
+                SetWinner(myPlayer);
             }
             else if (ilost)
             {
-                ILost();
+                SetWinner(opponentPlayer);
             }
         }
 
         /// <summary>
-        /// 我赢了
+        /// 设置胜者
         /// </summary>
-        public void IWin()
+        /// <param name="player"></param>
+        public void SetWinner(Player player)
         {
-            ShowMessage("我赢了!");
-            Thread.Sleep(2000);
-            GameManager.GetSingleInstance().EnterMainScene();
-        }
+            if(player==null)
+            {
+                ShowMessage("平局！");
+            }
+            else if(player==myPlayer)
+            {
+                ShowMessage("我赢了!");
+            }
+            else
+            {
+                ShowMessage("我输了!");
+            }
 
-        /// <summary>
-        /// 我输了
-        /// </summary>
-        public void ILost()
-        {
-            ShowMessage("我输了!");
-            
             TimerFunction timerFunction = new TimerFunction();
 
             timerFunction.SetFunction(2, () =>
@@ -276,16 +281,6 @@ namespace Assets.Script.Duel
             });
 
             GameManager.AddTimerFunction(timerFunction);
-        }
-
-        /// <summary>
-        /// 平局
-        /// </summary>
-        public void WinAndLost()
-        {
-            ShowMessage("平局！");
-            Thread.Sleep(2000);
-            GameManager.GetSingleInstance().EnterMainScene();
         }
 
         /// <summary>
@@ -410,9 +405,6 @@ namespace Assets.Script.Duel
         {
             myPlayer.SetLife(GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>());
             opponentPlayer.SetLife(GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>());
-
-            myPlayer.SetOpponentPlayer(opponentPlayer);
-            opponentPlayer.SetOpponentPlayer(myPlayer);
 
             myPlayer.SetHeartPosition(new Vector3(DuelCommonValue.myHeartPositionX, DuelCommonValue.myHeartPositionY));
             opponentPlayer.SetHeartPosition(new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY));

@@ -180,6 +180,11 @@ namespace Assets.Script
                     SceneManager.LoadScene("CardGroupScene", LoadSceneMode.Single);
                     currentGameState = GameState.CardGroupScene;
                     break;
+                case GameState.GuessFirstScene:
+                    duelScene.myPlayer.StopDuel();
+                    SceneManager.LoadScene("SeleteDuelModeScene", LoadSceneMode.Single);
+                    currentGameState = GameState.SeleteDuelModeScene;
+                    break;
                 default:
                     break;
             }
@@ -420,6 +425,15 @@ namespace Assets.Script
                 Debug.LogError("SetMyGuess");
             }
             return false;
+        }
+
+        /// <summary>
+        /// 停止决斗
+        /// </summary>
+        public void StopDuel()
+        {
+            ShowMessage("停止决斗。");
+            duelScene = null;
         }
 
         /// <summary>

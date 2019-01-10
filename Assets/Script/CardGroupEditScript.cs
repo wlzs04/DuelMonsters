@@ -16,6 +16,10 @@ public class CardGroupEditScript : MonoBehaviour
     public Transform deputyPanelTransform;
     public Transform infoContentTransform;
 
+    public GameObject mainTotalNumberText;
+    public GameObject extraTotalNumberText;
+    public GameObject deputyTotalNumberText;
+
     public InputField cardGroupNameInputField;
 
     public GameObject cardPre;
@@ -28,21 +32,15 @@ public class CardGroupEditScript : MonoBehaviour
 
     UserCardGroup cardGroup=null;
 
+    //是否只显示已拥有的卡牌
+    bool onlyShowOwnedCard = false;
+
     void Start ()
     {
         gameManager = GameManager.GetSingleInstance();
-
         UserData userData = gameManager.GetUserData();
 
-        GameManager.CleanPanelContent(allCardScrollViewTransform);
-
-        foreach (var item in userData.userCardList)
-        {
-            CardBase card = gameManager.allCardInfoList[item.cardNo];
-            GameObject go = Instantiate(cardPre, allCardScrollViewTransform);
-            go.GetComponent<CardScript>().SetRootScript(this);
-            go.GetComponent<CardScript>().SetCard(card);
-        }
+        ResetAllCard();
 
         currentCardGroupName = gameManager.GetCardGroupNameForCardGroupEditScene();
         cardGroupNameInputField.text = currentCardGroupName;
@@ -72,6 +70,35 @@ public class CardGroupEditScript : MonoBehaviour
 	}
 
     /// <summary>
+    /// 重新设置所有卡牌
+    /// </summary>
+    void ResetAllCard()
+    {
+        GameManager.CleanPanelContent(allCardScrollViewTransform);
+        UserData userData = gameManager.GetUserData();
+
+        bool ownedCard = false;
+        foreach (var item in gameManager.allCardInfoList)
+        {
+            ownedCard = userData.IsOwnCard(item.Value.GetCardNo());
+            if (!onlyShowOwnedCard && ownedCard)
+            {
+                CardBase card = item.Value;
+                GameObject go = Instantiate(cardPre, allCardScrollViewTransform);
+                go.GetComponent<CardScript>().SetRootScript(this);
+                go.GetComponent<CardScript>().SetCard(card, ownedCard);
+            }
+            else
+            {
+                CardBase card = item.Value;
+                GameObject go = Instantiate(cardPre, allCardScrollViewTransform);
+                go.GetComponent<CardScript>().SetRootScript(this);
+                go.GetComponent<CardScript>().SetCard(card, ownedCard);
+            }
+        }
+    }
+
+    /// <summary>
     /// 重新设置主卡组
     /// </summary>
     void ResetMainCardGroup()
@@ -97,6 +124,7 @@ public class CardGroupEditScript : MonoBehaviour
                 cardIndex++;
             }
         }
+        mainTotalNumberText.GetComponent<Text>().text = "主卡组：" + mainPanelTransform.childCount;
     }
 
     /// <summary>
@@ -125,10 +153,11 @@ public class CardGroupEditScript : MonoBehaviour
                 cardIndex++;
             }
         }
+        extraTotalNumberText.GetComponent<Text>().text = "额外卡组：" + extraPanelTransform.childCount;
     }
     
     /// <summary>
-    /// 重新设置额外卡组
+    /// 重新设置副卡组
     /// </summary>
     void ResetDeputyCardGroup()
     {
@@ -153,6 +182,7 @@ public class CardGroupEditScript : MonoBehaviour
                 cardIndex++;
             }
         }
+        deputyTotalNumberText.GetComponent<Text>().text = "副卡组：" + deputyPanelTransform.childCount;
     }
 
     /// <summary>
@@ -400,7 +430,7 @@ public class CardGroupEditScript : MonoBehaviour
     {
         CardScript cardScript = eventData.pointerDrag.GetComponent<CardScript>();
         
-        if (cardScript != null && cardScript.transform.parent != mainPanelTransform)
+        if (cardScript != null && cardScript.IsOwnedCard() && cardScript.transform.parent != mainPanelTransform)
         {
             bool addSucccess = AddCardToCardGroup(CardGroupType.Main,cardScript.GetCard());
             if(addSucccess)
@@ -424,7 +454,7 @@ public class CardGroupEditScript : MonoBehaviour
     void OnDropToExtraPanel(PointerEventData eventData)
     {
         CardScript cardScript = eventData.pointerDrag.GetComponent<CardScript>();
-        if (cardScript != null && cardScript.transform.parent != extraPanelTransform)
+        if (cardScript != null && cardScript.IsOwnedCard() && cardScript.transform.parent != extraPanelTransform)
         {
             bool addSucccess = AddCardToCardGroup(CardGroupType.Extra, cardScript.GetCard());
             if (addSucccess)
@@ -448,7 +478,7 @@ public class CardGroupEditScript : MonoBehaviour
     void OnDropToDeputyPanel(PointerEventData eventData)
     {
         CardScript cardScript = eventData.pointerDrag.GetComponent<CardScript>();
-        if (cardScript != null && cardScript.transform.parent != deputyPanelTransform)
+        if (cardScript != null && cardScript.IsOwnedCard() && cardScript.transform.parent != deputyPanelTransform)
         {
             bool addSucccess = AddCardToCardGroup(CardGroupType.Deputy, cardScript.GetCard());
             if (addSucccess)
@@ -463,5 +493,14 @@ public class CardGroupEditScript : MonoBehaviour
                 }
             }
         }
+    }
+    
+    /// <summary>
+    /// 只显示已拥有的卡牌
+    /// </summary>
+    public void OnlyShowOwnedCardChangeEvent(bool value)
+    {
+        onlyShowOwnedCard = value;
+        ResetAllCard();
     }
 }

@@ -116,5 +116,16 @@ namespace Assets.Script
 
             return userCardGroup;
         }
+
+        /// <summary>
+        /// 判断是否拥有此卡
+        /// </summary>
+        /// <returns></returns>
+        public bool IsOwnCard(int cardNo)
+        {
+            UserCardData userCardData = userCardList.Find(card => card.cardNo== cardNo);
+            
+            return userCardData!=null;
+        }
     }
 }

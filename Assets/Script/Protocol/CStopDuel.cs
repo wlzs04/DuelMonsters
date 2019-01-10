@@ -11,19 +11,18 @@ namespace Assets.Script.Protocol
     /// key：cardID
     /// value：int
     /// </summary>
-    class CAttackDirect : ClientProtocol
+    class CStopDuel : ClientProtocol
     {
-        public CAttackDirect() : base("CAttackDirect") { }
+        public CStopDuel() : base("CStopDuel") { }
 
         public override ClientProtocol GetInstance()
         {
-            return new CAttackDirect();
+            return new CStopDuel();
         }
 
         public override void Process()
         {
-            int cardID = int.Parse(GetContent("cardID"));
-            GameManager.GetSingleInstance().GetDuelScene().OpponentAttack(cardID);
+            GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.StopDuel();
         }
     }
 }
