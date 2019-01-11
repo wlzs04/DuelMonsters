@@ -101,5 +101,26 @@ namespace Assets.Script.Duel
             CSurrender cSurrender = new CSurrender();
             ClientManager.GetSingleInstance().SendProtocol(cSurrender);
         }
+
+        public override void SetCardGroup()
+        {
+            
+        }
+
+        public override void SetCardGroupNotify(DuelCardGroup duelCardGroup)
+        {
+            CCardGroup cCardGroup = new CCardGroup();
+            StringBuilder stringBuilder = new StringBuilder();
+            List<CardBase> cards = duelCardGroup.GetCards();
+
+            for (int i = 0; i < cards.Count - 1; i++)
+            {
+                stringBuilder.Append(cards[i].GetCardNo() + "-" + cards[i].GetID() + ":");
+            }
+            stringBuilder.Append(cards[cards.Count - 1].GetCardNo() + "-" + cards[cards.Count - 1].GetID());
+
+            cCardGroup.AddContent("cardGroupList", stringBuilder.ToString());
+            ClientManager.GetSingleInstance().SendProtocol(cCardGroup);
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Assets.Script.Duel.Rule
     /// <summary>
     /// 回合中的流程阶段
     /// </summary>
-    enum DuelProcess
+    public enum DuelProcess
     {
         Unknown,//未知
         Draw,//抽卡

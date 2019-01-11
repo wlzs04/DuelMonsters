@@ -15,14 +15,17 @@ namespace Assets.Script.Duel
     /// <summary>
     /// 决斗模式
     /// </summary>
-    enum DuelMode
+    public enum DuelMode
     {
         Unknown,//未知
         Single,//单人
         Net//网络
     }
 
-    class DuelScene
+    /// <summary>
+    /// 决斗场
+    /// </summary>
+    public class DuelScene
     {
         string cardPrefabPath = "Prefab/CardPre";
         public GameObject cardPre = null;
@@ -72,6 +75,8 @@ namespace Assets.Script.Duel
 
             myPlayer.SetOpponentPlayer(opponentPlayer);
             opponentPlayer.SetOpponentPlayer(myPlayer);
+
+            cardPre = Resources.Load<GameObject>(cardPrefabPath);
         }
 
         void AddControlFromScene()
@@ -228,9 +233,9 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 检测胜负
+        /// 通过生命值检测胜负
         /// </summary>
-        public void CheckWin()
+        public void CheckWinByLife()
         {
             bool ilost = myPlayer.GetLife() <= DuelRule.lostLife;
             bool iWin = opponentPlayer.GetLife() <= DuelRule.lostLife;
@@ -298,33 +303,14 @@ namespace Assets.Script.Duel
         public void Init()
         {
             AddControlFromScene();
-            SetMyCardGroup();
-            if(duelMode==DuelMode.Net)
-            {
-                SendCardGroupToOpponent();
-            }
-            else
-            {
-                DuelCardGroup duelCardGroup = new DuelCardGroup();
-                opponentPlayer.SetCardGroup(duelCardGroup);
-                UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
-                Debug.LogWarning("电脑暂时使用第一个卡组。");
-
-                foreach (var item in firstCardGroup.mainCardList)
-                {
-                    for (int i = 0; i < item.number; i++)
-                    {
-                        duelCardGroup.AddCard(item.cardNo);
-                    }
-                }
-                opponentPlayer.ShuffleCardGroup();
-            }
-            CheckPlayInit();
+            myPlayer.SetCardGroup();
+            opponentPlayer.SetCardGroup();
+            //CheckPlayInit();
         }
 
-        void CheckPlayInit()
+        public void CheckPlayInit()
         {
-            if(myPlayer!=null&& opponentPlayer!=null)
+            if(myPlayer.IAmReady()&& opponentPlayer.IAmReady())
             {
                 if (myFirst)
                 {
@@ -342,61 +328,6 @@ namespace Assets.Script.Duel
                 StartDuel();
             }
         }
-
-        /// <summary>
-        /// 发送我方卡组信息到对方
-        /// </summary>
-        void SendCardGroupToOpponent()
-        {
-            CCardGroup cCardGroup = new CCardGroup();
-            StringBuilder stringBuilder = new StringBuilder();
-            List<CardBase> cards = myPlayer.GetDuelCardGroup().GetCards();
-
-            for (int i = 0; i < cards.Count - 1; i++)
-            {
-                stringBuilder.Append(cards[i].GetCardNo() + "-" + cards[i].GetID() + ":");
-            }
-            stringBuilder.Append(cards[cards.Count - 1].GetCardNo() + "-" + cards[cards.Count - 1].GetID());
-
-            cCardGroup.AddContent("cardGroupList", stringBuilder.ToString());
-            ClientManager.GetSingleInstance().SendProtocol(cCardGroup);
-        }
-
-        /// <summary>
-        /// 设置对方卡组信息
-        /// </summary>
-        public void SetCardGroupFromOpponent(string cardGroupInfo)
-        {
-            DuelCardGroup duelCardGroup = new DuelCardGroup();
-            opponentPlayer.SetCardGroup(duelCardGroup);
-            string[] cardNos = cardGroupInfo.Split(':');
-            foreach (var item in cardNos)
-            {
-                duelCardGroup.AddCard(int.Parse(item.Substring(0,item.IndexOf('-'))), int.Parse(item.Substring(item.IndexOf('-')+1)));
-            }
-            CheckPlayInit();
-        }
-
-        /// <summary>
-        /// 一场决斗中只调用一次，用来设置卡组信息。
-        /// </summary>
-        void SetMyCardGroup()
-        {
-            DuelCardGroup duelCardGroup = new DuelCardGroup();
-            myPlayer.SetCardGroup(duelCardGroup);
-
-            UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
-            Debug.LogWarning("我方暂时使用第一个卡组。");
-
-            foreach (var item in firstCardGroup.mainCardList)
-            {
-                for (int i = 0; i < item.number; i++)
-                {
-                    duelCardGroup.AddCard(item.cardNo);
-                }
-            }
-            myPlayer.ShuffleCardGroup();
-        }
         
         /// <summary>
         /// 开始决斗
@@ -409,7 +340,9 @@ namespace Assets.Script.Duel
             myPlayer.SetHeartPosition(new Vector3(DuelCommonValue.myHeartPositionX, DuelCommonValue.myHeartPositionY));
             opponentPlayer.SetHeartPosition(new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY));
 
-            InitCardGroup();
+            myPlayer.InitCardGroup();
+            opponentPlayer.InitCardGroup();
+
             ShowMessage("抽牌！");
 
             myPlayer.DrawAtFirst();
@@ -443,13 +376,6 @@ namespace Assets.Script.Duel
         public void Battle()
         {
             EnterDuelProcess(DuelProcess.Battle);
-        }
-
-        void InitCardGroup()
-        {
-            cardPre = Resources.Load<GameObject>(cardPrefabPath);
-            myPlayer.InitCardGroup();
-            opponentPlayer.InitCardGroup();
         }
 
         /// <summary>

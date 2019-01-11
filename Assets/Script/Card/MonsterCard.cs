@@ -11,7 +11,7 @@ namespace Assets.Script.Card
     /// <summary>
     /// 怪兽卡属性种类
     /// </summary>
-    enum PropertyType
+    public enum PropertyType
     {
         Unknown,
         Light,//光
@@ -26,7 +26,7 @@ namespace Assets.Script.Card
     /// <summary>
     /// 怪兽卡种族
     /// </summary>
-    enum MonsterType
+    public enum MonsterType
     {
         Unknown,
         Dragon,//龙
@@ -59,7 +59,7 @@ namespace Assets.Script.Card
     /// <summary>
     /// 召唤方式
     /// </summary>
-    enum CallType
+    public enum CallType
     {
         Unknown,//未知
         Normal,//通常召唤
@@ -70,7 +70,7 @@ namespace Assets.Script.Card
     /// <summary>
     /// 怪兽卡
     /// </summary>
-    class MonsterCard : CardBase
+    public class MonsterCard : CardBase
     {
         int level = 4;//等级
         PropertyType propertyType = PropertyType.Unknown;//属性

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace Assets.Script.Duel
 {
-    enum PlayGameState
+    public enum PlayGameState
     {
         Unknown,
         Normal,
@@ -19,7 +19,7 @@ namespace Assets.Script.Duel
         ChooseSacrifice,//选择祭品
     }
 
-    class Player
+    public class Player
     {
         string name = "玩家";
         protected DuelCardGroup duelCardGroup;
@@ -49,6 +49,8 @@ namespace Assets.Script.Duel
         MonsterCard needSacrificeCallMonster = null;
 
         GuessEnum guessEnum = GuessEnum.Unknown;
+
+        bool iamReady = false;//判断玩家是否准备完成
 
         public bool CanDirectAttack
         {
@@ -93,6 +95,11 @@ namespace Assets.Script.Duel
             }
         }
 
+        public bool IAmReady()
+        {
+            return iamReady;
+        }
+
         public GuessEnum GetGuessEnum()
         {
             return guessEnum;
@@ -108,9 +115,56 @@ namespace Assets.Script.Duel
             return false;
         }
         
-        public void SetCardGroup(DuelCardGroup duelCardGroup)
+        public virtual void SetCardGroup()
         {
-            this.duelCardGroup = duelCardGroup;
+            if(duelCardGroup!=null)
+            {
+                return;
+            }
+            duelCardGroup = new DuelCardGroup();
+
+            UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
+            Debug.LogWarning("我方暂时使用第一个卡组。");
+
+            foreach (var item in firstCardGroup.mainCardList)
+            {
+                for (int i = 0; i < item.number; i++)
+                {
+                    duelCardGroup.AddCard(item.cardNo);
+                }
+            }
+            ShuffleCardGroup();
+
+            opponentPlayer.SetCardGroupNotify(duelCardGroup);
+            iamReady = true;
+            duelScene.CheckPlayInit();
+        }
+
+        /// <summary>
+        /// 一般由协议调用，为对手设置卡组
+        /// </summary>
+        /// <param name="cardGroupInfo"></param>
+        public void SetCardGroup(string cardGroupInfo)
+        {
+            duelCardGroup = new DuelCardGroup();
+            string[] cardNos = cardGroupInfo.Split(':');
+            foreach (var item in cardNos)
+            {
+                duelCardGroup.AddCard(int.Parse(item.Substring(0, item.IndexOf('-'))), int.Parse(item.Substring(item.IndexOf('-') + 1)));
+            }
+
+            opponentPlayer.SetCardGroupNotify(duelCardGroup);
+            iamReady = true;
+            duelScene.CheckPlayInit();
+        }
+
+        /// <summary>
+        /// 设置卡组时的提醒
+        /// </summary>
+        /// <param name="duelCardGroup"></param>
+        public virtual void SetCardGroupNotify(DuelCardGroup duelCardGroup)
+        {
+            
         }
 
         public void SetHeartPosition(Vector3 heartPosition)
@@ -292,10 +346,10 @@ namespace Assets.Script.Duel
             handCards.Add(card);
             card.SetCardGameState(CardGameState.Hand);
             
-            card.cardObject.gameObject.GetComponent<DuelCardScript>().ShowFront();
 
             if (this==duelScene.myPlayer)
             {
+                card.cardObject.gameObject.GetComponent<DuelCardScript>().ShowFront();
                 card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
             }
 
@@ -435,7 +489,16 @@ namespace Assets.Script.Duel
         {
             this.life -= life;
             lifeScrollBar.size =(float)this.life / DuelRule.startLife;
-            duelScene.CheckWin();
+            duelScene.CheckWinByLife();
+        }
+
+        /// <summary>
+        /// 获得可以进行召唤的次数，一般指通常召唤和祭品召唤
+        /// </summary>
+        /// <returns></returns>
+        public int GetCanCallNumber()
+        {
+            return normalCallNumber;
         }
 
         /// <summary>
@@ -487,6 +550,52 @@ namespace Assets.Script.Duel
         public virtual void CallMonsterNotify(int id,CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState,int flag)
         {
 
+        }
+
+        /// <summary>
+        /// 背面放置到场上
+        /// </summary>
+        public void BackPlaceMonster(MonsterCard monsterCard)
+        {
+            if (IsMyPlayer())
+            {
+                //检测召唤条件是否满足
+                if (normalCallNumber > 0)
+                {
+                    //先判断是否可以直接进行召唤
+                    if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
+                    {
+                        int index = 0;
+                        for (; index < DuelRule.monsterAreaNumber; index++)
+                        {
+                            if (monsterCardArea[index] == null)
+                            {
+                                monsterCardArea[index] = monsterCard;
+                                break;
+                            }
+                        }
+                        monsterCard.AddContent("monsterCardAreaIndex", index);
+                        monsterCard.SetCardGameState(CardGameState.Back);
+                        monsterCard.cardObject.GetComponent<DuelCardScript>().ShowBack();
+                        monsterCard.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
+                        monsterCard.cardObject.transform.localPosition = new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1);
+                        handCards.Remove(monsterCard);
+                        normalCallNumber--;
+
+                        CallMonsterNotify(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.Back, index);
+                        playGameState = PlayGameState.Normal;
+                    }
+                    else//使用祭品召唤
+                    {
+                        int monsterLevel = monsterCard.GetLevel();
+                        if (GetCanBeSacrificeMonsterNumber() >= 1)
+                        {
+                            playGameState = PlayGameState.ChooseSacrifice;
+                            needSacrificeCallMonster = monsterCard;
+                        }
+                    }
+                }
+            }
         }
 
         public virtual void CallMonsterWithSacrificeNotify(int id, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeInfo)

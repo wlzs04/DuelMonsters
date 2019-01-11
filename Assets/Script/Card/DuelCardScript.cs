@@ -12,9 +12,21 @@ using UnityEngine.UI;
 
 namespace Assets.Script.Card
 {
-    class DuelCardScript : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+    /// <summary>
+    /// 对卡片的操作
+    /// </summary>
+    public enum CardOperation
     {
-        float selectScale = 1.2f;//当鼠标移动到卡牌上时卡牌方法的倍数。
+        NormalCall,//通常召唤
+        SacrificCall,//祭品召唤
+        BackPlace,//背面放置
+        SpecailCall,//特殊召唤
+        LaunchEffect,//发动效果 
+    }
+
+    public class DuelCardScript : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+    {
+        float selectScale = 1.2f;//当鼠标移动到卡牌上时卡牌放大的倍数。
 
         CardBase card;
         Player ownerPlayer;
@@ -24,17 +36,19 @@ namespace Assets.Script.Card
         bool canShowInfo = false;
         bool isPrepareATK = false;
         GameObject atkImage = null;
-
-        Sprite backImage = null;
+        
         Sprite frontImage = null;
 
         bool haveBeChosen = false;
 
+        string cardOperationButtonPrefabPath = "Prefab/CardOperationButtonPre";
+        Transform operationPanelTransform = null;
+        
         void Start()
         {
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
             atkImage = gameObject.transform.GetChild(0).gameObject;
-            backImage = gameObject.GetComponent<Image>().sprite;
+            operationPanelTransform = gameObject.transform.GetChild(1);
         }
 
         void Update()
@@ -64,7 +78,7 @@ namespace Assets.Script.Card
         /// </summary>
         public void ShowBack()
         {
-            gameObject.GetComponent<Image>().sprite = backImage;
+            gameObject.GetComponent<Image>().sprite = GameManager.GetCardBackImage();
         }
 
         /// <summary>
@@ -87,14 +101,7 @@ namespace Assets.Script.Card
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if(ownerPlayer.CanCallMonster())
-            {
-                if(CanCall())
-                {
-                    ownerPlayer.CallMonster((MonsterCard)card);
-                }
-            }
-            else if(ownerPlayer.GetPlayGameState() == PlayGameState.ChooseSacrifice && !haveBeChosen && card.GetCardType() == CardType.Monster)
+            if (ownerPlayer.GetPlayGameState() == PlayGameState.ChooseSacrifice && !haveBeChosen && card.GetCardType() == CardType.Monster)
             {
                 int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
                 if (tempInt > 0)
@@ -141,11 +148,16 @@ namespace Assets.Script.Card
             {
                 duelScene.ShowCardInfo(card);
             }
+            if(ownerPlayer.IsMyTurn())
+            {
+                RecheckAllowedOperation();
+            }
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             gameObject.transform.localScale = Vector3.one;
+            GameManager.CleanPanelContent(operationPanelTransform);
         }
 
         public void SetAttackNumber()
@@ -198,12 +210,22 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanCall()
         {
-            if(card.GetCardGameState() == CardGameState.Hand && 
-                card.GetCardType() == CardType.Monster && 
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+            return CanNormalCall()|| CanSacrificCall()||CanBackPlace();
+        }
+
+        /// <summary>
+        /// 判断是否可以通常召唤
+        /// </summary>
+        /// <returns></returns>
+        public bool CanNormalCall()
+        {
+            if (card.GetCardGameState() == CardGameState.Hand &&
+                   card.GetCardType() == CardType.Monster &&
+                   ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                   ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
-                if (monsterCard.GetLevel()<= DuelRule.callMonsterWithoutSacrificeMaxLevel)
+                if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
                 {
                     bool monsterAreaFull = true;
                     foreach (var item in ownerPlayer.monsterCardArea)
@@ -216,15 +238,123 @@ namespace Assets.Script.Card
                     }
                     return !monsterAreaFull;
                 }
-                else
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断是否可以祭品召唤
+        /// </summary>
+        /// <returns></returns>
+        public bool CanSacrificCall()
+        {
+            if (card.GetCardGameState() == CardGameState.Hand &&
+                card.GetCardType() == CardType.Monster &&
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                   ownerPlayer.GetCanCallNumber() > 0)
+            {
+                MonsterCard monsterCard = (MonsterCard)card;
+                if (monsterCard.NeedSacrificeMonsterNumer()>0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= monsterCard.NeedSacrificeMonsterNumer())
                 {
-                    if(ownerPlayer.GetCanBeSacrificeMonsterNumber()>= monsterCard.NeedSacrificeMonsterNumer())
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// 判断是否可以背面放置
+        /// </summary>
+        /// <returns></returns>
+        public bool CanBackPlace()
+        {
+            if (card.GetCardGameState() == CardGameState.Hand &&
+                   card.GetCardType() == CardType.Monster &&
+                   ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                   ownerPlayer.GetCanCallNumber() > 0)
+            {
+                MonsterCard monsterCard = (MonsterCard)card;
+                if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
+                {
+                    bool monsterAreaFull = true;
+                    foreach (var item in ownerPlayer.monsterCardArea)
+                    {
+                        if (item == null)
+                        {
+                            monsterAreaFull = false;
+                            break;
+                        }
+                    }
+                    return !monsterAreaFull;
+                }
+                else if(monsterCard.NeedSacrificeMonsterNumer() > 0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= monsterCard.NeedSacrificeMonsterNumer())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 重新检查当前卡牌允许的操作，并添加到操作面板中
+        /// </summary>
+        public void RecheckAllowedOperation()
+        {
+            GameManager.CleanPanelContent(operationPanelTransform);
+
+            GameObject cardOperationButtonPre = Resources.Load<GameObject>(cardOperationButtonPrefabPath);
+
+            if (CanNormalCall())
+            {
+                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
+                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
+                cardOperationButtonScript.SetInfo(this,CardOperation.NormalCall);
+            }
+            if (CanSacrificCall())
+            {
+                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
+                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
+                cardOperationButtonScript.SetInfo(this,CardOperation.SacrificCall);
+            }
+            if(CanBackPlace())
+            {
+                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
+                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
+                cardOperationButtonScript.SetInfo(this, CardOperation.BackPlace);
+            }
+        }
+
+        /// <summary>
+        /// 对卡牌进行操作
+        /// </summary>
+        /// <param name="cardOperation"></param>
+        public void Operation(CardOperation cardOperation)
+        {
+            switch (cardOperation)
+            {
+                case CardOperation.NormalCall:
+                case CardOperation.SacrificCall:
+                    if (ownerPlayer.CanCallMonster())
+                    {
+                        if (CanCall())
+                        {
+                            ownerPlayer.CallMonster((MonsterCard)card);
+                        }
+                    }
+                    break;
+                case CardOperation.BackPlace:
+                    if (ownerPlayer.CanCallMonster())
+                    {
+                        if (CanCall())
+                        {
+                            ownerPlayer.BackPlaceMonster((MonsterCard)card);
+                        }
+                    }
+                    break;
+                default:
+                    Debug.LogError("未知操作命令："+cardOperation);
+                    break;
+            }
         }
     }
 }

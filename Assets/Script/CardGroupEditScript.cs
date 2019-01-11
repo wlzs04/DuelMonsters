@@ -81,14 +81,7 @@ public class CardGroupEditScript : MonoBehaviour
         foreach (var item in gameManager.allCardInfoList)
         {
             ownedCard = userData.IsOwnCard(item.Value.GetCardNo());
-            if (!onlyShowOwnedCard && ownedCard)
-            {
-                CardBase card = item.Value;
-                GameObject go = Instantiate(cardPre, allCardScrollViewTransform);
-                go.GetComponent<CardScript>().SetRootScript(this);
-                go.GetComponent<CardScript>().SetCard(card, ownedCard);
-            }
-            else
+            if(!onlyShowOwnedCard || ownedCard)
             {
                 CardBase card = item.Value;
                 GameObject go = Instantiate(cardPre, allCardScrollViewTransform);
@@ -500,7 +493,7 @@ public class CardGroupEditScript : MonoBehaviour
     /// </summary>
     public void OnlyShowOwnedCardChangeEvent(bool value)
     {
-        onlyShowOwnedCard = value;
+        onlyShowOwnedCard = !onlyShowOwnedCard;
         ResetAllCard();
     }
 }

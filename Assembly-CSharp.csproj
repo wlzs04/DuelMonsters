@@ -71,7 +71,9 @@
     <Compile Include="Assets\Script\CardCroupItemScript.cs" />
     <Compile Include="Assets\Script\CardGroupEditScript.cs" />
     <Compile Include="Assets\Script\CardGroupScript.cs" />
+    <Compile Include="Assets\Script\CardOperationButtonScript.cs" />
     <Compile Include="Assets\Script\CardScript.cs" />
+    <Compile Include="Assets\Script\Config\CardOperationConfig.cs" />
     <Compile Include="Assets\Script\Config\CardTypeConfig.cs" />
     <Compile Include="Assets\Script\Config\ConfigBase.cs" />
     <Compile Include="Assets\Script\Config\DuelProcessConfig.cs" />
@@ -124,6 +126,7 @@
     <None Include="Assets\Artres\CardData\45221020\script.txt" />
     <None Include="Assets\Artres\CardData\58518520\script.txt" />
     <None Include="Assets\Artres\Config\MagicType.xml" />
+    <None Include="Assets\Artres\Config\CardOperation.xml" />
     <None Include="Assets\Artres\Config\MonsterType.xml" />
     <None Include="Assets\Artres\CardData\35618217\script.txt" />
     <None Include="Assets\Artres\CardData\52589809\script.txt" />
@@ -140,6 +143,7 @@
     <None Include="Assets\Artres\Config\DuelProcess.xml" />
     <None Include="Assets\Artres\UserDate.xml" />
     <None Include="Assets\Artres\Config\StringRes.xml" />
+    <None Include="Assets\Artres\CardData\83764718\script.txt" />
     <None Include="Assets\Artres\CardData\20155904\script.txt" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>E:/tomb/Unity/DuelMonsters/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

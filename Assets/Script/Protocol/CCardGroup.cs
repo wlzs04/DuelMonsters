@@ -1,4 +1,4 @@
-﻿using Assets.Script.Duel;
+using Assets.Script.Duel;
 using Assets.Script.Net;
 using System;
 using System.Collections.Generic;
@@ -23,8 +23,7 @@ namespace Assets.Script.Protocol
 
         public override void Process()
         {
-            DuelScene duelScene = GameManager.GetSingleInstance().GetDuelScene();
-            duelScene.SetCardGroupFromOpponent(GetContent("cardGroupList"));
+            GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.SetCardGroup(GetContent("cardGroupList"));
         }
     }
 }

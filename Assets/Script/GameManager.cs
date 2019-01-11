@@ -27,7 +27,7 @@ namespace Assets.Script
 
         AudioScript audioScript;
         GameState currentGameState;
-
+        
         #region 路径与文件名
         string saveFileName = "UserDate.xml";
         string cardResourceRootDirectory = "CardData";
@@ -42,6 +42,7 @@ namespace Assets.Script
 
         #region 决斗
         DuelScene duelScene = null;
+        Sprite cardBackImage = null;
         #endregion
 
         #region 网络
@@ -62,6 +63,12 @@ namespace Assets.Script
             LoadUserData();
             InitAudio();
             LoadAllCardData();
+
+            string cardBackPath = Application.dataPath + "/Texture/CardBack.jpg";
+            WWW www = new WWW(cardBackPath);
+            Texture2D texture = new Texture2D(177, 254);
+            www.LoadImageIntoTexture(texture);
+            cardBackImage = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
         }
         
         public static GameManager GetSingleInstance()
@@ -608,6 +615,15 @@ namespace Assets.Script
         public static void AddTimerFunction(TimerFunction timerFunction)
         {
             gameManagerInstance.timerFunctions.Add(timerFunction);
+        }
+
+        /// <summary>
+        /// 获得
+        /// </summary>
+        /// <returns></returns>
+        public static Sprite GetCardBackImage()
+        {
+            return GameManager.GetSingleInstance().cardBackImage;
         }
     }
 }

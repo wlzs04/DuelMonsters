@@ -1,0 +1,9 @@
+<CardOperation>
+  <RecordList>
+    <Record id="0" value="通常召唤"/>
+    <Record id="1" value="祭品召唤"/>
+    <Record id="2" value="背面放置"/>
+    <Record id="3" value="特殊召唤"/>
+    <Record id="4" value="发动效果"/>
+  </RecordList>
+</CardOperation>
