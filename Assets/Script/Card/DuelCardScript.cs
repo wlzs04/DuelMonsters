@@ -32,11 +32,13 @@ namespace Assets.Script.Card
         Player ownerPlayer;
         DuelScene duelScene = null;
 
-        int atkNumber = 0;
+        int attackNumber = 0;
         bool canShowInfo = false;
-        bool isPrepareATK = false;
-        GameObject atkImage = null;
-        
+        bool isPrepareAttack = false;
+        bool showAttackImage = false;
+        GameObject attackImage = null;
+        GameObject borderImage = null;
+
         Sprite frontImage = null;
 
         bool haveBeChosen = false;
@@ -47,18 +49,19 @@ namespace Assets.Script.Card
         void Start()
         {
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
-            atkImage = gameObject.transform.GetChild(0).gameObject;
+            attackImage = gameObject.transform.GetChild(0).gameObject;
             operationPanelTransform = gameObject.transform.GetChild(1);
+            borderImage = gameObject.transform.GetChild(2).gameObject;
         }
 
         void Update()
         {
-            if(isPrepareATK)
+            if(isPrepareAttack)
             {
                 Vector3 mousePosition = Input.mousePosition;
-                Vector3 atkImagePosition = atkImage.transform.position;
+                Vector3 atkImagePosition = attackImage.transform.position;
 
-                atkImage.transform.rotation = Quaternion.Euler(0,0, Mathf.Atan2(atkImagePosition.x - mousePosition.x, mousePosition.y - atkImagePosition.y) *180/Mathf.PI);
+                attackImage.transform.rotation = Quaternion.Euler(0,0, Mathf.Atan2(atkImagePosition.x - mousePosition.x, mousePosition.y - atkImagePosition.y) *180/Mathf.PI);
             }
         }
 
@@ -89,6 +92,59 @@ namespace Assets.Script.Card
             gameObject.GetComponent<Image>().sprite = frontImage;
         }
 
+        /// <summary>
+        /// 设置是否显示攻击状态，仅显示攻击图标，并不代表即将进行攻击
+        /// </summary>
+        public void SetAttackState(bool showAttackImage)
+        {
+            this.showAttackImage = showAttackImage;
+            attackImage.SetActive(this.showAttackImage);
+            attackImage.transform.localEulerAngles = Vector3.zero;
+        }
+
+        /// <summary>
+        /// 准备攻击
+        /// </summary>
+        public void PrepareAttack()
+        {
+            isPrepareAttack = true;
+            attackImage.transform.localEulerAngles = Vector3.zero;
+        }
+
+        /// <summary>
+        /// 清除攻击准备状态
+        /// </summary>
+        public void ClearPrepareAttackState()
+        {
+            isPrepareAttack = false;
+            attackImage.transform.localEulerAngles = Vector3.zero;
+        }
+        
+        /// <summary>
+        /// 选中此卡
+        /// </summary>
+        public void ChooseThisCard()
+        {
+            borderImage.SetActive(true);
+        }
+
+        /// <summary>
+        /// 清空选中状态
+        /// </summary>
+        public void ClearChooseState()
+        {
+            borderImage.SetActive(false);
+        }
+
+        /// <summary>
+        /// 清除当前状态
+        /// </summary>
+        public void ClearCurrentState()
+        {
+            ClearPrepareAttackState();
+            ClearChooseState();
+        }
+
         public void SetOwner(Player player)
         {
             ownerPlayer = player;
@@ -106,15 +162,17 @@ namespace Assets.Script.Card
                 int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
                 if (tempInt > 0)
                 {
-                    if (ownerPlayer.ChooseMonsterAsSacrifice((MonsterCard)card))
+                    if (ownerPlayer.CanChooseMonsterAsSacrifice((MonsterCard)card))
                     {
                         haveBeChosen = true;
+                        ChooseThisCard();
+                        ownerPlayer.TrySacrificeCall();
                     }
                 }
             }
             if(ownerPlayer.CanBattle())
             {
-                if (ownerPlayer.IsMyPlayer() && !isPrepareATK && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
+                if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
                 {
                     Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
                     if (opponentPlayer.CanBeDirectAttacked() &&
@@ -131,14 +189,12 @@ namespace Assets.Script.Card
                     }
                     else
                     {
-                        atkImage.SetActive(true);
-                        isPrepareATK = true;
+                        PrepareAttack();
                         duelScene.SetCanChoose(true);
                         duelScene.ChooseCard(card);
                     }
                 }
             }
-            duelScene.ChooseCard(card);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -160,25 +216,32 @@ namespace Assets.Script.Card
             GameManager.CleanPanelContent(operationPanelTransform);
         }
 
+        public void SetAttackNumber(int number)
+        {
+            attackNumber = number;
+        }
+
         public void SetAttackNumber()
         {
-            atkNumber = DuelRule.monsterATKNumberEveryTurn;
+            SetAttackNumber(DuelRule.monsterATKNumberEveryTurn);
         }
 
         public int GetAttackNumber()
         {
-            return atkNumber;
+            return attackNumber;
         }
 
-        public void SetATKNumber(int number)
-        {
-            atkNumber = number;
-        }
-
+        /// <summary>
+        /// 进行攻击
+        /// </summary>
         public void Attack()
         {
-            atkNumber--;
-            ClearPrepareATKState();
+            attackNumber--;
+            ClearPrepareAttackState();
+            if(attackNumber <= 0)
+            {
+                SetAttackState(false);
+            }
         }
 
         /// <summary>
@@ -187,21 +250,20 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanAttack()
         {
-            return card.GetCardType() == CardType.Monster && atkNumber > 0;
+            if (ownerPlayer.IsMyTurn() &&
+                duelScene.currentDuelProcess ==DuelProcess.Battle &&
+                card.GetCardType() == CardType.Monster &&
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+            {
+                MonsterCard monsterCard = card as MonsterCard;
+                return monsterCard.CanAttack() && attackNumber > 0;
+            }
+            return false;
         }
 
         public void SetCanShowInfo(bool canShowInfo)
         {
             this.canShowInfo = canShowInfo;
-        }
-
-        /// <summary>
-        /// 清除攻击准备状态
-        /// </summary>
-        public void ClearPrepareATKState()
-        {
-            isPrepareATK = false;
-            atkImage.SetActive(false);
         }
 
         /// <summary>
@@ -347,7 +409,7 @@ namespace Assets.Script.Card
                     {
                         if (CanCall())
                         {
-                            ownerPlayer.BackPlaceMonster((MonsterCard)card);
+                            ownerPlayer.CallMonster((MonsterCard)card, CardGameState.Back);
                         }
                     }
                     break;
@@ -355,6 +417,7 @@ namespace Assets.Script.Card
                     Debug.LogError("未知操作命令："+cardOperation);
                     break;
             }
+            GameManager.CleanPanelContent(operationPanelTransform);
         }
     }
 }

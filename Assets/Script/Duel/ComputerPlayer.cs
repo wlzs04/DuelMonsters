@@ -56,7 +56,6 @@ namespace Assets.Script.Duel
                         if (duelCardScript.CanCall())
                         {
                             MonsterCard monsterCard = (MonsterCard)item;
-                            //有问题
                             int sacrificeMonsterNumer = monsterCard.NeedSacrificeMonsterNumer();
                             if(sacrificeMonsterNumer>0)
                             {
@@ -79,7 +78,7 @@ namespace Assets.Script.Duel
                                 {
                                     sacrificeInfo = sacrificeInfo.Substring(0, sacrificeInfo.Length - 1);
                                 }
-                                CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontATK, index,sacrificeInfo);
+                                CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, index,sacrificeInfo);
                             }
                             else
                             {
@@ -87,7 +86,7 @@ namespace Assets.Script.Duel
                                 {
                                     if (monsterCardArea[i] == null)
                                     {
-                                        CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontATK, i);
+                                        CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, i);
                                         return;
                                     }
                                 }

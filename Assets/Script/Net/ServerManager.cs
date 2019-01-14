@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,12 +16,8 @@ namespace Assets.Script.Net
         IPAddress ip = null;
         int maxLinkNumber = 1;//服务器最大监听数量。
         Socket clientSocket = null;
-        //Dictionary<string, Socket> ipSocketMap = new Dictionary<string, Socket>();
-        //Queue<ClientProtocol> protocolQueue = new Queue<ClientProtocol>();
-        //Dictionary<string, ClientProtocol> legalProtocolMap = new Dictionary<string, ClientProtocol>();
 
         public delegate void SocketEvent(Socket socket);
-        //public delegate void ProtocolEvent(ClientProtocol protocol);
         public SocketEvent AcceptNewSocketEvent;
         public SocketEvent SocketDisconnectEvent;
         public ClientManager.ProtocolEvent ProcessProtocolEvent;

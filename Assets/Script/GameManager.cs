@@ -193,6 +193,7 @@ namespace Assets.Script
                     currentGameState = GameState.SeleteDuelModeScene;
                     break;
                 default:
+                    Debug.LogError("当前场景未知："+ currentGameState);
                     break;
             }
         }
@@ -352,19 +353,9 @@ namespace Assets.Script
         /// <summary>
         /// 启动网络功能
         /// </summary>
-        public void StartNet()
+        public void OpenNet()
         {
             clientManager = ClientManager.GetSingleInstance();
-            
-            clientManager.AddLegalProtocol(new CGuessFirst());
-            clientManager.AddLegalProtocol(new CDrawCard());
-            clientManager.AddLegalProtocol(new CCardGroup());
-            clientManager.AddLegalProtocol(new CCallMonster());
-            clientManager.AddLegalProtocol(new CEndTurn());
-            clientManager.AddLegalProtocol(new CEnterDuelProcess());
-            clientManager.AddLegalProtocol(new CAttackMonster());
-            clientManager.AddLegalProtocol(new CAttackDirect());
-            clientManager.AddLegalProtocol(new CCallMonsterBySacrifice());
 
             if (ServerManager.GetInstance().GetHostIPV4().ToString() == userData.ip)
             {
@@ -386,6 +377,15 @@ namespace Assets.Script
                 clientManager.StartConnect(userData.ip, userData.port);
                 clientManager.ProcessProtocolEvent += ProcessProtocolEvent;
             }
+        }
+
+        /// <summary>
+        /// 关闭网络功能
+        /// </summary>
+        public void CloseNet()
+        {
+            clientManager.StopConnect();
+            serverManager.StopListen();
         }
         
         void ProcessProtocolEvent(ClientProtocol protocol)
@@ -441,6 +441,7 @@ namespace Assets.Script
         {
             ShowMessage("停止决斗。");
             duelScene = null;
+            CloseNet();
         }
 
         /// <summary>
@@ -606,6 +607,7 @@ namespace Assets.Script
         public void SetNetMode()
         {
             duelScene = new DuelScene(DuelMode.Net);
+            OpenNet();
             EnterGuessFirstScene();
         }
 
@@ -618,7 +620,7 @@ namespace Assets.Script
         }
 
         /// <summary>
-        /// 获得
+        /// 获得卡片背面图片
         /// </summary>
         /// <returns></returns>
         public static Sprite GetCardBackImage()

@@ -1,8 +1,10 @@
-﻿using System;
+using Assets.Script.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using UnityEngine;
@@ -25,11 +27,25 @@ namespace Assets.Script.Net
 
         private ClientManager()
         {
+            LoadAllLegalProtocol();
         }
         
         public static ClientManager GetSingleInstance()
         {
             return instance;
+        }
+
+        /// <summary>
+        /// 加载所有合法协议
+        /// </summary>
+        void LoadAllLegalProtocol()
+        {
+            Assembly assembly = Assembly.GetAssembly(typeof(CGuessFirst));
+            foreach (var item in assembly.GetTypes())
+            {
+                AddLegalProtocol((ClientProtocol)assembly.CreateInstance(item.FullName));
+            }
+            int y = 0;
         }
 
         public void StartConnect(string ip,int port)

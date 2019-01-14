@@ -1,4 +1,5 @@
 using Assets.Script.Config;
+using Assets.Script.Duel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,8 +38,8 @@ namespace Assets.Script.Card
         Unknown,//未知
         Group,//在卡组中
         Hand,//手牌中
-        FrontATK,//表侧表示攻击
-        FrontDEF,//表侧表示防守
+        FrontAttack,//表侧表示攻击
+        FrontDefense,//表侧表示防守
         Back,//覆盖表示
         Tomb,//在墓地中
         Exclusion,//被排除在游戏外
@@ -51,7 +52,7 @@ namespace Assets.Script.Card
     {
         protected CardType cardType = CardType.Monster;//卡片类型
         CardGameState cardGameState = CardGameState.Group;
-        CardGroupType cardGroupType = CardGroupType.Unknown;
+        //CardGroupType cardGroupType = CardGroupType.Unknown;
         Sprite image;
         protected string name = "未命名";//名称
         protected int cardNo = 0;//唯一编号，0代表为假卡。
@@ -118,6 +119,43 @@ namespace Assets.Script.Card
         public void SetCardGameState(CardGameState cardGameState)
         {
             this.cardGameState = cardGameState;
+
+            switch (cardGameState)
+            {
+                case CardGameState.Unknown:
+                    break;
+                case CardGameState.Group:
+                    break;
+                case CardGameState.Hand:
+                    break;
+                case CardGameState.FrontAttack:
+                    cardObject.GetComponent<DuelCardScript>().ShowFront();
+                    cardObject.transform.localEulerAngles = new Vector3(0, 0, 0);
+                    break;
+                case CardGameState.FrontDefense:
+                    cardObject.GetComponent<DuelCardScript>().ShowFront();
+                    cardObject.transform.localEulerAngles = new Vector3(0, 0, 90);
+                    break;
+                case CardGameState.Back:
+                    cardObject.GetComponent<DuelCardScript>().ShowBack();
+                    cardObject.transform.localEulerAngles = new Vector3(0, 0, 90);
+                    break;
+                case CardGameState.Tomb:
+                    if (cardObject.GetComponent<DuelCardScript>().GetOwner().IsMyPlayer())
+                    {
+                        cardObject.transform.localPosition = new Vector3(DuelCommonValue.myTombPositionX, DuelCommonValue.myTombPositionY, 0);
+                    }
+                    else
+                    {
+                       cardObject.transform.localPosition = new Vector3(DuelCommonValue.opponentTombPositionX, DuelCommonValue.opponentTombPositionY, 0);
+                    }
+                    cardObject.transform.localEulerAngles = Vector3.zero;
+                    break;
+                case CardGameState.Exclusion:
+                    break;
+                default:
+                    break;
+            }
         }
 
         public CardGameState GetCardGameState()

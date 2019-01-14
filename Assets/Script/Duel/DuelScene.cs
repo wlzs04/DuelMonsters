@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Assets.Script.Duel
@@ -109,26 +110,41 @@ namespace Assets.Script.Duel
             this.myFirst = myFirst;
         }
 
-        public void ShowMessage(string value)
-        {
-            GameManager.ShowMessage(value);
-        }
-
         /// <summary>
         /// 右键点击
         /// </summary>
         public void MouseRightButtonDown()
         {
-            if(!inSpecialState)
+            //取消当前选中卡牌的状态
+            if(currentChooseCard!=null)
             {
-                duelSceneScript.SetDuelProcessPanel(true);
-                inSpecialState = true;
+                currentChooseCard.cardObject.GetComponent<DuelCardScript>().ClearCurrentState();
+                currentChooseCard = null;
             }
             else
             {
-                duelSceneScript.SetDuelProcessPanel(false);
-                inSpecialState = false;
+                //显示或隐藏决斗流程面板
+                if (!inSpecialState)
+                {
+                    duelSceneScript.SetDuelProcessPanel(true);
+                    inSpecialState = true;
+                }
+                else
+                {
+                    duelSceneScript.SetDuelProcessPanel(false);
+                    inSpecialState = false;
+                }
             }
+        }
+
+        /// <summary>
+        /// 显示攻击防御选择面板
+        /// </summary>
+        /// <param name="monsterCard"></param>
+        /// <param name="finishAction"></param>
+        public void ShowAttackOrDefensePanel(MonsterCard monsterCard,UnityAction<CardGameState> finishAction)
+        {
+            duelSceneScript.ShowAttackOrDefensePanel(monsterCard, finishAction);
         }
 
         /// <summary>
@@ -158,11 +174,6 @@ namespace Assets.Script.Duel
             {
                 ChooseAnotherCard(card);
             }
-        }
-
-        public void SetAttackAnimationFinishEvent(object v)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -266,15 +277,15 @@ namespace Assets.Script.Duel
         {
             if(player==null)
             {
-                ShowMessage("平局！");
+                GameManager.ShowMessage("平局！");
             }
             else if(player==myPlayer)
             {
-                ShowMessage("我赢了!");
+                GameManager.ShowMessage("我赢了!");
             }
             else
             {
-                ShowMessage("我输了!");
+                GameManager.ShowMessage("我输了!");
             }
 
             TimerFunction timerFunction = new TimerFunction();
@@ -305,9 +316,11 @@ namespace Assets.Script.Duel
             AddControlFromScene();
             myPlayer.SetCardGroup();
             opponentPlayer.SetCardGroup();
-            //CheckPlayInit();
         }
 
+        /// <summary>
+        /// 检查是否决斗双方都已经初始化完成
+        /// </summary>
         public void CheckPlayInit()
         {
             if(myPlayer.IAmReady()&& opponentPlayer.IAmReady())
@@ -343,12 +356,12 @@ namespace Assets.Script.Duel
             myPlayer.InitCardGroup();
             opponentPlayer.InitCardGroup();
 
-            ShowMessage("抽牌！");
+            GameManager.ShowMessage("抽牌！");
 
             myPlayer.DrawAtFirst();
             opponentPlayer.DrawAtFirst();
 
-            ShowMessage("决斗开始！");
+            GameManager.ShowMessage("决斗开始！");
             startPlayer.StartTurn();
         }
 
@@ -390,71 +403,62 @@ namespace Assets.Script.Duel
         {
             duelSceneScript.SetInfoContent(card);
         }
-
-        /// <summary>
-        /// 由玩家调用，代表进入下一阶段
-        /// </summary>
-        public void EnterNextDuelProcess()
-        {
-            switch (currentDuelProcess)
-            {
-                case DuelProcess.Unknown:
-                    EnterDuelProcess(DuelProcess.Draw);
-                    break;
-                case DuelProcess.Draw:
-                    EnterDuelProcess(DuelProcess.Prepare);
-                    break;
-                case DuelProcess.Prepare:
-                    EnterDuelProcess(DuelProcess.Main);
-                    break;
-                case DuelProcess.Main:
-                    EnterDuelProcess(DuelProcess.End);
-                    Debug.LogError("EnterNextDuelProcess DuelProcess.Main");
-                    break;
-                case DuelProcess.Battle:
-                    EnterDuelProcess(DuelProcess.Second);
-                    break;
-                case DuelProcess.Second:
-                    EnterDuelProcess(DuelProcess.End);
-                    break;
-                case DuelProcess.End:
-                    EnterDuelProcess(DuelProcess.Unknown);
-                    break;
-                default:
-                    break;
-            }
-        }
-
+        
         /// <summary>
         /// 向玩家显示当前流程
         /// </summary>
         /// <param name="duelProcess"></param>
         public void EnterDuelProcess(DuelProcess duelProcess)
         {
+            if(currentDuelProcess == duelProcess)
+            {
+                return;
+            }
+            switch (currentDuelProcess)
+            {
+                case DuelProcess.Unknown:
+                    break;
+                case DuelProcess.Draw:
+                    break;
+                case DuelProcess.Prepare:
+                    break;
+                case DuelProcess.Main:
+                    break;
+                case DuelProcess.Battle:
+                    EndBattleDuelProcessEvent();
+                    break;
+                case DuelProcess.Second:
+                    break;
+                case DuelProcess.End:
+                    break;
+                default:
+                    break;
+            }
             currentDuelProcess = duelProcess;
             string ex = currentPlayer == myPlayer ? "我方进入" : "对方进入";
             switch (duelProcess)
             {
                 case DuelProcess.Unknown:
-                    ShowMessage(ex + "未知流程！");
+                    GameManager.ShowMessage(ex + "未知流程！");
                     break;
                 case DuelProcess.Draw:
-                    ShowMessage(ex + "抽牌流程！");
+                    GameManager.ShowMessage(ex + "抽牌流程！");
                     break;
                 case DuelProcess.Prepare:
-                    ShowMessage(ex + "准备流程！");
+                    GameManager.ShowMessage(ex + "准备流程！");
                     break;
                 case DuelProcess.Main:
-                    ShowMessage(ex + "主要流程！");
+                    GameManager.ShowMessage(ex + "主要流程！");
                     break;
                 case DuelProcess.Battle:
-                    ShowMessage(ex + "战斗流程！");
+                    BeginBattleDuelProcessEvent();
+                    GameManager.ShowMessage(ex + "战斗流程！");
                     break;
                 case DuelProcess.Second:
-                    ShowMessage(ex + "第二主要流程！");
+                    GameManager.ShowMessage(ex + "第二主要流程！");
                     break;
                 case DuelProcess.End:
-                    ShowMessage(ex + "结束流程！");
+                    GameManager.ShowMessage(ex + "结束流程！");
                     break;
                 default:
                     break;
@@ -467,6 +471,22 @@ namespace Assets.Script.Duel
             {
                 opponentPlayer.ThinkAction();
             }
+        }
+
+        /// <summary>
+        /// 开始战斗流程事件
+        /// </summary>
+        void BeginBattleDuelProcessEvent()
+        {
+             currentPlayer.CheckAndShowAllMonsterCanAttack();
+        }
+
+        /// <summary>
+        /// 结束战斗流程事件
+        /// </summary>
+        void EndBattleDuelProcessEvent()
+        {
+            currentPlayer.ClearAllMonsterCanAttack();
         }
 
         /// <summary>
@@ -499,7 +519,16 @@ namespace Assets.Script.Duel
         {
             opponentPlayer.CallMonsterByProtocol(cardID, callType,fromCardGameState,toCardGameState,flag);
         }
-
+        
+        /// <summary>
+        /// 对方祭品召唤怪兽
+        /// </summary>
+        /// <param name="cardID"></param>
+        /// <param name="callType"></param>
+        /// <param name="fromCardGameState"></param>
+        /// <param name="toCardGameState"></param>
+        /// <param name="flag"></param>
+        /// <param name="sacrificeInfo"></param>
         public void OpponentCallMonsterBySacrifice(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag,string sacrificeInfo)
         {
             opponentPlayer.CallMonsterByProtocol(cardID, callType, fromCardGameState, toCardGameState, flag, sacrificeInfo);

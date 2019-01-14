@@ -115,6 +115,14 @@ namespace Assets.Script.Card
             }
         }
 
+        /// <summary>
+        /// 是否可以攻击
+        /// </summary>
+        public bool CanAttack()
+        {
+            return  GetCardGameState() == CardGameState.FrontAttack;
+        }
+
         public int GetCanBeSacrificedNumber()
         {
             return canBeSacrificedNumber;

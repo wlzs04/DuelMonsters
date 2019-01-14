@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Assets.Script
@@ -17,13 +18,19 @@ namespace Assets.Script
         public Transform infoContentTransform = null;
 
         GameObject durlProcessPanel = null;
+        GameObject attackOrDefensePanel = null;
+
+        UnityAction<CardGameState> selectAttackOrDefenseFinishAction = null;
+
         Image cardImage;
 
         void Start()
         {
             GameManager.GetSingleInstance().GetDuelScene().Init();
             cardImage= GameObject.Find("cardImage").GetComponent<Image>();
+
             durlProcessPanel= GameObject.Find("DuelProcessPanel");
+            durlProcessPanel.SetActive(false);
 
             DuelProcessConfig duelProcessConfig = ConfigManager.GetConfigByName("DuelProcess") as DuelProcessConfig;
 
@@ -32,7 +39,8 @@ namespace Assets.Script
                 durlProcessPanel.transform.GetChild(i).GetComponent<Text>().text = duelProcessConfig.GetRecordById(i).value;
             }
 
-            durlProcessPanel.SetActive(false);
+            attackOrDefensePanel = GameObject.Find("AttackOrDefensePanel");
+            attackOrDefensePanel.SetActive(false);
         }
 
         public void EnterBattleProcessEvent()
@@ -58,6 +66,10 @@ namespace Assets.Script
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.Surrender();
         }
 
+        /// <summary>
+        /// 设置决斗流程面板是否显示
+        /// </summary>
+        /// <param name="show"></param>
         public void SetDuelProcessPanel(bool show)
         {
             durlProcessPanel.SetActive(show);
@@ -118,7 +130,6 @@ namespace Assets.Script
             }
             else if (card.GetCardType() == CardType.Magic)
             {
-                gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 MagicCard magicCard = (MagicCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + magicCard.GetName();
@@ -127,7 +138,6 @@ namespace Assets.Script
             }
             else if (card.GetCardType() == CardType.Trap)
             {
-                gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 TrapCard trapCard = (TrapCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + trapCard.GetName();
@@ -138,6 +148,35 @@ namespace Assets.Script
             {
                 Debug.LogError("卡片类型错误！");
             }
+        }
+
+        /// <summary>
+        /// 显示攻击防御选择面板
+        /// </summary>
+        public void ShowAttackOrDefensePanel(MonsterCard monsterCard, UnityAction<CardGameState> finishAction)
+        {
+            durlProcessPanel.SetActive(true);
+            durlProcessPanel.transform.Find("LeftPanel").Find("LeftImage").GetComponent<Image>().sprite = monsterCard.GetImage();
+            durlProcessPanel.transform.Find("RightPanel").Find("RightImage").GetComponent<Image>().sprite = monsterCard.GetImage();
+            selectAttackOrDefenseFinishAction = finishAction;
+        }
+
+        /// <summary>
+        /// 选择攻击表示召唤
+        /// </summary>
+        public void SelectAttackToCall()
+        {
+            durlProcessPanel.SetActive(false);
+            selectAttackOrDefenseFinishAction(CardGameState.FrontAttack);
+        }
+
+        /// <summary>
+        /// 选择防守表示召唤
+        /// </summary>
+        public void SelectDefenseToCall()
+        {
+            durlProcessPanel.SetActive(false);
+            selectAttackOrDefenseFinishAction(CardGameState.FrontDefense);
         }
     }
 }
