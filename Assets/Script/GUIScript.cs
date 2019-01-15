@@ -16,6 +16,12 @@ public class GUIScript : MonoBehaviour {
         {
             float audioValue = gameManager.GetUserData().audioValue;
             GameObject.Find("AudioSlider").GetComponent<Slider>().value = audioValue;
+
+            bool guessMustWinValue = gameManager.GetUserData().guessMustWin;
+            GameObject.Find("GuessMustWinToggle").GetComponent<Toggle>().isOn = guessMustWinValue;
+
+            bool showOpponentHandCardValue = gameManager.GetUserData().showOpponentHandCard;
+            GameObject.Find("ShowOpponentHandCardToggle").GetComponent<Toggle>().isOn = showOpponentHandCardValue;
         }
     }
 	
@@ -70,5 +76,15 @@ public class GUIScript : MonoBehaviour {
     public void NetButton()
     {
         gameManager.SetNetMode();
+    }
+
+    public void GuessMustWinToggle(bool value)
+    {
+        gameManager.SetGuessMustWin(value);
+    }
+
+    public void ShowOpponentHandCardToggle(bool value)
+    {
+        gameManager.SetShowOpponentHandCard(value);
     }
 }

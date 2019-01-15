@@ -530,6 +530,7 @@ namespace Assets.Script
         {
             GameObject gameObject = MonoBehaviour.Instantiate(Resources.Load<GameObject>("Prefab/MessageTip"), GameObject.Find("Canvas").transform);
             gameObject.transform.GetChild(0).GetComponent<Text>().text = value;
+            Debug.Log(value);
         }
 
         /// <summary>
@@ -626,6 +627,22 @@ namespace Assets.Script
         public static Sprite GetCardBackImage()
         {
             return GameManager.GetSingleInstance().cardBackImage;
+        }
+
+        /// <summary>
+        /// 设置是否猜先必胜
+        /// </summary>
+        public void SetGuessMustWin(bool value)
+        {
+            userData.guessMustWin = value;
+        }
+
+        /// <summary>
+        /// 设置是否显示对方手牌
+        /// </summary>
+        public void SetShowOpponentHandCard(bool value)
+        {
+            userData.showOpponentHandCard = value;
         }
     }
 }

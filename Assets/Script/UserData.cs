@@ -50,6 +50,12 @@ namespace Assets.Script
         public float audioValue = 1;
 
         [XmlAttribute]
+        public bool guessMustWin = false;
+
+        [XmlAttribute]
+        public bool showOpponentHandCard = false;
+
+        [XmlAttribute]
         public string ip ="127.0.0.1";
 
         [XmlAttribute]

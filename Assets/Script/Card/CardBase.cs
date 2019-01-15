@@ -130,15 +130,15 @@ namespace Assets.Script.Card
                     break;
                 case CardGameState.FrontAttack:
                     cardObject.GetComponent<DuelCardScript>().ShowFront();
-                    cardObject.transform.localEulerAngles = new Vector3(0, 0, 0);
+                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(0);
                     break;
                 case CardGameState.FrontDefense:
                     cardObject.GetComponent<DuelCardScript>().ShowFront();
-                    cardObject.transform.localEulerAngles = new Vector3(0, 0, 90);
+                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(90);
                     break;
                 case CardGameState.Back:
                     cardObject.GetComponent<DuelCardScript>().ShowBack();
-                    cardObject.transform.localEulerAngles = new Vector3(0, 0, 90);
+                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(90);
                     break;
                 case CardGameState.Tomb:
                     if (cardObject.GetComponent<DuelCardScript>().GetOwner().IsMyPlayer())
@@ -149,7 +149,7 @@ namespace Assets.Script.Card
                     {
                        cardObject.transform.localPosition = new Vector3(DuelCommonValue.opponentTombPositionX, DuelCommonValue.opponentTombPositionY, 0);
                     }
-                    cardObject.transform.localEulerAngles = Vector3.zero;
+                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(0);
                     break;
                 case CardGameState.Exclusion:
                     break;

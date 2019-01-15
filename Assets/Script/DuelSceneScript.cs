@@ -19,48 +19,66 @@ namespace Assets.Script
 
         GameObject durlProcessPanel = null;
         GameObject attackOrDefensePanel = null;
+        GameObject helpInfoPanel = null;
 
         UnityAction<CardGameState> selectAttackOrDefenseFinishAction = null;
 
         Image cardImage;
 
+        private void Awake()
+        {
+            helpInfoPanel = GameObject.Find("HelpInfoPanel");
+        }
+
         void Start()
         {
             GameManager.GetSingleInstance().GetDuelScene().Init();
-            cardImage= GameObject.Find("cardImage").GetComponent<Image>();
+            cardImage = GameObject.Find("cardImage").GetComponent<Image>();
 
-            durlProcessPanel= GameObject.Find("DuelProcessPanel");
+            durlProcessPanel = GameObject.Find("DuelProcessPanel");
             durlProcessPanel.SetActive(false);
 
             DuelProcessConfig duelProcessConfig = ConfigManager.GetConfigByName("DuelProcess") as DuelProcessConfig;
 
-            for (int i = 1; i < durlProcessPanel.transform.childCount; i++)
+            for (int i = 1; i < durlProcessPanel.transform.GetChild(0).childCount; i++)
             {
-                durlProcessPanel.transform.GetChild(i).GetComponent<Text>().text = duelProcessConfig.GetRecordById(i).value;
+                durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().text = duelProcessConfig.GetRecordById(i).value;
             }
 
             attackOrDefensePanel = GameObject.Find("AttackOrDefensePanel");
             attackOrDefensePanel.SetActive(false);
         }
 
+        /// <summary>
+        /// 进入战斗流程事件
+        /// </summary>
         public void EnterBattleProcessEvent()
         {
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.Battle();
             durlProcessPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// 进入第二流程事件
+        /// </summary>
         public void EnterSecondProcessEvent()
         {
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.Second();
             durlProcessPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// 结束流程事件
+        /// </summary>
         public void EndProcessEvent()
         {
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.EndTurn();
             durlProcessPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// 玩家投降事件
+        /// </summary>
         public void SurrenderEvent()
         {
             GameManager.GetSingleInstance().GetDuelScene().myPlayer.Surrender();
@@ -85,24 +103,32 @@ namespace Assets.Script
         public void ResetDuelProcessPanelInfo()
         {
             Color color = GameManager.GetSingleInstance().GetDuelScene().myPlayer.IsMyTurn() ? Color.green : Color.red;
-            
-            for (int i = 1; i < durlProcessPanel.transform.childCount; i++)
+            int currentDuelProcess = (int)GameManager.GetSingleInstance().GetDuelScene().currentDuelProcess;
+            for (int i = 1; i < durlProcessPanel.transform.GetChild(0).childCount; i++)
             {
-                if((int)GameManager.GetSingleInstance().GetDuelScene().currentDuelProcess>i)
+                if(currentDuelProcess > i)
                 {
-                    if(durlProcessPanel.transform.GetChild(i).GetComponent<Button>()!=null)
+                    if(durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>()!=null)
                     {
-                        durlProcessPanel.transform.GetChild(i).GetComponent<Button>().interactable = false;
+                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = false;
                     }
-                    durlProcessPanel.transform.GetChild(i).GetComponent<Text>().color = Color.gray;
+                    durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = Color.gray;
+                }
+                else if(currentDuelProcess==i)
+                {
+                    if (durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>() != null)
+                    {
+                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = false;
+                    }
+                    durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = Color.yellow;
                 }
                 else
                 {
-                    if (durlProcessPanel.transform.GetChild(i).GetComponent<Button>() != null)
+                    if (durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>() != null)
                     {
-                        durlProcessPanel.transform.GetChild(i).GetComponent<Button>().interactable = true;
+                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = true;
                     }
-                    durlProcessPanel.transform.GetChild(i).GetComponent<Text>().color = color;
+                    durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = color;
                 }
             }
         }
@@ -151,13 +177,21 @@ namespace Assets.Script
         }
 
         /// <summary>
+        /// 攻击防御选择面板是否显示
+        /// </summary>
+        public bool AttackOrDefensePanelIsShowing()
+        {
+            return attackOrDefensePanel.activeSelf;
+        }
+
+        /// <summary>
         /// 显示攻击防御选择面板
         /// </summary>
         public void ShowAttackOrDefensePanel(MonsterCard monsterCard, UnityAction<CardGameState> finishAction)
         {
-            durlProcessPanel.SetActive(true);
-            durlProcessPanel.transform.Find("LeftPanel").Find("LeftImage").GetComponent<Image>().sprite = monsterCard.GetImage();
-            durlProcessPanel.transform.Find("RightPanel").Find("RightImage").GetComponent<Image>().sprite = monsterCard.GetImage();
+            attackOrDefensePanel.SetActive(true);
+            attackOrDefensePanel.transform.Find("BackPanel").Find("LeftPanel").Find("LeftImage").GetComponent<Image>().sprite = monsterCard.GetImage();
+            attackOrDefensePanel.transform.Find("BackPanel").Find("RightPanel").Find("RightImage").GetComponent<Image>().sprite = monsterCard.GetImage();
             selectAttackOrDefenseFinishAction = finishAction;
         }
 
@@ -166,7 +200,7 @@ namespace Assets.Script
         /// </summary>
         public void SelectAttackToCall()
         {
-            durlProcessPanel.SetActive(false);
+            attackOrDefensePanel.SetActive(false);
             selectAttackOrDefenseFinishAction(CardGameState.FrontAttack);
         }
 
@@ -175,8 +209,19 @@ namespace Assets.Script
         /// </summary>
         public void SelectDefenseToCall()
         {
-            durlProcessPanel.SetActive(false);
+            attackOrDefensePanel.SetActive(false);
             selectAttackOrDefenseFinishAction(CardGameState.FrontDefense);
+        }
+
+        /// <summary>
+        /// 显示帮助信息面板
+        /// </summary>
+        public void ShowHelpInfoPanel(int myRemainCardNumberText,int opponentRemainCardNumberText)
+        {
+            helpInfoPanel.SetActive(true);
+            StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
+            helpInfoPanel.transform.Find("MyRemainCardNumberText").GetComponent<Text>().text = stringResConfig.GetRecordById(8).value + myRemainCardNumberText;
+            helpInfoPanel.transform.Find("OpponentRemainCardNumberText").GetComponent<Text>().text = stringResConfig.GetRecordById(8).value + opponentRemainCardNumberText;
         }
     }
 }

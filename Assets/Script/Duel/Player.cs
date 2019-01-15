@@ -35,6 +35,7 @@ namespace Assets.Script.Duel
         protected DuelScene duelScene = null;
         GameObject handPanel = null;
         Scrollbar lifeScrollBar = null;
+        Text lifeNumberText = null;
         int life = 4000;
 
         Player opponentPlayer = null;
@@ -248,10 +249,11 @@ namespace Assets.Script.Duel
             this.canBeDirectAttacked = canBeDirectAttacked;
         }
 
-        public void SetLife(Scrollbar lifeScrollBar)
+        public void SetLife(Scrollbar lifeScrollBar,Text lifeNumberText)
         {
             life = DuelRule.startLife;
             this.lifeScrollBar = lifeScrollBar;
+            this.lifeNumberText = lifeNumberText;
         }
 
         public void SetHandPanel(GameObject handPanel)
@@ -324,7 +326,7 @@ namespace Assets.Script.Duel
         public void Surrender()
         {
             opponentPlayer.SurrenderNotify();
-            duelScene.SetWinner(opponentPlayer);
+            duelScene.SetWinner(opponentPlayer,DuelEndReason.Surrender);
         }
 
         /// <summary>
@@ -341,8 +343,12 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 抽卡
         /// </summary>
-        public virtual void Draw()
+        public virtual bool Draw()
         {
+            if(GetDuelCardGroup().GetCards().Count<=0)
+            {
+                return false;
+            }
             CardBase card = GetDuelCardGroup().GetCards()[0];
             card.cardObject.transform.SetParent(handPanel.transform);
             duelCardGroup.GetCards().RemoveAt(0);
@@ -355,7 +361,10 @@ namespace Assets.Script.Duel
                 card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
             }
 
+            duelScene.ShowHelpInfoPanel();
+
             opponentPlayer.DrawNotify();
+            return true;
         }
 
         /// <summary>
@@ -414,9 +423,22 @@ namespace Assets.Script.Duel
             playGameState = PlayGameState.Normal;
             duelScene.EnterDuelProcess(DuelProcess.Draw);
             normalCallNumber = DuelRule.drawCardNumberEveryTurn;
+            if(GetDuelCardGroup().GetCards().Count<=0)
+            {
+                duelScene.SetWinner(opponentPlayer,DuelEndReason.Draw);
+                return;
+            }
             Draw();
             duelScene.EnterDuelProcess(DuelProcess.Prepare);
             duelScene.EnterDuelProcess(DuelProcess.Main);
+            //为场上怪兽添加攻守转换次数
+            foreach (var item in monsterCardArea)
+            {
+                if(item!=null)
+                {
+                    item.cardObject.GetComponent<DuelCardScript>().SetChangeAttackOrDefenseNumber();
+                }
+            }
         }
 
         /// <summary>
@@ -519,6 +541,7 @@ namespace Assets.Script.Duel
         {
             this.life -= life;
             lifeScrollBar.size =(float)this.life / DuelRule.startLife;
+            lifeNumberText.text = this.life + "/" + DuelRule.startLife;
             duelScene.CheckWinByLife();
         }
 
@@ -727,8 +750,6 @@ namespace Assets.Script.Duel
             monsterCard.SetCardGameState(toCardGameState);
             monsterCard.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
             monsterCard.cardObject.transform.localPosition = new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.opponentMonsterCardPositionY, 1);
-            //monsterCard.cardObject.transform.localRotation = Quaternion.Euler(0,0,180);
-            monsterCard.cardObject.GetComponent<Image>().sprite = monsterCard.GetImage();
             handCards.Remove(monsterCard);
             normalCallNumber--;
 

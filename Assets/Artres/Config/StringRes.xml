@@ -8,5 +8,6 @@
     <Record id="5" value="背面放置"/>
     <Record id="6" value="特殊召唤"/>
     <Record id="7" value="发动效果"/>
+    <Record id="8" value="剩余卡牌数量:"/>
   </RecordList>
 </StringRes>

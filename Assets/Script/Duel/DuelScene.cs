@@ -87,8 +87,8 @@ namespace Assets.Script.Duel
             attackAnimationScript = GameObject.Find("attackImage").GetComponent<AttackAnimationScript>();
             attackAnimationScript.StopPlay();
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
-            myHandCardPanel = GameObject.Find("myHandCardPanel");
-            opponentHandCardPanel = GameObject.Find("opponentHandCardPanel");
+            myHandCardPanel = GameObject.Find("MyHandCardPanel");
+            opponentHandCardPanel = GameObject.Find("OpponentHandCardPanel");
         }
 
         public int GetCurrentTurnNumber()
@@ -120,6 +120,10 @@ namespace Assets.Script.Duel
             {
                 currentChooseCard.cardObject.GetComponent<DuelCardScript>().ClearCurrentState();
                 currentChooseCard = null;
+            }
+            else if(duelSceneScript.AttackOrDefensePanelIsShowing())
+            {
+                //如果攻击防御选择面板正在显示，则不做处理。
             }
             else
             {
@@ -257,15 +261,15 @@ namespace Assets.Script.Duel
 
             if (iWin && ilost)
             {
-                SetWinner(null);
+                SetWinner(null, DuelEndReason.Life);
             }
             else if(iWin)
             {
-                SetWinner(myPlayer);
+                SetWinner(myPlayer, DuelEndReason.Life);
             }
             else if (ilost)
             {
-                SetWinner(opponentPlayer);
+                SetWinner(opponentPlayer, DuelEndReason.Life);
             }
         }
 
@@ -273,7 +277,7 @@ namespace Assets.Script.Duel
         /// 设置胜者
         /// </summary>
         /// <param name="player"></param>
-        public void SetWinner(Player player)
+        public void SetWinner(Player player,DuelEndReason duelEndReason)
         {
             if(player==null)
             {
@@ -335,10 +339,17 @@ namespace Assets.Script.Duel
                     currentPlayer = opponentPlayer;
                     startPlayer = opponentPlayer;
                 }
-                myPlayer.SetHandPanel(myHandCardPanel);
-                opponentPlayer.SetHandPanel(opponentHandCardPanel);
-                duelSceneScript = GameObject.Find("Main Camera").GetComponent<DuelSceneScript>();
-                StartDuel();
+
+                TimerFunction timerFunction = new TimerFunction();
+                timerFunction.SetFunction(1, () =>
+                {
+                    duelSceneScript = GameObject.Find("Main Camera").GetComponent<DuelSceneScript>();
+                    myPlayer.SetHandPanel(myHandCardPanel);
+                    opponentPlayer.SetHandPanel(opponentHandCardPanel);
+                    StartDuel();
+                });
+
+                GameManager.AddTimerFunction(timerFunction);
             }
         }
         
@@ -347,8 +358,8 @@ namespace Assets.Script.Duel
         /// </summary>
         void StartDuel()
         {
-            myPlayer.SetLife(GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>());
-            opponentPlayer.SetLife(GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>());
+            myPlayer.SetLife(GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>(), GameObject.Find("myLifeNumberText").GetComponent<Text>());
+            opponentPlayer.SetLife(GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>(), GameObject.Find("opponentLifeNumberText").GetComponent<Text>());
 
             myPlayer.SetHeartPosition(new Vector3(DuelCommonValue.myHeartPositionX, DuelCommonValue.myHeartPositionY));
             opponentPlayer.SetHeartPosition(new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY));
@@ -356,13 +367,26 @@ namespace Assets.Script.Duel
             myPlayer.InitCardGroup();
             opponentPlayer.InitCardGroup();
 
-            GameManager.ShowMessage("抽牌！");
-
-            myPlayer.DrawAtFirst();
-            opponentPlayer.DrawAtFirst();
-
             GameManager.ShowMessage("决斗开始！");
-            startPlayer.StartTurn();
+
+            TimerFunction timerFunction = new TimerFunction();
+            timerFunction.SetFunction(1, () =>
+            {
+                myPlayer.DrawAtFirst();
+                opponentPlayer.DrawAtFirst();
+                
+                startPlayer.StartTurn();
+            });
+
+            GameManager.AddTimerFunction(timerFunction);
+        }
+
+        /// <summary>
+        /// 显示帮助信息面板
+        /// </summary>
+        public void ShowHelpInfoPanel()
+        {
+            duelSceneScript.ShowHelpInfoPanel(opponentPlayer.GetDuelCardGroup().GetCards().Count, myPlayer.GetDuelCardGroup().GetCards().Count);
         }
 
         void EndDuel()

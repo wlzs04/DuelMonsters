@@ -21,6 +21,8 @@ namespace Assets.Script.Card
         SacrificCall,//祭品召唤
         BackPlace,//背面放置
         SpecailCall,//特殊召唤
+        ChangeAttack,//攻击表示
+        ChangeDefense,//守备表示
         LaunchEffect,//发动效果 
     }
 
@@ -31,11 +33,13 @@ namespace Assets.Script.Card
         CardBase card;
         Player ownerPlayer;
         DuelScene duelScene = null;
-
-        int attackNumber = 0;
+        
+        int attackNumber = 0; //攻击次数
+        int changeAttackOrDefenseNumber = 0;//攻守转换次数
         bool canShowInfo = false;
         bool isPrepareAttack = false;
         bool showAttackImage = false;
+        GameObject cardImage = null;
         GameObject attackImage = null;
         GameObject borderImage = null;
 
@@ -49,9 +53,10 @@ namespace Assets.Script.Card
         void Start()
         {
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
-            attackImage = gameObject.transform.GetChild(0).gameObject;
-            operationPanelTransform = gameObject.transform.GetChild(1);
-            borderImage = gameObject.transform.GetChild(2).gameObject;
+            cardImage = gameObject.transform.GetChild(0).gameObject;
+            attackImage = gameObject.transform.GetChild(1).gameObject;
+            operationPanelTransform = gameObject.transform.GetChild(2);
+            borderImage = gameObject.transform.GetChild(3).gameObject;
         }
 
         void Update()
@@ -81,7 +86,7 @@ namespace Assets.Script.Card
         /// </summary>
         public void ShowBack()
         {
-            gameObject.GetComponent<Image>().sprite = GameManager.GetCardBackImage();
+            cardImage.GetComponent<Image>().sprite = GameManager.GetCardBackImage();
         }
 
         /// <summary>
@@ -89,7 +94,16 @@ namespace Assets.Script.Card
         /// </summary>
         public void ShowFront()
         {
-            gameObject.GetComponent<Image>().sprite = frontImage;
+            cardImage.GetComponent<Image>().sprite = frontImage;
+        }
+
+        /// <summary>
+        /// 设置卡片角度，一般用于防守或对面卡牌
+        /// </summary>
+        /// <param name="angle"></param>
+        public void SetCardAngle(float angle)
+        {
+            cardImage.transform.localEulerAngles = new Vector3(0, 0, angle);
         }
 
         /// <summary>
@@ -186,15 +200,18 @@ namespace Assets.Script.Card
                             duelScene.AttackDirect((MonsterCard)card);
                         });
                         duelScene.StartPlayAttackAnimation(GetPosition(), ownerPlayer.GetOpponentPlayer().GetHeartPosition());
+                        return;
                     }
                     else
                     {
                         PrepareAttack();
                         duelScene.SetCanChoose(true);
                         duelScene.ChooseCard(card);
+                        return;
                     }
                 }
             }
+            duelScene.ChooseCard(card);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -230,7 +247,22 @@ namespace Assets.Script.Card
         {
             return attackNumber;
         }
+        
+        public void SetChangeAttackOrDefenseNumber(int number)
+        {
+            changeAttackOrDefenseNumber = number;
+        }
 
+        public void SetChangeAttackOrDefenseNumber()
+        {
+            SetChangeAttackOrDefenseNumber(DuelRule.monsterChangeAttackOrDefenseNumberEveryTurn);
+        }
+
+        public int GetChangeAttackOrDefenseNumber()
+        {
+            return changeAttackOrDefenseNumber;
+        }
+        
         /// <summary>
         /// 进行攻击
         /// </summary>
@@ -261,6 +293,30 @@ namespace Assets.Script.Card
             return false;
         }
 
+        /// <summary>
+        /// 转换成攻击表示
+        /// </summary>
+        public void ChangeToFrontAttack()
+        {
+            if(changeAttackOrDefenseNumber>0)
+            {
+                changeAttackOrDefenseNumber--;
+                card.SetCardGameState(CardGameState.FrontAttack);
+            }
+        }
+
+        /// <summary>
+        /// 转换成攻击表示
+        /// </summary>
+        public void ChangeToFrontDefense()
+        {
+            if (changeAttackOrDefenseNumber > 0)
+            {
+                changeAttackOrDefenseNumber--;
+                card.SetCardGameState(CardGameState.FrontDefense);
+            }
+        }
+
         public void SetCanShowInfo(bool canShowInfo)
         {
             this.canShowInfo = canShowInfo;
@@ -282,9 +338,11 @@ namespace Assets.Script.Card
         public bool CanNormalCall()
         {
             if (card.GetCardGameState() == CardGameState.Hand &&
-                   card.GetCardType() == CardType.Monster &&
-                   ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
-                   ownerPlayer.GetCanCallNumber() > 0)
+                card.GetCardType() == CardType.Monster &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
                 if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
@@ -312,8 +370,10 @@ namespace Assets.Script.Card
         {
             if (card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second)&&
                 ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
-                   ownerPlayer.GetCanCallNumber() > 0)
+                ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
                 if (monsterCard.NeedSacrificeMonsterNumer()>0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= monsterCard.NeedSacrificeMonsterNumer())
@@ -331,9 +391,11 @@ namespace Assets.Script.Card
         public bool CanBackPlace()
         {
             if (card.GetCardGameState() == CardGameState.Hand &&
-                   card.GetCardType() == CardType.Monster &&
-                   ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
-                   ownerPlayer.GetCanCallNumber() > 0)
+                card.GetCardType() == CardType.Monster &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
                 if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
@@ -353,6 +415,44 @@ namespace Assets.Script.Card
                 {
                     return true;
                 }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断是否可以转换成攻击表示
+        /// </summary>
+        /// <returns></returns>
+        public bool CanChangeToFrontAttack()
+        {
+            if (card.GetCardType() == CardType.Monster &&
+                (card.GetCardGameState() == CardGameState.FrontDefense ||
+                card.GetCardGameState() == CardGameState.Back) &&
+                GetChangeAttackOrDefenseNumber()>0 &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断是否可以转换成防守表示
+        /// </summary>
+        /// <returns></returns>
+        public bool CanChangeToFrontDefense()
+        {
+            if (card.GetCardType() == CardType.Monster &&
+                (card.GetCardGameState() == CardGameState.FrontAttack ||
+                card.GetCardGameState() == CardGameState.Back) &&
+                GetChangeAttackOrDefenseNumber() > 0 &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+            {
+                return true;
             }
             return false;
         }
@@ -384,6 +484,18 @@ namespace Assets.Script.Card
                 CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
                 cardOperationButtonScript.SetInfo(this, CardOperation.BackPlace);
             }
+            if (CanChangeToFrontAttack())
+            {
+                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
+                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
+                cardOperationButtonScript.SetInfo(this, CardOperation.ChangeAttack);
+            }
+            if (CanChangeToFrontDefense())
+            {
+                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
+                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
+                cardOperationButtonScript.SetInfo(this, CardOperation.ChangeDefense);
+            }
         }
 
         /// <summary>
@@ -411,6 +523,18 @@ namespace Assets.Script.Card
                         {
                             ownerPlayer.CallMonster((MonsterCard)card, CardGameState.Back);
                         }
+                    }
+                    break;
+                case CardOperation.ChangeAttack:
+                    if(CanChangeToFrontAttack())
+                    {
+                        ChangeToFrontAttack();
+                    }
+                    break;
+                case CardOperation.ChangeDefense:
+                    if (CanChangeToFrontDefense())
+                    {
+                        ChangeToFrontDefense();
                     }
                     break;
                 default:

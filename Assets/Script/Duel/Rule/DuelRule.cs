@@ -19,6 +19,19 @@ namespace Assets.Script.Duel.Rule
         End//结束
     }
 
+    /// <summary>
+    /// 决斗结束原因
+    /// </summary>
+    public enum DuelEndReason
+    {
+        Unknown,//未知
+        Stop,//中途停止
+        Life,//生命值为0
+        Draw,//抽卡时卡牌数量为0
+        Special,//特殊效果
+        Surrender,//投降
+    }
+
     class DuelRule
     {
         public static readonly int drawCardNumberOnFirstDraw = 5;
@@ -28,10 +41,10 @@ namespace Assets.Script.Duel.Rule
 
         public static readonly int monsterAreaNumber = 5;
         public static readonly int monsterATKNumberEveryTurn = 1;
+        
+        public static readonly int monsterChangeAttackOrDefenseNumberEveryTurn = 1;
 
         public static readonly int startLife = 4000;
         public static readonly int lostLife = 0;
-
-
     }
 }
