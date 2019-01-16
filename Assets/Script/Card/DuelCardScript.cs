@@ -95,6 +95,7 @@ namespace Assets.Script.Card
         public void ShowFront()
         {
             cardImage.GetComponent<Image>().sprite = frontImage;
+            SetCanShowInfo(true);
         }
 
         /// <summary>
@@ -240,7 +241,7 @@ namespace Assets.Script.Card
 
         public void SetAttackNumber()
         {
-            SetAttackNumber(DuelRule.monsterATKNumberEveryTurn);
+            SetAttackNumber(DuelRuleManager.GetMonsterAttackNumberEveryTurn());
         }
 
         public int GetAttackNumber()
@@ -255,7 +256,7 @@ namespace Assets.Script.Card
 
         public void SetChangeAttackOrDefenseNumber()
         {
-            SetChangeAttackOrDefenseNumber(DuelRule.monsterChangeAttackOrDefenseNumberEveryTurn);
+            SetChangeAttackOrDefenseNumber(DuelRuleManager.GetMonsterChangeAttackOrDefenseNumberEveryTurn());
         }
 
         public int GetChangeAttackOrDefenseNumber()
@@ -317,6 +318,10 @@ namespace Assets.Script.Card
             }
         }
 
+        /// <summary>
+        /// 设置是否可以显示卡牌详细信息
+        /// </summary>
+        /// <param name="canShowInfo"></param>
         public void SetCanShowInfo(bool canShowInfo)
         {
             this.canShowInfo = canShowInfo;
@@ -345,7 +350,7 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
-                if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
+                if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
                     bool monsterAreaFull = true;
                     foreach (var item in ownerPlayer.monsterCardArea)
@@ -398,7 +403,7 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
-                if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
+                if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
                     bool monsterAreaFull = true;
                     foreach (var item in ownerPlayer.monsterCardArea)

@@ -32,6 +32,7 @@ namespace Assets.Script
 
         void Start()
         {
+            //audioScript.SetAudioByName(duelBgmName);
             GameManager.GetSingleInstance().GetDuelScene().Init();
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
 
@@ -102,7 +103,12 @@ namespace Assets.Script
         /// </summary>
         public void ResetDuelProcessPanelInfo()
         {
-            Color color = GameManager.GetSingleInstance().GetDuelScene().myPlayer.IsMyTurn() ? Color.green : Color.red;
+            if(!durlProcessPanel.activeSelf)
+            {
+                return;
+            }
+            bool isMyTurn = GameManager.GetSingleInstance().GetDuelScene().myPlayer.IsMyTurn();
+            Color color = isMyTurn ? Color.green : Color.red;
             int currentDuelProcess = (int)GameManager.GetSingleInstance().GetDuelScene().currentDuelProcess;
             for (int i = 1; i < durlProcessPanel.transform.GetChild(0).childCount; i++)
             {
@@ -126,7 +132,7 @@ namespace Assets.Script
                 {
                     if (durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>() != null)
                     {
-                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = true;
+                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = isMyTurn;
                     }
                     durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = color;
                 }

@@ -18,6 +18,7 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     Image deleteImage = null;
 
     CardGroupScript cardGroupScript = null;
+    GuessFirstSceneScript guessFirstSceneScript = null;
 
     void Awake()
     {
@@ -38,20 +39,34 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     /// <summary>
     /// 设置卡组名称
     /// </summary>
-    public void InitInfo(string cardCroupName,CardGroupScript cardGroupScript)
+    public void InitInfo(string cardCroupName,CardGroupScript cardGroupScript=null, GuessFirstSceneScript guessFirstSceneScript = null)
     {
         this.cardCroupName = cardCroupName;
         nameText.text = cardCroupName;
         this.cardGroupScript = cardGroupScript;
+        this.guessFirstSceneScript = guessFirstSceneScript;
+        //当是猜先场景使用时隐藏编辑和删除按钮
+        if(guessFirstSceneScript!=null)
+        {
+            gameObject.transform.GetChild(1).gameObject.SetActive(false);
+            gameObject.transform.GetChild(2).gameObject.SetActive(false);
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!isSelected)
+        if(cardGroupScript!=null)
         {
-            cardGroupScript.ClearAllSelectState();
-            cardGroupScript.SelectCardGroupByName(cardCroupName);
-            SetSelectState(true);
+            if (!isSelected)
+            {
+                cardGroupScript.ClearAllSelectState();
+                cardGroupScript.SelectCardGroupByName(cardCroupName);
+                SetSelectState(true);
+            }
+        }
+        if(guessFirstSceneScript!=null)
+        {
+            guessFirstSceneScript.SelectCardGroupByName(cardCroupName);
         }
     }
 
@@ -106,7 +121,10 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     /// </summary>
     public void EditCardGroup()
     {
-        cardGroupScript.EditCardGroupByName(cardCroupName);
+        if(cardGroupScript!=null)
+        {
+            cardGroupScript.EditCardGroupByName(cardCroupName);
+        }
     }
 
     /// <summary>
@@ -114,6 +132,9 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
     /// </summary>
     public void DeleteCardGroup()
     {
-        cardGroupScript.DeleteCardGroupByName(cardCroupName);
+        if (cardGroupScript != null)
+        {
+            cardGroupScript.DeleteCardGroupByName(cardCroupName);
+        }
     }
 }

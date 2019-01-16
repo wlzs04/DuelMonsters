@@ -29,8 +29,8 @@ namespace Assets.Script.Duel
         
         List<MonsterCard> sacrificeCards = new List<MonsterCard>();
 
-        public CardBase[] monsterCardArea = new CardBase[DuelRule.monsterAreaNumber];
-        protected CardBase[] magicTrapCardArea = new CardBase[DuelRule.monsterAreaNumber];
+        public CardBase[] monsterCardArea = new CardBase[5];
+        protected CardBase[] magicTrapCardArea = new CardBase[5];
 
         protected DuelScene duelScene = null;
         GameObject handPanel = null;
@@ -69,7 +69,7 @@ namespace Assets.Script.Duel
             }
         }
 
-        int normalCallNumber = DuelRule.drawCardNumberEveryTurn;
+        int normalCallNumber = DuelRuleManager.GetDrawNumberEveryTurn();
 
         public Player(string name, DuelScene duelScene)
         {
@@ -114,23 +114,21 @@ namespace Assets.Script.Duel
             if(this.guessEnum == GuessEnum.Unknown || guessEnum == GuessEnum.Unknown)
             {
                 this.guessEnum = guessEnum;
+                opponentPlayer.GuessFirstNotify(guessEnum);
                 return true;
             }
             return false;
         }
         
-        public virtual void SetCardGroup()
+        public virtual void SetCardGroup(UserCardGroup selectCardGroup)
         {
             if(duelCardGroup!=null)
             {
                 return;
             }
             duelCardGroup = new DuelCardGroup();
-
-            UserCardGroup firstCardGroup = GameManager.GetSingleInstance().GetUserData().userCardGroupList[0];
-            Debug.LogWarning("我方暂时使用第一个卡组。");
-
-            foreach (var item in firstCardGroup.mainCardList)
+            
+            foreach (var item in selectCardGroup.mainCardList)
             {
                 for (int i = 0; i < item.number; i++)
                 {
@@ -251,7 +249,7 @@ namespace Assets.Script.Duel
 
         public void SetLife(Scrollbar lifeScrollBar,Text lifeNumberText)
         {
-            life = DuelRule.startLife;
+            life = DuelRuleManager.GetPlayerStartLife();
             this.lifeScrollBar = lifeScrollBar;
             this.lifeNumberText = lifeNumberText;
         }
@@ -334,7 +332,7 @@ namespace Assets.Script.Duel
         /// </summary>
         public void DrawAtFirst()
         {
-            for (int i = 0; i < DuelRule.drawCardNumberOnFirstDraw; i++)
+            for (int i = 0; i < DuelRuleManager.GetDrawNumberOnStartDuel(); i++)
             {
                 Draw();
             }
@@ -355,10 +353,17 @@ namespace Assets.Script.Duel
             handCards.Add(card);
             card.SetCardGameState(CardGameState.Hand);
             
-            if (this==duelScene.myPlayer)
+            if (this == duelScene.myPlayer)
             {
                 card.cardObject.gameObject.GetComponent<DuelCardScript>().ShowFront();
                 card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
+            }
+            else if(this == duelScene.opponentPlayer)
+            {
+                if(GameManager.GetSingleInstance().GetUserData().showOpponentHandCard)
+                {
+                    card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
+                }
             }
 
             duelScene.ShowHelpInfoPanel();
@@ -422,19 +427,31 @@ namespace Assets.Script.Duel
         {
             playGameState = PlayGameState.Normal;
             duelScene.EnterDuelProcess(DuelProcess.Draw);
-            normalCallNumber = DuelRule.drawCardNumberEveryTurn;
-            if(GetDuelCardGroup().GetCards().Count<=0)
+
+            TimerFunction timerFunction = new TimerFunction();
+
+            timerFunction.SetFunction(0.5f, () => 
             {
-                duelScene.SetWinner(opponentPlayer,DuelEndReason.Draw);
-                return;
-            }
-            Draw();
-            duelScene.EnterDuelProcess(DuelProcess.Prepare);
-            duelScene.EnterDuelProcess(DuelProcess.Main);
-            //为场上怪兽添加攻守转换次数
+                normalCallNumber = DuelRuleManager.getc;
+                if (GetDuelCardGroup().GetCards().Count <= 0)
+                {
+                    duelScene.SetWinner(opponentPlayer, DuelEndReason.Draw);
+                    return;
+                }
+                Draw();
+            });
+
+            GameManager.AddTimerFunction(timerFunction);
+        }
+
+        /// <summary>
+        /// 为场上怪兽添加攻守转换次数
+        /// </summary>
+        public void CheckAndSetAllMonsterChangeAttackOrDefenseNumber()
+        {
             foreach (var item in monsterCardArea)
             {
-                if(item!=null)
+                if (item != null)
                 {
                     item.cardObject.GetComponent<DuelCardScript>().SetChangeAttackOrDefenseNumber();
                 }
@@ -446,7 +463,14 @@ namespace Assets.Script.Duel
         /// </summary>
         public virtual void ThinkAction()
         {
-
+            if (duelScene.currentDuelProcess == DuelProcess.Draw)
+            {
+                duelScene.EnterDuelProcess(DuelProcess.Prepare);
+            }
+            else if (duelScene.currentDuelProcess == DuelProcess.Prepare)
+            {
+                duelScene.EnterDuelProcess(DuelProcess.Main);
+            }
         }
         
         /// <summary>
@@ -746,7 +770,6 @@ namespace Assets.Script.Duel
 
             monsterCardArea[flag] = monsterCard;
             monsterCard.AddContent("monsterCardAreaIndex", flag);
-            monsterCard.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
             monsterCard.SetCardGameState(toCardGameState);
             monsterCard.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
             monsterCard.cardObject.transform.localPosition = new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.opponentMonsterCardPositionY, 1);
@@ -900,6 +923,14 @@ namespace Assets.Script.Duel
         /// 玩家投降通知
         /// </summary>
         public virtual void SurrenderNotify()
+        {
+
+        }
+
+        /// <summary>
+        /// 玩家猜先通知
+        /// </summary>
+        public virtual void GuessFirstNotify(GuessEnum guessEnum)
         {
 
         }

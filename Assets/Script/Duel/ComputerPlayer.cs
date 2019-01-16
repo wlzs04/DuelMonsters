@@ -44,8 +44,18 @@ namespace Assets.Script.Duel
         /// </summary>
         public override void ThinkAction()
         {
+            if(duelScene.currentDuelProcess == DuelProcess.Draw)
+            {
+                duelScene.EnterDuelProcess(DuelProcess.Prepare);
+                return;
+            }
+            else if (duelScene.currentDuelProcess == DuelProcess.Prepare)
+            {
+                duelScene.EnterDuelProcess(DuelProcess.Main);
+                return;
+            }
             //在主要流程中
-            if (duelScene.currentDuelProcess == DuelProcess.Main)
+            else if (duelScene.currentDuelProcess == DuelProcess.Main)
             {
                 //先召唤怪兽
                 if (CanCallMonster())
@@ -61,7 +71,7 @@ namespace Assets.Script.Duel
                             {
                                 string sacrificeInfo = "";
                                 int index = 0;
-                                for (int i = 0; i < DuelRule.monsterAreaNumber; i++)
+                                for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
                                 {
                                     if (monsterCardArea[i] != null)
                                     {
@@ -82,7 +92,7 @@ namespace Assets.Script.Duel
                             }
                             else
                             {
-                                for (int i = 0; i < DuelRule.monsterAreaNumber; i++)
+                                for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
                                 {
                                     if (monsterCardArea[i] == null)
                                     {

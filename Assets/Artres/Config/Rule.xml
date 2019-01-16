@@ -11,5 +11,8 @@
     <Record id="8" value="4000" description="决斗初始血量"/>
     <Record id="9" value="1" description="每个怪兽在战斗流程可以进行攻击的次数"/>
     <Record id="10" value="1" description="自己回合每个怪兽可以进行攻守转换的次数"/>
+    <Record id="11" value="4" description="怪兽不需要祭品召唤的最大等级"/>
+    <Record id="12" value="6" description="怪兽需要一只祭品召唤的最大等级"/>
+    <Record id="13" value="5" description="玩家怪兽区的数量"/>
   </RecordList>
 </Rule>

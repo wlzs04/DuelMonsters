@@ -1,5 +1,6 @@
 using Assets.Script.Card;
 using Assets.Script.Duel;
+using Assets.Script.Duel.Rule;
 using Assets.Script.Helper;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -69,6 +70,8 @@ namespace Assets.Script
             Texture2D texture = new Texture2D(177, 254);
             www.LoadImageIntoTexture(texture);
             cardBackImage = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+
+            DuelRuleManager.InitDuelRule();
         }
         
         public static GameManager GetSingleInstance()
@@ -384,8 +387,14 @@ namespace Assets.Script
         /// </summary>
         public void CloseNet()
         {
-            clientManager.StopConnect();
-            serverManager.StopListen();
+            if(clientManager!=null)
+            {
+                clientManager.StopConnect();
+            }
+            if(serverManager != null)
+            {
+                serverManager.StopListen();
+            }
         }
         
         void ProcessProtocolEvent(ClientProtocol protocol)
@@ -403,38 +412,6 @@ namespace Assets.Script
         }
 
         /// <summary>
-        /// 设定我方猜先选择
-        /// </summary>
-        /// <param name="guessEnum"></param>
-        /// <returns></returns>
-        public bool SetMyGuess(GuessEnum guessEnum)
-        {
-            if (duelScene != null)
-            {
-                if(duelScene.myPlayer.SetGuessEnum(guessEnum))
-                {
-                    if(duelScene.GetDuelMode()==DuelMode.Net)
-                    {
-                        CGuessFirst guessFirst = new CGuessFirst();
-                        guessFirst.AddContent("guess", duelScene.myPlayer.GetGuessEnum().ToString());
-                        clientManager.SendProtocol(guessFirst);
-                    }
-                    DecideGuessFirst();
-                    return true;
-                }
-                else
-                {
-                    ShowMessage("选择后不能修改！");
-                }
-            }
-            else
-            {
-                Debug.LogError("SetMyGuess");
-            }
-            return false;
-        }
-
-        /// <summary>
         /// 停止决斗
         /// </summary>
         public void StopDuel()
@@ -443,85 +420,23 @@ namespace Assets.Script
             duelScene = null;
             CloseNet();
         }
-
+        
         /// <summary>
         /// 设置对方猜先的选择
         /// </summary>
         /// <param name="opponentGuess"></param>
-        public void SetOpponentGuess(GuessEnum opponentGuess)
-        {
-            if (duelScene != null)
-            {
-                if (duelScene.opponentPlayer.SetGuessEnum(opponentGuess))
-                {
-                    GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuess - 1).GetComponent<GuessFirstScript>().SetChooseState();
-                    DecideGuessFirst();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 清空猜先选择
-        /// </summary>
-        public void ClearChoose()
-        {
-            GameObject.Find("myPanel").transform.GetChild((int)duelScene.myPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-
-            duelScene.myPlayer.SetGuessEnum(GuessEnum.Unknown);
-            duelScene.opponentPlayer.SetGuessEnum(GuessEnum.Unknown);
-        }
-
-        /// <summary>
-        /// 决定谁先出牌
-        /// </summary>
-        void DecideGuessFirst()
-        {
-            if(duelScene.GetDuelMode()==DuelMode.Single)
-            {
-                duelScene.opponentPlayer.SetGuessEnum((GuessEnum)UnityEngine.Random.Range(1, 4));
-                GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
-            }
-            GuessEnum myGuessEnum = duelScene.myPlayer.GetGuessEnum();
-            GuessEnum opponentGuessEnum = duelScene.opponentPlayer.GetGuessEnum();
-            if (myGuessEnum!=GuessEnum.Unknown&&opponentGuessEnum!=GuessEnum.Unknown)
-            {
-                if(myGuessEnum == opponentGuessEnum)
-                {
-                    TimerFunction reguessTimeFunction = new TimerFunction();
-                    reguessTimeFunction.SetFunction(1, () =>
-                    {
-                        ClearChoose();
-                    });
-
-                    AddTimerFunction(reguessTimeFunction);
-                    ShowMessage("双方选择相同，需重新选择！");
-
-                    return;
-                }
-
-                TimerFunction timeFunction =  new TimerFunction();
-                timeFunction.SetFunction(1,()=> 
-                {
-                    EnterDuelScene();
-                    audioScript.SetAudioByName(duelBgmName);
-                    int tempValue = (int)myGuessEnum - (int)opponentGuessEnum;
-                    if (tempValue == 1 || tempValue == -2)
-                    {
-                        ShowMessage("您先手！");
-                        duelScene.SetFirst(true);
-                    }
-                    else
-                    {
-                        ShowMessage("您后手！");
-                        duelScene.SetFirst(false);
-                    }
-                });
-
-                AddTimerFunction(timeFunction);
-            }
-        }
-
+        //public void SetOpponentGuess(GuessEnum opponentGuess)
+        //{
+        //    if (duelScene != null)
+        //    {
+        //        if (duelScene.opponentPlayer.SetGuessEnum(opponentGuess))
+        //        {
+        //            GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuess - 1).GetComponent<GuessFirstScript>().SetChooseState();
+        //            DecideGuessFirst();
+        //        }
+        //    }
+        //}
+        
         /// <summary>
         /// 弹出提示框
         /// </summary>

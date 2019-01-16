@@ -26,14 +26,14 @@ namespace Assets.Script.Config
     {
         [XmlArray("RecordList")]
         [XmlArrayItem("Record")]
-        public List<MagicTypeRecord> recordList;
+        public List<RuleRecord> recordList;
 
         public int GetRecordCount()
         {
             return recordList.Count;
         }
 
-        public MagicTypeRecord GetRecordById(int id)
+        public RuleRecord GetRecordById(int id)
         {
             return recordList[id];
         }

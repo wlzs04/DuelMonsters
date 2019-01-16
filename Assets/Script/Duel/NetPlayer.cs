@@ -102,11 +102,6 @@ namespace Assets.Script.Duel
             ClientManager.GetSingleInstance().SendProtocol(cSurrender);
         }
 
-        public override void SetCardGroup()
-        {
-            
-        }
-
         public override void SetCardGroupNotify(DuelCardGroup duelCardGroup)
         {
             CCardGroup cCardGroup = new CCardGroup();
@@ -121,6 +116,13 @@ namespace Assets.Script.Duel
 
             cCardGroup.AddContent("cardGroupList", stringBuilder.ToString());
             ClientManager.GetSingleInstance().SendProtocol(cCardGroup);
+        }
+
+        public override void GuessFirstNotify(GuessEnum guessEnum)
+        {
+            CGuessFirst guessFirst = new CGuessFirst();
+            guessFirst.AddContent("guess", guessEnum.ToString());
+            ClientManager.GetSingleInstance().SendProtocol(guessFirst);
         }
     }
 }

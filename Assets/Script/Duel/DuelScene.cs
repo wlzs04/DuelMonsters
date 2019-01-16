@@ -33,6 +33,7 @@ namespace Assets.Script.Duel
         DuelMode duelMode = DuelMode.Unknown;
 
         public Player myPlayer = null;//我方玩家
+        string myCardGroupName;//我方玩家卡组名称
         public Player opponentPlayer = null;//敌方玩家
 
         public bool myFirst = false;
@@ -252,8 +253,8 @@ namespace Assets.Script.Duel
         /// </summary>
         public void CheckWinByLife()
         {
-            bool ilost = myPlayer.GetLife() <= DuelRule.lostLife;
-            bool iWin = opponentPlayer.GetLife() <= DuelRule.lostLife;
+            bool ilost = myPlayer.GetLife() <= 0;
+            bool iWin = opponentPlayer.GetLife() <= 0;
             if(!(iWin|| ilost))
             {
                 return;
@@ -312,14 +313,19 @@ namespace Assets.Script.Duel
             card.cardObject.GetComponent<DuelCardScript>().GetOwner().MoveCardToTomb(card);
         }
 
+        public void SetMyPlayerCardGroupName(string myCardGroupName)
+        {
+            this.myCardGroupName = myCardGroupName;
+        }
+
         /// <summary>
         /// 初始化决斗场景
         /// </summary>
         public void Init()
         {
             AddControlFromScene();
-            myPlayer.SetCardGroup();
-            opponentPlayer.SetCardGroup();
+            myPlayer.SetCardGroup(GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(myCardGroupName));
+            opponentPlayer.SetCardGroup(GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(myCardGroupName));
         }
 
         /// <summary>
@@ -400,10 +406,14 @@ namespace Assets.Script.Duel
         public void EndTurn()
         {
             EnterDuelProcess(DuelProcess.End);
-            if (currentPlayer == myPlayer)
-            {
-                opponentPlayer.EndTurnNotify();
-            }
+        }
+
+        /// <summary>
+        /// 切换当前玩家一般在结束回合后调用
+        /// </summary>
+        /// <param name="player"></param>
+        public void ChangeCurrentPlayer()
+        {
             currentTurnNumber++;
             currentDuelProcess = DuelProcess.Unknown;
             currentPlayer = currentPlayer == myPlayer ? opponentPlayer : myPlayer;
@@ -459,6 +469,7 @@ namespace Assets.Script.Duel
                     break;
             }
             currentDuelProcess = duelProcess;
+            duelSceneScript.ResetDuelProcessPanelInfo();
             string ex = currentPlayer == myPlayer ? "我方进入" : "对方进入";
             switch (duelProcess)
             {
@@ -472,6 +483,7 @@ namespace Assets.Script.Duel
                     GameManager.ShowMessage(ex + "准备流程！");
                     break;
                 case DuelProcess.Main:
+                    BeginMainDuelProcessEvent();
                     GameManager.ShowMessage(ex + "主要流程！");
                     break;
                 case DuelProcess.Battle:
@@ -487,14 +499,23 @@ namespace Assets.Script.Duel
                 default:
                     break;
             }
-            if(myPlayer.IsMyTurn())
+            currentPlayer.GetOpponentPlayer().EnterDuelNotify(currentDuelProcess);
+            TimerFunction timerFunction = new TimerFunction();
+            if(duelProcess== DuelProcess.End)
             {
-                opponentPlayer.EnterDuelNotify(currentDuelProcess);
+                timerFunction.SetFunction(1, () =>
+                {
+                    ChangeCurrentPlayer();
+                });
             }
-            if(opponentPlayer.IsMyTurn())
+            else
             {
-                opponentPlayer.ThinkAction();
+                timerFunction.SetFunction(1, () =>
+                {
+                    currentPlayer.ThinkAction();
+                });
             }
+            GameManager.AddTimerFunction(timerFunction);
         }
 
         /// <summary>
@@ -503,6 +524,14 @@ namespace Assets.Script.Duel
         void BeginBattleDuelProcessEvent()
         {
              currentPlayer.CheckAndShowAllMonsterCanAttack();
+        }
+
+        /// <summary>
+        /// 开始主要流程事件
+        /// </summary>
+        void BeginMainDuelProcessEvent()
+        {
+            currentPlayer.CheckAndSetAllMonsterChangeAttackOrDefenseNumber();
         }
 
         /// <summary>
@@ -521,7 +550,7 @@ namespace Assets.Script.Duel
             return false;
         }
         
-        // 带有Opponent前缀的方法
+        //带有Opponent前缀的方法
 
         /// <summary>
         /// 对方抽牌

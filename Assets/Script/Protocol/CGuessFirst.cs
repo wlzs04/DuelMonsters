@@ -1,4 +1,4 @@
-﻿using Assets.Script.Net;
+using Assets.Script.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace Assets.Script.Protocol
         public override void Process()
         {
             GuessEnum opponentGuess =(GuessEnum)Enum.Parse(typeof(GuessEnum),GetContent("guess"));
-            GameManager.GetSingleInstance().SetOpponentGuess(opponentGuess);
+            //GameManager.GetSingleInstance().SetOpponentGuess(opponentGuess);
 
         }
     }

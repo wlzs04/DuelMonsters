@@ -17,10 +17,12 @@ public class GuessFirstScript : MonoBehaviour, IPointerClickHandler
     public GuessEnum selectGuessEnum;
     float selectScale = 1.2f;
     public bool isMyChoose = false;
+
+    GuessFirstSceneScript guessFirstSceneScript = null;
     
     void Start()
     {
-
+        guessFirstSceneScript = GameObject.Find("Main Camera").GetComponent<GuessFirstSceneScript>();
     }
     
     void Update()
@@ -42,7 +44,7 @@ public class GuessFirstScript : MonoBehaviour, IPointerClickHandler
     {
         if(isMyChoose)
         {
-            if (GameManager.GetSingleInstance().SetMyGuess(selectGuessEnum))
+            if (guessFirstSceneScript.SetMyGuess(selectGuessEnum))
             {
                 SetChooseState();
             }
