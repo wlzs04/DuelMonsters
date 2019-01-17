@@ -14,8 +14,7 @@ namespace Assets.Script.Duel
     {
         public NetPlayer(DuelScene duelScene) : base("网络对手", duelScene)
         {
-
-
+            
         }
 
         public override void InitCardGroup()

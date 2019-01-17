@@ -232,7 +232,7 @@ public class CardGroupEditScript : MonoBehaviour
             Debug.LogError("在向卡组中添加卡牌时没有找到卡组：" + currentCardGroupName);
             return false;
         }
-        int cardNumberLimit = CardGroupRule.sameCardMaxNumber;
+        int cardNumberLimit = DuelRuleManager.GetSameCardNumberUpperLimit();
         List<UserCardData> typrCardGroup = null;
         switch (cardGroupType)
         {

@@ -1,8 +1,10 @@
 using Assets.Script;
+using Assets.Script.Config;
 using Assets.Script.Duel;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GuessFirstSceneScript : MonoBehaviour {
 
@@ -34,7 +36,6 @@ public class GuessFirstSceneScript : MonoBehaviour {
         {
             AddCardGroupItemToScrollView(item);
         }
-
     }
 
     void Update()
@@ -114,17 +115,33 @@ public class GuessFirstSceneScript : MonoBehaviour {
             }
 
             int tempValue = (int)myGuessEnum - (int)opponentGuessEnum;
+            StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
+            string title;
             if (tempValue == 1 || tempValue == -2)
             {
                 iGuessWin = true;
+                title = stringResConfig.GetRecordById(13).value;
             }
             else
             {
                 iGuessWin = false;
+                title = stringResConfig.GetRecordById(14).value;
             }
             selectCardGroupPanel.SetActive(false);
             guessFirstPanel.SetActive(false);
             selectFirstPanel.SetActive(true);
+            selectFirstPanel.transform.GetChild(0).GetComponent<Text>().text = title;
+            if(!iGuessWin)
+            {
+                TimerFunction timerFunction = new TimerFunction();
+                timerFunction.SetFunction(2, () => 
+                {
+                    GameManager.ShowMessage("您先手！");
+                    duelScene.SetFirst(true);
+                    GameManager.GetSingleInstance().EnterDuelScene();
+                });
+                GameManager.AddTimerFunction(timerFunction);
+            }
         }
     }
 
@@ -147,15 +164,16 @@ public class GuessFirstSceneScript : MonoBehaviour {
     {
         if(iGuessWin)
         {
+            GameManager.ShowMessage("您先手！");
             TimerFunction timeFunction = new TimerFunction();
             timeFunction.SetFunction(1, () =>
             {
-                GameManager.ShowMessage("您先手！");
                 duelScene.SetFirst(true);
                 GameManager.GetSingleInstance().EnterDuelScene();
             });
 
             GameManager.AddTimerFunction(timeFunction);
+            selectFirstPanel.SetActive(false);
         }
         else
         {
@@ -170,15 +188,16 @@ public class GuessFirstSceneScript : MonoBehaviour {
     {
         if (iGuessWin)
         {
+            GameManager.ShowMessage("您后手！");
             TimerFunction timeFunction = new TimerFunction();
             timeFunction.SetFunction(1, () =>
             {
-                GameManager.ShowMessage("您后手！");
                 duelScene.SetFirst(false);
                 GameManager.GetSingleInstance().EnterDuelScene();
             });
 
             GameManager.AddTimerFunction(timeFunction);
+            selectFirstPanel.SetActive(false);
         }
         else
         {

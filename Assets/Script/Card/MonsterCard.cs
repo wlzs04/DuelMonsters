@@ -134,9 +134,9 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public int NeedSacrificeMonsterNumer()
         {
-            if(GetLevel()>DuelRule.callMonsterWithoutSacrificeMaxLevel)
+            if(GetLevel()>DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
             {
-                if(GetLevel() > DuelRule.callMonsterWithOneSacrificeMaxLevel)
+                if(GetLevel() > DuelRuleManager.GetCallMonsterWithOneSacrificeLevelUpperLimit())
                 {
                     return 2;
                 }

@@ -42,7 +42,8 @@ namespace Assets.Script.Card
         GameObject cardImage = null;
         GameObject attackImage = null;
         GameObject borderImage = null;
-
+        GameObject attackAndDefenseText = null;
+        
         Sprite frontImage = null;
 
         bool haveBeChosen = false;
@@ -57,6 +58,8 @@ namespace Assets.Script.Card
             attackImage = gameObject.transform.GetChild(1).gameObject;
             operationPanelTransform = gameObject.transform.GetChild(2);
             borderImage = gameObject.transform.GetChild(3).gameObject;
+            attackAndDefenseText = gameObject.transform.GetChild(4).gameObject;
+            attackAndDefenseText.GetComponent<Text>().text = "";
         }
 
         void Update()
@@ -79,6 +82,11 @@ namespace Assets.Script.Card
         {
             this.card = card;
             frontImage = card.GetImage();
+        }
+
+        public CardBase GetCard()
+        {
+            return card;
         }
 
         /// <summary>
@@ -172,47 +180,67 @@ namespace Assets.Script.Card
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (ownerPlayer.GetPlayGameState() == PlayGameState.ChooseSacrifice && !haveBeChosen && card.GetCardType() == CardType.Monster)
+            if(card.GetCardGameState() == CardGameState.FrontAttack || 
+                card.GetCardGameState() == CardGameState.FrontDefense ||
+                card.GetCardGameState() == CardGameState.Back)
             {
-                int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
-                if (tempInt > 0)
+                if (ownerPlayer.GetPlayGameState() == PlayGameState.ChooseSacrifice && !haveBeChosen && card.GetCardType() == CardType.Monster)
                 {
-                    if (ownerPlayer.CanChooseMonsterAsSacrifice((MonsterCard)card))
+                    int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
+                    if (tempInt > 0)
                     {
-                        haveBeChosen = true;
-                        ChooseThisCard();
-                        ownerPlayer.TrySacrificeCall();
-                    }
-                }
-            }
-            if(ownerPlayer.CanBattle())
-            {
-                if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
-                {
-                    Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
-                    if (opponentPlayer.CanBeDirectAttacked() &&
-                        !opponentPlayer.HaveBeAttackedMonster() &&
-                        ownerPlayer.CanDirectAttack && ((MonsterCard)card).CanDirectAttack)
-                    {
-                        duelScene.SetAttackAnimationFinishEvent(() =>
+                        if (ownerPlayer.CanChooseMonsterAsSacrifice((MonsterCard)card))
                         {
-                            ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(card.GetID());
-
-                            duelScene.AttackDirect((MonsterCard)card);
-                        });
-                        duelScene.StartPlayAttackAnimation(GetPosition(), ownerPlayer.GetOpponentPlayer().GetHeartPosition());
-                        return;
-                    }
-                    else
-                    {
-                        PrepareAttack();
-                        duelScene.SetCanChoose(true);
-                        duelScene.ChooseCard(card);
-                        return;
+                            haveBeChosen = true;
+                            ChooseThisCard();
+                            ownerPlayer.TrySacrificeCall();
+                        }
                     }
                 }
+
+                if (ownerPlayer.CanBattle())
+                {
+                    if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
+                    {
+                        Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
+                        if (opponentPlayer.CanBeDirectAttacked() &&
+                            !opponentPlayer.HaveBeAttackedMonster() &&
+                            ownerPlayer.CanDirectAttack && ((MonsterCard)card).CanDirectAttack)
+                        {
+                            card.cardObject.GetComponent<DuelCardScript>().Attack();
+                            duelScene.SetAttackAnimationFinishEvent(() =>
+                            {
+                                ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(card.GetID());
+
+                                duelScene.AttackDirect((MonsterCard)card);
+                            });
+                            duelScene.StartPlayAttackAnimation(GetPosition(), ownerPlayer.GetOpponentPlayer().GetHeartPosition());
+                            return;
+                        }
+                        else
+                        {
+                            PrepareAttack();
+                            duelScene.SetCanChoose(true);
+                            duelScene.ChooseCard(card);
+                            return;
+                        }
+                    }
+                }
+                duelScene.ChooseCard(card);
             }
-            duelScene.ChooseCard(card);
+            else if(card.GetCardGameState() == CardGameState.Tomb ||
+                card.GetCardGameState() == CardGameState.Exclusion)
+            {
+                duelScene.ShowCardList(ownerPlayer, card.GetCardGameState());
+            }
+            else if(card.GetCardGameState() == CardGameState.Hand)
+            {
+                if(ownerPlayer==duelScene.myPlayer && ownerPlayer.GetNeedDiscardCardNumberInHand()>0)
+                {
+                    ownerPlayer.MoveCardToTomb(card);
+                    ownerPlayer.AddNeedDiscardCardNumberInHand(-1);
+                }
+            }
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -237,6 +265,11 @@ namespace Assets.Script.Card
         public void SetAttackNumber(int number)
         {
             attackNumber = number;
+        }
+
+        public void SetAttackAndDefenseText(string text)
+        {
+            attackAndDefenseText.GetComponent<Text>().text = text;
         }
 
         public void SetAttackNumber()

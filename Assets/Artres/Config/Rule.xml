@@ -14,5 +14,6 @@
     <Record id="11" value="4" description="怪兽不需要祭品召唤的最大等级"/>
     <Record id="12" value="6" description="怪兽需要一只祭品召唤的最大等级"/>
     <Record id="13" value="5" description="玩家怪兽区的数量"/>
+    <Record id="14" value="1" description="每回合可进行通常召唤的次数"/>
   </RecordList>
 </Rule>

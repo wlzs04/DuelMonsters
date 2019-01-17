@@ -106,7 +106,7 @@ namespace Assets.Script.Duel.Rule
         /// 每到自己回合抽卡数量
         /// </summary>
         /// <returns></returns>
-        public static int GetDrawNumberEveryTurn() 
+        public static int GetDrawNumberEveryTurn()
         {
             return ruleConfig.GetRecordById(6).value;
         }
@@ -172,6 +172,15 @@ namespace Assets.Script.Duel.Rule
         public static int GetMonsterAreaNumber()
         {
             return ruleConfig.GetRecordById(13).value;
+        }
+
+        /// <summary>
+        /// 每回合可进行通常召唤的次数
+        /// </summary>
+        /// <returns></returns>
+        public static int GetNormalCallMonsterNumber()
+        {
+            return ruleConfig.GetRecordById(14).value;
         }
     }
 }

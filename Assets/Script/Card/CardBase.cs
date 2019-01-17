@@ -119,6 +119,7 @@ namespace Assets.Script.Card
         public void SetCardGameState(CardGameState cardGameState)
         {
             this.cardGameState = cardGameState;
+            cardObject.GetComponent<DuelCardScript>().SetAttackAndDefenseText("");
 
             switch (cardGameState)
             {
@@ -129,18 +130,31 @@ namespace Assets.Script.Card
                 case CardGameState.Hand:
                     break;
                 case CardGameState.FrontAttack:
+                { 
                     cardObject.GetComponent<DuelCardScript>().ShowFront();
                     cardObject.GetComponent<DuelCardScript>().SetCardAngle(0);
+                    MonsterCard monsterCard = (MonsterCard)this;
+                    string attackAndDefenseText = "<color=#FF0000FF>"+ monsterCard.GetAttackNumber() + "</color>/";
+                    attackAndDefenseText += "<color=#000000FF>" + monsterCard.GetDefenseNumber() + "</color>";
+                    cardObject.GetComponent<DuelCardScript>().SetAttackAndDefenseText(attackAndDefenseText);
                     break;
+                }
                 case CardGameState.FrontDefense:
+                {
                     cardObject.GetComponent<DuelCardScript>().ShowFront();
                     cardObject.GetComponent<DuelCardScript>().SetCardAngle(90);
+                    MonsterCard monsterCard = (MonsterCard)this;
+                    string attackAndDefenseText = "<color=#000000FF>" + monsterCard.GetAttackNumber() + "</color>/";
+                    attackAndDefenseText += "<color=#00FF00FF>" + monsterCard.GetDefenseNumber() + "</color>";
+                    cardObject.GetComponent<DuelCardScript>().SetAttackAndDefenseText(attackAndDefenseText);
                     break;
+                }
                 case CardGameState.Back:
                     cardObject.GetComponent<DuelCardScript>().ShowBack();
                     cardObject.GetComponent<DuelCardScript>().SetCardAngle(90);
                     break;
                 case CardGameState.Tomb:
+                    cardObject.transform.SetParent(GameManager.GetSingleInstance().GetDuelScene().duelBackImage.transform);
                     if (cardObject.GetComponent<DuelCardScript>().GetOwner().IsMyPlayer())
                     {
                         cardObject.transform.localPosition = new Vector3(DuelCommonValue.myTombPositionX, DuelCommonValue.myTombPositionY, 0);

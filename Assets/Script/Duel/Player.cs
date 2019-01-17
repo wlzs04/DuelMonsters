@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Assets.Script.Duel
@@ -56,6 +57,12 @@ namespace Assets.Script.Duel
 
         bool iamReady = false;//判断玩家是否准备完成
 
+        int normalCallNumber = DuelRuleManager.GetDrawNumberEveryTurn();
+
+        int needDiscardCardInHand = 0;
+
+        Dictionary<DuelEffectProcess, UnityAction> effectProcessMap=new Dictionary<DuelEffectProcess, UnityAction>();
+
         public bool CanDirectAttack
         {
             get
@@ -69,8 +76,6 @@ namespace Assets.Script.Duel
             }
         }
 
-        int normalCallNumber = DuelRuleManager.GetDrawNumberEveryTurn();
-
         public Player(string name, DuelScene duelScene)
         {
             if(this.name == "")
@@ -83,6 +88,33 @@ namespace Assets.Script.Duel
             }
 
             this.duelScene = duelScene;
+        }
+
+        /// <summary>
+        /// 获得手牌列表
+        /// </summary>
+        /// <returns></returns>
+        public List<CardBase> GetHandCards()
+        {
+            return handCards;
+        }
+
+        /// <summary>
+        /// 获得墓地卡牌牌列表
+        /// </summary>
+        /// <returns></returns>
+        public List<CardBase> GetTombCards()
+        {
+            return tombCards;
+        }
+
+        /// <summary>
+        /// 获得除外卡牌列表
+        /// </summary>
+        /// <returns></returns>
+        public List<CardBase> GetExceptCards()
+        {
+            return exceptCards;
         }
 
         public virtual void InitCardGroup()
@@ -187,6 +219,30 @@ namespace Assets.Script.Duel
         public Player GetOpponentPlayer()
         {
             return opponentPlayer;
+        }
+
+        /// <summary>
+        /// 添加效果处理
+        /// </summary>
+        public void AddEffectProcess(DuelEffectProcess duelEffectProcess,UnityAction unityAction)
+        {
+            effectProcessMap[duelEffectProcess] = unityAction;
+        }
+
+        /// <summary>
+        /// 添加需要丢弃手卡
+        /// </summary>
+        public void AddNeedDiscardCardNumberInHand(int needDiscardCardInHand)
+        {
+            this.needDiscardCardInHand += needDiscardCardInHand;
+        }
+
+        /// <summary>
+        /// 获得需要丢弃手卡的数量
+        /// </summary>
+        public int GetNeedDiscardCardNumberInHand()
+        {
+            return needDiscardCardInHand;
         }
 
         /// <summary>
@@ -432,7 +488,7 @@ namespace Assets.Script.Duel
 
             timerFunction.SetFunction(0.5f, () => 
             {
-                normalCallNumber = DuelRuleManager.getc;
+                normalCallNumber = DuelRuleManager.GetNormalCallMonsterNumber();
                 if (GetDuelCardGroup().GetCards().Count <= 0)
                 {
                     duelScene.SetWinner(opponentPlayer, DuelEndReason.Draw);
@@ -564,8 +620,9 @@ namespace Assets.Script.Duel
         public void ReduceLife(int life)
         {
             this.life -= life;
-            lifeScrollBar.size =(float)this.life / DuelRule.startLife;
-            lifeNumberText.text = this.life + "/" + DuelRule.startLife;
+            this.life = this.life > 0 ? this.life : 0;
+            lifeScrollBar.size =(float)this.life / DuelRuleManager.GetPlayerStartLife();
+            lifeNumberText.text = this.life + "/" + DuelRuleManager.GetPlayerStartLife();
             duelScene.CheckWinByLife();
         }
 
@@ -602,10 +659,10 @@ namespace Assets.Script.Duel
                 if (normalCallNumber > 0)
                 {
                     //先判断是否可以直接进行召唤
-                    if (monsterCard.GetLevel() <= DuelRule.callMonsterWithoutSacrificeMaxLevel)
+                    if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                     {
                         int index = 0;
-                        for (; index < DuelRule.monsterAreaNumber; index++)
+                        for (; index < DuelRuleManager.GetMonsterAreaNumber(); index++)
                         {
                             if (monsterCardArea[index] == null)
                             {
@@ -666,7 +723,7 @@ namespace Assets.Script.Duel
                     MoveCardToTomb(item);
                 }
                 int index = 0;
-                for (; index < DuelRule.monsterAreaNumber; index++)
+                for (; index < DuelRuleManager.GetMonsterAreaNumber(); index++)
                 {
                     if (monsterCardArea[index] == null)
                     {
@@ -766,7 +823,7 @@ namespace Assets.Script.Duel
                 }
             }
 
-            int index = DuelRule.monsterAreaNumber - flag - 1;
+            int index = DuelRuleManager.GetMonsterAreaNumber() - flag - 1;
 
             monsterCardArea[flag] = monsterCard;
             monsterCard.AddContent("monsterCardAreaIndex", flag);
@@ -851,6 +908,16 @@ namespace Assets.Script.Duel
                 case CardGameState.Group:
                     break;
                 case CardGameState.Hand:
+                    handCards.Remove(card);
+                    tombCards.Add(card);
+                    if (effectProcessMap.ContainsKey(DuelEffectProcess.Discard))
+                    {
+                        UnityAction action = effectProcessMap[DuelEffectProcess.Discard];
+                        effectProcessMap.Remove(DuelEffectProcess.Discard);
+                        TimerFunction timerFunction = new TimerFunction();
+                        timerFunction.SetFunction(0.5f, action);
+                        GameManager.AddTimerFunction(timerFunction);
+                    }
                     break;
                 case CardGameState.FrontAttack:
                 case CardGameState.FrontDefense:
@@ -867,7 +934,6 @@ namespace Assets.Script.Duel
                 default:
                     break;
             }
-
             card.SetCardGameState(CardGameState.Tomb);
         }
 

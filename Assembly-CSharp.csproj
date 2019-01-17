@@ -93,8 +93,8 @@
     <Compile Include="Assets\Script\Duel\DuelScene.cs" />
     <Compile Include="Assets\Script\Duel\NetPlayer.cs" />
     <Compile Include="Assets\Script\Duel\Player.cs" />
-    <Compile Include="Assets\Script\DuelSceneScript.cs" />
     <Compile Include="Assets\Script\Duel\Rule\DuelRuleManager.cs" />
+    <Compile Include="Assets\Script\DuelSceneScript.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
     <Compile Include="Assets\Script\GameState.cs" />
     <Compile Include="Assets\Script\GuessFirstSceneScript.cs" />

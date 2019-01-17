@@ -1,5 +1,6 @@
 using Assets.Script.Card;
 using Assets.Script.Config;
+using Assets.Script.Duel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,14 @@ namespace Assets.Script
         GameObject durlProcessPanel = null;
         GameObject attackOrDefensePanel = null;
         GameObject helpInfoPanel = null;
+        GameObject cardListPanel = null;
+        Transform cardListContentTransform = null;
 
         UnityAction<CardGameState> selectAttackOrDefenseFinishAction = null;
 
         Image cardImage;
+
+        DuelScene duelScene = null;
 
         private void Awake()
         {
@@ -33,7 +38,8 @@ namespace Assets.Script
         void Start()
         {
             //audioScript.SetAudioByName(duelBgmName);
-            GameManager.GetSingleInstance().GetDuelScene().Init();
+            duelScene = GameManager.GetSingleInstance().GetDuelScene();
+            duelScene.Init();
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
 
             durlProcessPanel = GameObject.Find("DuelProcessPanel");
@@ -48,6 +54,11 @@ namespace Assets.Script
 
             attackOrDefensePanel = GameObject.Find("AttackOrDefensePanel");
             attackOrDefensePanel.SetActive(false);
+
+            cardListPanel = GameObject.Find("CardListPanel");
+            cardListContentTransform = cardListPanel.transform.GetChild(0).GetChild(0).GetChild(0);
+            cardListPanel.SetActive(false);
+            
         }
 
         /// <summary>
@@ -228,6 +239,43 @@ namespace Assets.Script
             StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
             helpInfoPanel.transform.Find("MyRemainCardNumberText").GetComponent<Text>().text = stringResConfig.GetRecordById(8).value + myRemainCardNumberText;
             helpInfoPanel.transform.Find("OpponentRemainCardNumberText").GetComponent<Text>().text = stringResConfig.GetRecordById(8).value + opponentRemainCardNumberText;
+        }
+
+        /// <summary>
+        /// 显示卡牌列表面板
+        /// </summary>
+        public void ShowCardListPanel(List<CardBase> cardList,string title)
+        {
+            cardListPanel.SetActive(true);
+            cardListPanel.transform.GetChild(1).GetComponent<Text>().text = title;
+            foreach (var item in cardList)
+            {
+                item.cardObject.transform.SetParent(cardListContentTransform);
+            }
+        }
+
+        /// <summary>
+        /// 卡牌列表面板是否显示
+        /// </summary>
+        /// <returns></returns>
+        public bool CardListPanelIsShowing()
+        {
+            return cardListPanel.activeSelf;
+        }
+
+        /// <summary>
+        /// 隐藏卡牌列表面板
+        /// </summary>
+        public void HideCardListPanel()
+        {
+            cardListPanel.SetActive(false);
+            for (int i = 0; i < cardListContentTransform.childCount; i++)
+            {
+                CardBase card = cardListContentTransform.GetChild(i).GetComponent<DuelCardScript>().GetCard();
+                card.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
+                card.SetCardGameState(card.GetCardGameState());
+            }
+            //GameManager.CleanPanelContent(cardListContentTransform);
         }
     }
 }

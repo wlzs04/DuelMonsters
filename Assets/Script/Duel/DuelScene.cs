@@ -1,4 +1,5 @@
 using Assets.Script.Card;
+using Assets.Script.Config;
 using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -21,6 +22,16 @@ namespace Assets.Script.Duel
         Unknown,//未知
         Single,//单人
         Net//网络
+    }
+
+    /// <summary>
+    /// 决斗中的效果处理，用于执行回调
+    /// </summary>
+    public enum DuelEffectProcess
+    {
+        Unknown,//未知
+        Draw,//抽卡
+        Discard,//丢弃卡牌
     }
 
     /// <summary>
@@ -125,6 +136,11 @@ namespace Assets.Script.Duel
             else if(duelSceneScript.AttackOrDefensePanelIsShowing())
             {
                 //如果攻击防御选择面板正在显示，则不做处理。
+            }
+            else if (duelSceneScript.CardListPanelIsShowing())
+            {
+                //如果卡牌列表正在显示，则隐藏。
+                duelSceneScript.HideCardListPanel();
             }
             else
             {
@@ -236,6 +252,33 @@ namespace Assets.Script.Duel
         public void AttackDirect(MonsterCard card)
         {
             card.cardObject.GetComponent<DuelCardScript>().GetOwner().GetOpponentPlayer().ReduceLife(card.GetAttackNumber());
+        }
+
+        /// <summary>
+        /// 显示指定玩家当前指定类型的卡牌列表
+        /// </summary>
+        /// <param name="ownerPlayer"></param>
+        /// <param name="cardGameState"></param>
+        public void ShowCardList(Player ownerPlayer, CardGameState cardGameState)
+        {
+            if(duelSceneScript.CardListPanelIsShowing())
+            {
+                return;
+            }
+            StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
+            string titleText = ownerPlayer==myPlayer? stringResConfig.GetRecordById(9).value: stringResConfig.GetRecordById(10).value;
+            switch (cardGameState)
+            {
+                case CardGameState.Tomb:
+                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetTombCards(), titleText+ stringResConfig.GetRecordById(11).value);
+                    break;
+                case CardGameState.Exclusion:
+                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetExceptCards(),titleText + stringResConfig.GetRecordById(12).value);
+                    break;
+                default:
+                    Debug.LogError("无法显示当前卡牌状态的列表:" + cardGameState);
+                    break;
+            }
         }
 
         public void StartPlayAttackAnimation(Vector3 fromPosition,Vector3 toPosition)
@@ -409,6 +452,23 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 在回合结束后检查手牌，如果手牌超过规定数量后进行丢弃
+        /// </summary>
+        public void CheckHandCardsWhenEndTurn()
+        {
+            if(currentPlayer.GetHandCards().Count>DuelRuleManager.GetHandCardNumberUpperLimit())
+            {
+                GameManager.ShowMessage("请丢弃多余手牌！");
+                currentPlayer.AddNeedDiscardCardNumberInHand(1);
+                currentPlayer.AddEffectProcess(DuelEffectProcess.Discard, CheckHandCardsWhenEndTurn);
+            }
+            else
+            {
+                ChangeCurrentPlayer();
+            }
+        }
+
+        /// <summary>
         /// 切换当前玩家一般在结束回合后调用
         /// </summary>
         /// <param name="player"></param>
@@ -505,7 +565,7 @@ namespace Assets.Script.Duel
             {
                 timerFunction.SetFunction(1, () =>
                 {
-                    ChangeCurrentPlayer();
+                    CheckHandCardsWhenEndTurn();
                 });
             }
             else

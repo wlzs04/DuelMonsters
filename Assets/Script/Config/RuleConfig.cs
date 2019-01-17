@@ -22,7 +22,7 @@ namespace Assets.Script.Config
     }
 
     [XmlRoot("Rule")]
-    class RuleConfig : ConfigBase
+    public class RuleConfig : ConfigBase
     {
         [XmlArray("RecordList")]
         [XmlArrayItem("Record")]

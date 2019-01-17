@@ -9,5 +9,11 @@
     <Record id="6" value="特殊召唤"/>
     <Record id="7" value="发动效果"/>
     <Record id="8" value="剩余卡牌数量:"/>
+    <Record id="9" value="我方"/>
+    <Record id="10" value="对方"/>
+    <Record id="11" value="墓地卡牌列表"/>
+    <Record id="12" value="除外卡牌列表"/>
+    <Record id="13" value="请选择"/>
+    <Record id="14" value="请等待对方选择"/>
   </RecordList>
 </StringRes>
