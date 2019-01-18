@@ -14,13 +14,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CCardGroup : ClientProtocol
     {
-        public CCardGroup() : base("CCardGroup") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CCardGroup();
-        }
-
         public override void Process()
         {
             GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.SetCardGroup(GetContent("cardGroupList"));

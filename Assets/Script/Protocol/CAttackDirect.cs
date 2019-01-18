@@ -13,13 +13,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CAttackDirect : ClientProtocol
     {
-        public CAttackDirect() : base("CAttackDirect") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CAttackDirect();
-        }
-
         public override void Process()
         {
             int cardID = int.Parse(GetContent("cardID"));

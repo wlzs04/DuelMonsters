@@ -33,7 +33,6 @@ namespace Assets.Script
         string saveFileName = "UserDate.xml";
         string cardResourceRootDirectory = "CardData";
         string bgmName = "DuelBGM";
-        string duelBgmName = "光宗信吉-神々の戦い";
         #endregion
 
         #region 用户和卡组信息
@@ -88,6 +87,15 @@ namespace Assets.Script
             audioScript.Init();
             audioScript.SetAudioByName(bgmName);
             audioScript.SetVolume(userData.audioValue);
+        }
+
+        /// <summary>
+        /// 播放指定音频文件
+        /// </summary>
+        /// <param name="audioName"></param>
+        public void SetAudioByName(string audioName)
+        {
+            audioScript.SetAudioByName(audioName);
         }
 
         /// <summary>
@@ -420,22 +428,6 @@ namespace Assets.Script
             duelScene = null;
             CloseNet();
         }
-        
-        /// <summary>
-        /// 设置对方猜先的选择
-        /// </summary>
-        /// <param name="opponentGuess"></param>
-        //public void SetOpponentGuess(GuessEnum opponentGuess)
-        //{
-        //    if (duelScene != null)
-        //    {
-        //        if (duelScene.opponentPlayer.SetGuessEnum(opponentGuess))
-        //        {
-        //            GameObject.Find("opponentPanel").transform.GetChild((int)opponentGuess - 1).GetComponent<GuessFirstScript>().SetChooseState();
-        //            DecideGuessFirst();
-        //        }
-        //    }
-        //}
         
         /// <summary>
         /// 弹出提示框

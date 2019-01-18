@@ -1,4 +1,4 @@
-﻿using Assets.Script.Card;
+using Assets.Script.Card;
 using Assets.Script.Duel;
 using Assets.Script.Net;
 using System;
@@ -15,13 +15,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CCallMonsterBySacrifice : ClientProtocol
     {
-        public CCallMonsterBySacrifice() : base("CCallMonsterBySacrifice") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CCallMonsterBySacrifice();
-        }
-
         public override void Process()
         {
             int cardID = int.Parse(GetContent("cardID"));

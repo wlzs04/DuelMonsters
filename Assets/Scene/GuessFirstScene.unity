@@ -726,6 +726,12 @@ MonoBehaviour:
   cardGroupScrollViewTransform: {fileID: 1925679175}
   cardGroupItemPrefab: {fileID: 1531878736500608, guid: 66738d5763a272545a964abc29aa5ead,
     type: 2}
+  myJiandao: {fileID: 978999112}
+  myShitou: {fileID: 1785465432}
+  myBu: {fileID: 2122499334}
+  opponentJiandao: {fileID: 321993920}
+  opponentShitou: {fileID: 1636432643}
+  opponentBu: {fileID: 2124514219}
 --- !u!1 &801060688
 GameObject:
   m_ObjectHideFlags: 0

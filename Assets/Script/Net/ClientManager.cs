@@ -45,7 +45,6 @@ namespace Assets.Script.Net
             {
                 AddLegalProtocol((ClientProtocol)assembly.CreateInstance(item.FullName));
             }
-            int y = 0;
         }
 
         public void StartConnect(string ip,int port)

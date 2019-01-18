@@ -91,6 +91,7 @@
     <Compile Include="Assets\Script\Duel\DuelCardGroup.cs" />
     <Compile Include="Assets\Script\Duel\DuelCommonValue.cs" />
     <Compile Include="Assets\Script\Duel\DuelScene.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\NetPlayer.cs" />
     <Compile Include="Assets\Script\Duel\Player.cs" />
     <Compile Include="Assets\Script\Duel\Rule\DuelRuleManager.cs" />
@@ -106,7 +107,6 @@
     <Compile Include="Assets\Script\Net\ClientProtocol.cs" />
     <Compile Include="Assets\Script\Net\Protocol.cs" />
     <Compile Include="Assets\Script\Net\ServerManager.cs" />
-    <Compile Include="Assets\Script\Net\ServerProtocol.cs" />
     <Compile Include="Assets\Script\Protocol\CAttackDirect.cs" />
     <Compile Include="Assets\Script\Protocol\CAttackMonster.cs" />
     <Compile Include="Assets\Script\Protocol\CCallMonster.cs" />
@@ -116,6 +116,7 @@
     <Compile Include="Assets\Script\Protocol\CEndTurn.cs" />
     <Compile Include="Assets\Script\Protocol\CEnterDuelProcess.cs" />
     <Compile Include="Assets\Script\Protocol\CGuessFirst.cs" />
+    <Compile Include="Assets\Script\Protocol\CSelectFristOrBack.cs" />
     <Compile Include="Assets\Script\Protocol\CStopDuel.cs" />
     <Compile Include="Assets\Script\Protocol\CSurrender.cs" />
     <Compile Include="Assets\Script\TimerFunction.cs" />

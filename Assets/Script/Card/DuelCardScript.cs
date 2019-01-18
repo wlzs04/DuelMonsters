@@ -178,6 +178,24 @@ namespace Assets.Script.Card
             return ownerPlayer;
         }
 
+        /// <summary>
+        /// 设置父控件
+        /// </summary>
+        /// <param name="parentTransform"></param>
+        public void SetParent(Transform parentTransform)
+        {
+            transform.SetParent(parentTransform);
+        }
+
+        /// <summary>
+        /// 设置新位置
+        /// </summary>
+        /// <param name="newPosition"></param>
+        public void SetLocalPosition(Vector3 newPosition)
+        {
+            transform.localPosition = newPosition;
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
             if(card.GetCardGameState() == CardGameState.FrontAttack || 
@@ -205,9 +223,9 @@ namespace Assets.Script.Card
                         Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
                         if (opponentPlayer.CanBeDirectAttacked() &&
                             !opponentPlayer.HaveBeAttackedMonster() &&
-                            ownerPlayer.CanDirectAttack && ((MonsterCard)card).CanDirectAttack)
+                            ownerPlayer.GetCanDirectAttack() && ((MonsterCard)card).CanDirectAttack)
                         {
-                            card.cardObject.GetComponent<DuelCardScript>().Attack();
+                            card.GetDuelCardScript().Attack();
                             duelScene.SetAttackAnimationFinishEvent(() =>
                             {
                                 ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(card.GetID());
@@ -385,16 +403,7 @@ namespace Assets.Script.Card
                 MonsterCard monsterCard = (MonsterCard)card;
                 if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
-                    bool monsterAreaFull = true;
-                    foreach (var item in ownerPlayer.monsterCardArea)
-                    {
-                        if (item == null)
-                        {
-                            monsterAreaFull = false;
-                            break;
-                        }
-                    }
-                    return !monsterAreaFull;
+                    return !ownerPlayer.MonsterAreaIsFull();
                 }
             }
             return false;
@@ -438,16 +447,7 @@ namespace Assets.Script.Card
                 MonsterCard monsterCard = (MonsterCard)card;
                 if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
-                    bool monsterAreaFull = true;
-                    foreach (var item in ownerPlayer.monsterCardArea)
-                    {
-                        if (item == null)
-                        {
-                            monsterAreaFull = false;
-                            break;
-                        }
-                    }
-                    return !monsterAreaFull;
+                    return !ownerPlayer.MonsterAreaIsFull();
                 }
                 else if(monsterCard.NeedSacrificeMonsterNumer() > 0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= monsterCard.NeedSacrificeMonsterNumer())
                 {

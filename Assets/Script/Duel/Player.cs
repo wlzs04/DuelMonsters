@@ -23,28 +23,34 @@ namespace Assets.Script.Duel
     public class Player
     {
         string name = "玩家";
+
+        #region 卡牌
+
         protected DuelCardGroup duelCardGroup;
         protected List<CardBase> handCards = new List<CardBase>();
         protected List<CardBase> tombCards = new List<CardBase>();
         protected List<CardBase> exceptCards = new List<CardBase>();
-        
-        List<MonsterCard> sacrificeCards = new List<MonsterCard>();
 
-        public CardBase[] monsterCardArea = new CardBase[5];
-        protected CardBase[] magicTrapCardArea = new CardBase[5];
+        protected List<MonsterCard> sacrificeCards = new List<MonsterCard>();
+
+        protected CardBase[] monsterCardArea = new CardBase[DuelRuleManager.GetMonsterAreaNumber()];
+        protected CardBase[] magicTrapCardArea = new CardBase[DuelRuleManager.GetMonsterAreaNumber()];
+
+        #endregion
 
         protected DuelScene duelScene = null;
-        GameObject handPanel = null;
-        Scrollbar lifeScrollBar = null;
-        Text lifeNumberText = null;
-        int life = 4000;
-
+        protected string cardGroupName;//我方玩家卡组名称
         Player opponentPlayer = null;
 
+        GameObject handPanel = null;
+        protected Scrollbar lifeScrollBar = null;
+        protected Text lifeNumberText = null;
+        protected Vector3 heartPosition;
+        protected int life = 4000;
+        
         bool canBeDirectAttacked = true;
         bool canDirectAttack = true;
 
-        Vector3 heartPosition;
 
         PlayGameState playGameState;
 
@@ -62,19 +68,6 @@ namespace Assets.Script.Duel
         int needDiscardCardInHand = 0;
 
         Dictionary<DuelEffectProcess, UnityAction> effectProcessMap=new Dictionary<DuelEffectProcess, UnityAction>();
-
-        public bool CanDirectAttack
-        {
-            get
-            {
-                return canDirectAttack;
-            }
-
-            set
-            {
-                canDirectAttack = value;
-            }
-        }
 
         public Player(string name, DuelScene duelScene)
         {
@@ -117,15 +110,41 @@ namespace Assets.Script.Duel
             return exceptCards;
         }
 
-        public virtual void InitCardGroup()
+        /// <summary>
+        /// 判断怪兽区是否已满
+        /// </summary>
+        /// <returns></returns>
+        public bool MonsterAreaIsFull()
         {
+            foreach (var item in monsterCardArea)
+            {
+                if (item == null)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 在决斗前的初始化
+        /// </summary>
+        public virtual void InitBeforDuel()
+        {
+            heartPosition = new Vector3(DuelCommonValue.myHeartPositionX, DuelCommonValue.myHeartPositionY);
+
+            lifeScrollBar = GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>();
+            lifeNumberText = GameObject.Find("myLifeNumberText").GetComponent<Text>();
+
+            life = DuelRuleManager.GetPlayerStartLife();
+
             List<CardBase> myCards = duelCardGroup.GetCards();
             for (int i = 0; i < myCards.Count; i++)
             {
                 GameObject go = GameObject.Instantiate(duelScene.cardPre, duelScene.duelBackImage.transform);
                 go.GetComponent<DuelCardScript>().SetCard(myCards[i]);
                 go.GetComponent<DuelCardScript>().SetOwner(this);
-                myCards[i].cardObject = go;
+                myCards[i].SetCardObject(go);
                 go.transform.SetParent(duelScene.duelBackImage.transform);
                 go.transform.localPosition = new Vector3(DuelCommonValue.myCardGroupPositionX, DuelCommonValue.myCardGroupPositionY, 0);
             }
@@ -136,11 +155,11 @@ namespace Assets.Script.Duel
             return iamReady;
         }
 
-        public GuessEnum GetGuessEnum()
-        {
-            return guessEnum;
-        }
-        
+        /// <summary>
+        /// 设置猜先内容
+        /// </summary>
+        /// <param name="guessEnum"></param>
+        /// <returns></returns>
         public bool SetGuessEnum(GuessEnum guessEnum)
         {
             if(this.guessEnum == GuessEnum.Unknown || guessEnum == GuessEnum.Unknown)
@@ -151,15 +170,43 @@ namespace Assets.Script.Duel
             }
             return false;
         }
+
+        public GuessEnum GetGuessEnum()
+        {
+            return guessEnum;
+        }
         
-        public virtual void SetCardGroup(UserCardGroup selectCardGroup)
+        /// <summary>
+        /// 选择先攻还是后手
+        /// </summary>
+        public virtual void SelectFristOrBack()
+        {
+
+        }
+
+        public virtual void SelectFristOrBackNotify(bool opponentSelectFrist)
+        {
+
+        }
+
+        public void SetCardGroupName(string cardGroupName)
+        {
+            this.cardGroupName = cardGroupName;
+        }
+
+        /// <summary>
+        /// 设置卡组
+        /// </summary>
+        /// <param name="selectCardGroup"></param>
+        public virtual void SetCardGroup()
         {
             if(duelCardGroup!=null)
             {
                 return;
             }
             duelCardGroup = new DuelCardGroup();
-            
+            UserCardGroup selectCardGroup = GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(cardGroupName);
+
             foreach (var item in selectCardGroup.mainCardList)
             {
                 for (int i = 0; i < item.number; i++)
@@ -201,11 +248,6 @@ namespace Assets.Script.Duel
             
         }
 
-        public void SetHeartPosition(Vector3 heartPosition)
-        {
-            this.heartPosition = heartPosition;
-        }
-
         public Vector3 GetHeartPosition()
         {
             return heartPosition;
@@ -219,6 +261,16 @@ namespace Assets.Script.Duel
         public Player GetOpponentPlayer()
         {
             return opponentPlayer;
+        }
+
+        public void SetCanDirectAttack(bool canDirectAttack)
+        {
+            this.canDirectAttack = canDirectAttack;
+        }
+
+        public bool GetCanDirectAttack()
+        {
+            return canDirectAttack;
         }
 
         /// <summary>
@@ -262,7 +314,7 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 判断玩家是否可以进入战斗流程
+        /// 判断玩家是否可以战斗
         /// </summary>
         /// <returns></returns>
         public bool CanBattle()
@@ -275,8 +327,7 @@ namespace Assets.Script.Duel
             {
                 if(item!=null)
                 {
-                    DuelCardScript duelCardScript = item.cardObject.GetComponent<DuelCardScript>();
-                    if (duelCardScript.CanAttack())
+                    if (item.GetDuelCardScript().CanAttack())
                     {
                         return true;
                     }
@@ -301,13 +352,6 @@ namespace Assets.Script.Duel
         public void SetCanBeDirectAttacked(bool canBeDirectAttacked)
         {
             this.canBeDirectAttacked = canBeDirectAttacked;
-        }
-
-        public void SetLife(Scrollbar lifeScrollBar,Text lifeNumberText)
-        {
-            life = DuelRuleManager.GetPlayerStartLife();
-            this.lifeScrollBar = lifeScrollBar;
-            this.lifeNumberText = lifeNumberText;
         }
 
         public void SetHandPanel(GameObject handPanel)
@@ -346,7 +390,7 @@ namespace Assets.Script.Duel
             bool canCall = false;
             foreach (var item in handCards)
             {
-                if(item.cardObject.GetComponent<DuelCardScript>().CanCall())
+                if(item.GetDuelCardScript().CanCall())
                 {
                     canCall = true;
                     break;
@@ -404,21 +448,21 @@ namespace Assets.Script.Duel
                 return false;
             }
             CardBase card = GetDuelCardGroup().GetCards()[0];
-            card.cardObject.transform.SetParent(handPanel.transform);
+            card.GetDuelCardScript().SetParent(handPanel.transform);
             duelCardGroup.GetCards().RemoveAt(0);
             handCards.Add(card);
             card.SetCardGameState(CardGameState.Hand);
             
             if (this == duelScene.myPlayer)
             {
-                card.cardObject.gameObject.GetComponent<DuelCardScript>().ShowFront();
-                card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
+                card.GetDuelCardScript().ShowFront();
+                card.GetDuelCardScript().SetCanShowInfo(true);
             }
             else if(this == duelScene.opponentPlayer)
             {
                 if(GameManager.GetSingleInstance().GetUserData().showOpponentHandCard)
                 {
-                    card.cardObject.gameObject.GetComponent<DuelCardScript>().SetCanShowInfo(true);
+                    card.GetDuelCardScript().SetCanShowInfo(true);
                 }
             }
 
@@ -509,7 +553,7 @@ namespace Assets.Script.Duel
             {
                 if (item != null)
                 {
-                    item.cardObject.GetComponent<DuelCardScript>().SetChangeAttackOrDefenseNumber();
+                    item.GetDuelCardScript().SetChangeAttackOrDefenseNumber();
                 }
             }
         }
@@ -579,7 +623,7 @@ namespace Assets.Script.Duel
             {
                 if(item!=null)
                 {
-                    item.cardObject.GetComponent<DuelCardScript>().SetAttackNumber();
+                    item.GetDuelCardScript().SetAttackNumber();
                 }
             }
             duelScene.Battle();
@@ -592,9 +636,9 @@ namespace Assets.Script.Duel
         {
             foreach (var item in monsterCardArea)
             {
-                if(item!=null && item.cardObject.GetComponent<DuelCardScript>().CanAttack())
+                if(item!=null && item.GetDuelCardScript().CanAttack())
                 {
-                    item.cardObject.GetComponent<DuelCardScript>().SetAttackState(true);
+                    item.GetDuelCardScript().SetAttackState(true);
                 }
             }
         }
@@ -608,7 +652,7 @@ namespace Assets.Script.Duel
             {
                 if (item != null)
                 {
-                    item.cardObject.GetComponent<DuelCardScript>().SetAttackState(false);
+                    item.GetDuelCardScript().SetAttackState(false);
                 }
             }
         }
@@ -672,8 +716,8 @@ namespace Assets.Script.Duel
                         }
                         monsterCard.AddContent("monsterCardAreaIndex", index);
                         monsterCard.SetCardGameState(cardGameState);
-                        monsterCard.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
-                        monsterCard.cardObject.transform.localPosition = new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1);
+                        monsterCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
+                        monsterCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1));
                         handCards.Remove(monsterCard);
                         normalCallNumber--;
 
@@ -719,7 +763,7 @@ namespace Assets.Script.Duel
                 }
                 foreach (var item in sacrificeCards)
                 {
-                    item.cardObject.GetComponent<DuelCardScript>().ClearCurrentState();
+                    item.GetDuelCardScript().ClearCurrentState();
                     MoveCardToTomb(item);
                 }
                 int index = 0;
@@ -733,8 +777,8 @@ namespace Assets.Script.Duel
                 }
                 monsterCard.AddContent("monsterCardAreaIndex", index);
                 monsterCard.SetCardGameState(cardGameStateForSacrifice);
-                monsterCard.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
-                monsterCard.cardObject.transform.localPosition = new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1);
+                monsterCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
+                monsterCard.GetDuelCardScript().SetLocalPosition( new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1));
                 handCards.Remove(monsterCard);
                 normalCallNumber--;
 
@@ -828,8 +872,9 @@ namespace Assets.Script.Duel
             monsterCardArea[flag] = monsterCard;
             monsterCard.AddContent("monsterCardAreaIndex", flag);
             monsterCard.SetCardGameState(toCardGameState);
-            monsterCard.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
-            monsterCard.cardObject.transform.localPosition = new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.opponentMonsterCardPositionY, 1);
+            monsterCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
+            monsterCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.opponentMonsterCardPositionY, 1));
+            
             handCards.Remove(monsterCard);
             normalCallNumber--;
 
@@ -895,6 +940,15 @@ namespace Assets.Script.Duel
         public int GetLife()
         {
             return life;
+        }
+
+        public void SetLife(int newLife)
+        {
+            life = newLife;
+            life = life > 0 ? life : 0;
+            lifeScrollBar.size = (float)life / DuelRuleManager.GetPlayerStartLife();
+            lifeNumberText.text = life + "/" + DuelRuleManager.GetPlayerStartLife();
+            duelScene.CheckWinByLife();
         }
 
         /// <summary>

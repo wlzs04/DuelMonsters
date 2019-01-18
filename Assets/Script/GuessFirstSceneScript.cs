@@ -1,6 +1,7 @@
 using Assets.Script;
 using Assets.Script.Config;
 using Assets.Script.Duel;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class GuessFirstSceneScript : MonoBehaviour {
 
     string cardGroupName;
 
-    bool iGuessWin = false;//我方是否猜先成功
+    int iGuessWin = 0;//0-未知 1-成功 2-失败
 
     void Start()
     {
@@ -57,7 +58,8 @@ public class GuessFirstSceneScript : MonoBehaviour {
     public void SelectCardGroupByName(string cardGroupName)
     {
         this.cardGroupName = cardGroupName;
-        GameManager.GetSingleInstance().GetDuelScene().SetMyPlayerCardGroupName(cardGroupName);
+        GameManager.GetSingleInstance().GetDuelScene().myPlayer.SetCardGroupName(cardGroupName);
+        GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.SetCardGroupName(cardGroupName);
         selectCardGroupPanel.SetActive(false);
         guessFirstPanel.SetActive(true);
         selectFirstPanel.SetActive(false);
@@ -67,6 +69,22 @@ public class GuessFirstSceneScript : MonoBehaviour {
     {
         if (duelScene.myPlayer.SetGuessEnum(guessEnum))
         {
+            GameObject.Find("myPanel").transform.GetChild((int)duelScene.myPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
+            DecideGuessFirst();
+            return true;
+        }
+        else
+        {
+            GameManager.ShowMessage("选择后不能修改！");
+        }
+        return false;
+    }
+
+    public bool SetOpponentGuess(GuessEnum guessEnum)
+    {
+        if (duelScene.opponentPlayer.SetGuessEnum(guessEnum))
+        {
+            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
             DecideGuessFirst();
             return true;
         }
@@ -80,21 +98,11 @@ public class GuessFirstSceneScript : MonoBehaviour {
     /// <summary>
     /// 决定谁先出牌
     /// </summary>
-    void DecideGuessFirst()
+    public void DecideGuessFirst()
     {
-        if (duelScene.GetDuelMode() == DuelMode.Single)
+        if(iGuessWin!=0)
         {
-            if (GameManager.GetSingleInstance().GetUserData().guessMustWin)
-            {
-                int tempMyGuessEnum = (int)duelScene.myPlayer.GetGuessEnum();
-                int tempOpponentGuessEnum = tempMyGuessEnum - 1 > 0 ? tempMyGuessEnum - 1 : 3;
-                duelScene.opponentPlayer.SetGuessEnum((GuessEnum)tempOpponentGuessEnum);
-            }
-            else
-            {
-                duelScene.opponentPlayer.SetGuessEnum((GuessEnum)UnityEngine.Random.Range(1, 4));
-            }
-            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
+            return;
         }
         GuessEnum myGuessEnum = duelScene.myPlayer.GetGuessEnum();
         GuessEnum opponentGuessEnum = duelScene.opponentPlayer.GetGuessEnum();
@@ -119,29 +127,35 @@ public class GuessFirstSceneScript : MonoBehaviour {
             string title;
             if (tempValue == 1 || tempValue == -2)
             {
-                iGuessWin = true;
+                iGuessWin = 1;
                 title = stringResConfig.GetRecordById(13).value;
             }
             else
             {
-                iGuessWin = false;
+                iGuessWin = 2;
                 title = stringResConfig.GetRecordById(14).value;
             }
-            selectCardGroupPanel.SetActive(false);
-            guessFirstPanel.SetActive(false);
-            selectFirstPanel.SetActive(true);
-            selectFirstPanel.transform.GetChild(0).GetComponent<Text>().text = title;
-            if(!iGuessWin)
+
+            TimerFunction timerFunction = new TimerFunction();
+
+            timerFunction.SetFunction(1, () => 
             {
-                TimerFunction timerFunction = new TimerFunction();
-                timerFunction.SetFunction(2, () => 
+                selectCardGroupPanel.SetActive(false);
+                guessFirstPanel.SetActive(false);
+                selectFirstPanel.SetActive(true);
+                selectFirstPanel.transform.GetChild(0).GetComponent<Text>().text = title;
+
+                if (iGuessWin == 1)
                 {
-                    GameManager.ShowMessage("您先手！");
-                    duelScene.SetFirst(true);
-                    GameManager.GetSingleInstance().EnterDuelScene();
-                });
-                GameManager.AddTimerFunction(timerFunction);
-            }
+                    duelScene.myPlayer.SelectFristOrBack();
+                }
+
+                if (iGuessWin == 2)
+                {
+                    duelScene.opponentPlayer.SelectFristOrBack();
+                }
+            });
+            GameManager.AddTimerFunction(timerFunction);
         }
     }
 
@@ -150,11 +164,16 @@ public class GuessFirstSceneScript : MonoBehaviour {
     /// </summary>
     public void ClearChoose()
     {
-        GameObject.Find("myPanel").transform.GetChild((int)duelScene.myPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-        GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-
-        duelScene.myPlayer.SetGuessEnum(GuessEnum.Unknown);
-        duelScene.opponentPlayer.SetGuessEnum(GuessEnum.Unknown);
+        if(duelScene.myPlayer.GetGuessEnum()!=GuessEnum.Unknown)
+        {
+            GameObject.Find("myPanel").transform.GetChild((int)duelScene.myPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+            duelScene.myPlayer.SetGuessEnum(GuessEnum.Unknown);
+        }
+        if (duelScene.opponentPlayer.GetGuessEnum() != GuessEnum.Unknown)
+        {
+            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+            duelScene.opponentPlayer.SetGuessEnum(GuessEnum.Unknown);
+        }
     }
 
     /// <summary>
@@ -162,13 +181,12 @@ public class GuessFirstSceneScript : MonoBehaviour {
     /// </summary>
     public void SelectFirstHandEvent()
     {
-        if(iGuessWin)
+        if(iGuessWin == 1)
         {
-            GameManager.ShowMessage("您先手！");
+            duelScene.SetFirst(true);
             TimerFunction timeFunction = new TimerFunction();
             timeFunction.SetFunction(1, () =>
             {
-                duelScene.SetFirst(true);
                 GameManager.GetSingleInstance().EnterDuelScene();
             });
 
@@ -186,13 +204,12 @@ public class GuessFirstSceneScript : MonoBehaviour {
     /// </summary>
     public void SelectBackHandEvent()
     {
-        if (iGuessWin)
+        if (iGuessWin == 1)
         {
-            GameManager.ShowMessage("您后手！");
+            duelScene.SetFirst(false);
             TimerFunction timeFunction = new TimerFunction();
             timeFunction.SetFunction(1, () =>
             {
-                duelScene.SetFirst(false);
                 GameManager.GetSingleInstance().EnterDuelScene();
             });
 
@@ -203,5 +220,13 @@ public class GuessFirstSceneScript : MonoBehaviour {
         {
             GameManager.ShowMessage("请等待对方选择！");
         }
+    }
+
+    /// <summary>
+    /// 隐藏选先界面
+    /// </summary>
+    public  void HideSelectFirstPanel()
+    {
+        selectFirstPanel.SetActive(false);
     }
 }

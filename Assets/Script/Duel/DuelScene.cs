@@ -41,16 +41,13 @@ namespace Assets.Script.Duel
     {
         string cardPrefabPath = "Prefab/CardPre";
         public GameObject cardPre = null;
-        DuelMode duelMode = DuelMode.Unknown;
 
         public Player myPlayer = null;//我方玩家
-        string myCardGroupName;//我方玩家卡组名称
         public Player opponentPlayer = null;//敌方玩家
 
-        public bool myFirst = false;
         public Player currentPlayer;//当前玩家
         public Player startPlayer;//开始玩家
-        public int currentTurnNumber = 1;//当前回合数
+        int currentTurnNumber = 1;//当前回合数
         public DuelProcess currentDuelProcess = DuelProcess.Unknown;//当前流程
 
         bool inSpecialState = false;//在特殊状态，例如进入流程选择界面
@@ -69,7 +66,6 @@ namespace Assets.Script.Duel
 
         public DuelScene(DuelMode duelMode)
         {
-            this.duelMode = duelMode;
             myPlayer = new Player("玩家", this);
             switch (duelMode)
             {
@@ -92,7 +88,10 @@ namespace Assets.Script.Duel
             cardPre = Resources.Load<GameObject>(cardPrefabPath);
         }
 
-        void AddControlFromScene()
+        /// <summary>
+        /// 从场景中初始化控件
+        /// </summary>
+        void InitControlFromScene()
         {
             duelBackImage = GameObject.Find("duelBackImage").GetComponent<Image>();
             environmentImage = GameObject.Find("environmentImage").GetComponent<Image>();
@@ -108,18 +107,22 @@ namespace Assets.Script.Duel
             return currentTurnNumber;
         }
 
-        public DuelMode GetDuelMode()
-        {
-            return duelMode;
-        }
-
         /// <summary>
         /// 设置我方玩家是否先攻
         /// </summary>
         /// <param name="myFirst"></param>
         public void SetFirst(bool myFirst)
         {
-            this.myFirst = myFirst;
+            if(myFirst)
+            {
+                startPlayer = myPlayer;
+                GameManager.ShowMessage("您先手！");
+            }
+            else
+            {
+                startPlayer = opponentPlayer;
+                GameManager.ShowMessage("您后手！");
+            }
         }
 
         /// <summary>
@@ -130,7 +133,7 @@ namespace Assets.Script.Duel
             //取消当前选中卡牌的状态
             if(currentChooseCard!=null)
             {
-                currentChooseCard.cardObject.GetComponent<DuelCardScript>().ClearCurrentState();
+                currentChooseCard.GetDuelCardScript().ClearCurrentState();
                 currentChooseCard = null;
             }
             else if(duelSceneScript.AttackOrDefensePanelIsShowing())
@@ -205,8 +208,8 @@ namespace Assets.Script.Duel
         {
             if(currentDuelProcess==DuelProcess.Battle)
             {
-                if(currentChooseCard.cardObject.GetComponent<DuelCardScript>().GetOwner()!= 
-                    card.cardObject.GetComponent<DuelCardScript>().GetOwner()&&
+                if(currentChooseCard.GetDuelCardScript().GetOwner()!= 
+                    card.GetDuelCardScript().GetOwner()&&
                     ((MonsterCard)card).CanBeAttacked)
                 {
                     opponentPlayer.BeAttackedMonsterNotify(currentChooseCard.GetID(), card.GetID());
@@ -224,7 +227,7 @@ namespace Assets.Script.Duel
         /// <param name="card2"></param>
         void AttackMonster(MonsterCard card1, MonsterCard card2)
         {
-            card1.cardObject.GetComponent<DuelCardScript>().Attack();
+            card1.GetDuelCardScript().Attack();
             int differenceValue = card1.GetAttackNumber() - card2.GetAttackNumber();
 
             if (differenceValue==0)
@@ -234,12 +237,12 @@ namespace Assets.Script.Duel
             }
             else if(differenceValue>0)
             {
-                card2.cardObject.GetComponent<DuelCardScript>().GetOwner().ReduceLife(differenceValue);
+                card2.GetDuelCardScript().GetOwner().ReduceLife(differenceValue);
                 SendCardToTomb(card2);
             }
             else
             {
-                card1.cardObject.GetComponent<DuelCardScript>().GetOwner().ReduceLife(-differenceValue);
+                card1.GetDuelCardScript().GetOwner().ReduceLife(-differenceValue);
                 SendCardToTomb(card1);
             }
             canChoose = false;
@@ -251,7 +254,7 @@ namespace Assets.Script.Duel
         /// <param name="card"></param>
         public void AttackDirect(MonsterCard card)
         {
-            card.cardObject.GetComponent<DuelCardScript>().GetOwner().GetOpponentPlayer().ReduceLife(card.GetAttackNumber());
+            card.GetDuelCardScript().GetOwner().GetOpponentPlayer().ReduceLife(card.GetAttackNumber());
         }
 
         /// <summary>
@@ -353,12 +356,7 @@ namespace Assets.Script.Duel
         /// <param name="card"></param>
         public void SendCardToTomb(CardBase card)
         {
-            card.cardObject.GetComponent<DuelCardScript>().GetOwner().MoveCardToTomb(card);
-        }
-
-        public void SetMyPlayerCardGroupName(string myCardGroupName)
-        {
-            this.myCardGroupName = myCardGroupName;
+            card.GetDuelCardScript().GetOwner().MoveCardToTomb(card);
         }
 
         /// <summary>
@@ -366,9 +364,9 @@ namespace Assets.Script.Duel
         /// </summary>
         public void Init()
         {
-            AddControlFromScene();
-            myPlayer.SetCardGroup(GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(myCardGroupName));
-            opponentPlayer.SetCardGroup(GameManager.GetSingleInstance().GetUserData().GetCardGroupByName(myCardGroupName));
+            InitControlFromScene();
+            myPlayer.SetCardGroup();
+            opponentPlayer.SetCardGroup();
         }
 
         /// <summary>
@@ -378,16 +376,7 @@ namespace Assets.Script.Duel
         {
             if(myPlayer.IAmReady()&& opponentPlayer.IAmReady())
             {
-                if (myFirst)
-                {
-                    currentPlayer = myPlayer;
-                    startPlayer = myPlayer;
-                }
-                else
-                {
-                    currentPlayer = opponentPlayer;
-                    startPlayer = opponentPlayer;
-                }
+                currentPlayer = startPlayer;
 
                 TimerFunction timerFunction = new TimerFunction();
                 timerFunction.SetFunction(1, () =>
@@ -407,14 +396,8 @@ namespace Assets.Script.Duel
         /// </summary>
         void StartDuel()
         {
-            myPlayer.SetLife(GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>(), GameObject.Find("myLifeNumberText").GetComponent<Text>());
-            opponentPlayer.SetLife(GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>(), GameObject.Find("opponentLifeNumberText").GetComponent<Text>());
-
-            myPlayer.SetHeartPosition(new Vector3(DuelCommonValue.myHeartPositionX, DuelCommonValue.myHeartPositionY));
-            opponentPlayer.SetHeartPosition(new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY));
-
-            myPlayer.InitCardGroup();
-            opponentPlayer.InitCardGroup();
+            myPlayer.InitBeforDuel();
+            opponentPlayer.InitBeforDuel();
 
             GameManager.ShowMessage("决斗开始！");
 
@@ -676,6 +659,21 @@ namespace Assets.Script.Duel
         {
             CardBase card1 = opponentPlayer.GetCardByID(cardID);
             AttackDirect((MonsterCard)card1);
+        }
+
+        public void OpponentSelectFirstOrBack(bool selectFirstOrBack)
+        {
+            GuessFirstSceneScript guessFirstSceneScript = GameObject.Find("Main Camera").GetComponent<GuessFirstSceneScript>();
+
+            SetFirst(!selectFirstOrBack);
+            TimerFunction timeFunction = new TimerFunction();
+            timeFunction.SetFunction(1, () =>
+            {
+                GameManager.GetSingleInstance().EnterDuelScene();
+            });
+
+            GameManager.AddTimerFunction(timeFunction);
+            guessFirstSceneScript.HideSelectFirstPanel();
         }
     }
 }

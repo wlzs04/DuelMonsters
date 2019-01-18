@@ -1,18 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Assets.Script.Net
 {
     abstract class ClientProtocol:Protocol
     {
-        public ClientProtocol(string name) : base(name)
+        public ClientProtocol GetInstance()
         {
-
+            Type chindType = GetType();
+            return (ClientProtocol)chindType.Assembly.CreateInstance(chindType.FullName);
         }
-
-        public abstract ClientProtocol GetInstance();
 
         public void AddContent(string key, object value)
         {

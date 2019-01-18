@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Script.Duel
 {
@@ -15,15 +16,22 @@ namespace Assets.Script.Duel
 
         }
 
-        public override void InitCardGroup()
+        public override void InitBeforDuel()
         {
+            heartPosition = new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY);
+
+            lifeScrollBar = GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>();
+            lifeNumberText = GameObject.Find("opponentLifeNumberText").GetComponent<Text>();
+
+            life = DuelRuleManager.GetPlayerStartLife();
+
             List<CardBase> opponentCards = duelCardGroup.GetCards();
             for (int i = 0; i < opponentCards.Count; i++)
             {
                 GameObject go = UnityEngine.Object.Instantiate(duelScene.cardPre, duelScene.duelBackImage.transform);
                 go.GetComponent<DuelCardScript>().SetCard(opponentCards[i]);
                 go.GetComponent<DuelCardScript>().SetOwner(this);
-                opponentCards[i].cardObject = go;
+                opponentCards[i].SetCardObject(go);
                 go.transform.SetParent(duelScene.duelBackImage.transform);
                 go.transform.localPosition = new Vector3(DuelCommonValue.opponentCardGroupPositionX, DuelCommonValue.opponentCardGroupPositionY, 0);
             }
@@ -62,7 +70,7 @@ namespace Assets.Script.Duel
                 {
                     foreach (var item in handCards)
                     {
-                        DuelCardScript duelCardScript = item.cardObject.GetComponent<DuelCardScript>();
+                        DuelCardScript duelCardScript = item.GetDuelCardScript();
                         if (duelCardScript.CanCall())
                         {
                             MonsterCard monsterCard = (MonsterCard)item;
@@ -121,6 +129,45 @@ namespace Assets.Script.Duel
             {
                 EndTurn();
             }
+        }
+
+        public override void GuessFirstNotify(GuessEnum guessEnum)
+        {
+            if (guessEnum == GuessEnum.Unknown)
+            {
+                return;
+            }
+            if (GameManager.GetSingleInstance().GetUserData().guessMustWin)
+            {
+                int tempMyGuessEnum = (int)duelScene.myPlayer.GetGuessEnum();
+                int tempOpponentGuessEnum = tempMyGuessEnum - 1 > 0 ? tempMyGuessEnum - 1 : 3;
+                GameObject.Find("Main Camera").GetComponent<GuessFirstSceneScript>().SetOpponentGuess((GuessEnum)tempOpponentGuessEnum);
+
+            }
+            else
+            {
+                GameObject.Find("Main Camera").GetComponent<GuessFirstSceneScript>().SetOpponentGuess((GuessEnum)UnityEngine.Random.Range(1, 4));
+            }
+        }
+
+        public override void SelectFristOrBack()
+        {
+            System.Random random = new System.Random();
+            int i = random.Next(2);
+            if (i == 0)
+            {
+                duelScene.SetFirst(true);
+            }
+            else
+            {
+                duelScene.SetFirst(false);
+            }
+            TimerFunction timerFunction = new TimerFunction();
+            timerFunction.SetFunction(1, () =>
+            {
+                GameManager.GetSingleInstance().EnterDuelScene();
+            });
+            GameManager.AddTimerFunction(timerFunction);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Assets.Script.Duel.Rule;
+using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using System;
 using System.Collections.Generic;
@@ -14,13 +14,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CEnterDuelProcess : ClientProtocol
     {
-        public CEnterDuelProcess() : base("CEnterDuelProcess") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CEnterDuelProcess();
-        }
-
         public override void Process()
         {
             DuelProcess opponentDuelProcess = (DuelProcess)Enum.Parse(typeof(DuelProcess), GetContent("duelProcess"));

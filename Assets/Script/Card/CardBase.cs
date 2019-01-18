@@ -63,10 +63,21 @@ namespace Assets.Script.Card
         protected string info ="";//卡片信息
         protected int limitNumber = 3;//数量限制
 
-        public GameObject cardObject=null;
-        
+        protected GameObject cardObject=null;
+
+        DuelCardScript duelCardScript;
+
         //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
+
+        /// <summary>
+        /// 为卡牌设置场景内依附的物体
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public void SetCardObject(GameObject gameObject)
+        {
+            cardObject = gameObject;
+        }
 
         public void AddContent(string key, object value)
         {
@@ -114,6 +125,11 @@ namespace Assets.Script.Card
         public int GetCardNo()
         {
             return cardNo;
+        }
+
+        public DuelCardScript GetDuelCardScript()
+        {
+            return duelCardScript;
         }
 
         public void SetCardGameState(CardGameState cardGameState)

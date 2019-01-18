@@ -1,4 +1,4 @@
-﻿using Assets.Script.Net;
+using Assets.Script.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +11,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CEndTurn : ClientProtocol
     {
-        public CEndTurn() : base("CEndTurn") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CEndTurn();
-        }
-
         public override void Process()
         {
             GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.EndTurn();

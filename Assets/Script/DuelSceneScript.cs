@@ -29,6 +29,7 @@ namespace Assets.Script
         Image cardImage;
 
         DuelScene duelScene = null;
+        string duelBgmName = "光宗信吉-神々の戦い";
 
         private void Awake()
         {
@@ -37,7 +38,7 @@ namespace Assets.Script
 
         void Start()
         {
-            //audioScript.SetAudioByName(duelBgmName);
+            GameManager.GetSingleInstance().SetAudioByName(duelBgmName);
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
             duelScene.Init();
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
@@ -250,7 +251,7 @@ namespace Assets.Script
             cardListPanel.transform.GetChild(1).GetComponent<Text>().text = title;
             foreach (var item in cardList)
             {
-                item.cardObject.transform.SetParent(cardListContentTransform);
+                item.GetDuelCardScript().SetParent(cardListContentTransform);
             }
         }
 
@@ -272,10 +273,9 @@ namespace Assets.Script
             for (int i = 0; i < cardListContentTransform.childCount; i++)
             {
                 CardBase card = cardListContentTransform.GetChild(i).GetComponent<DuelCardScript>().GetCard();
-                card.cardObject.transform.SetParent(duelScene.duelBackImage.transform);
+                card.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
                 card.SetCardGameState(card.GetCardGameState());
             }
-            //GameManager.CleanPanelContent(cardListContentTransform);
         }
     }
 }

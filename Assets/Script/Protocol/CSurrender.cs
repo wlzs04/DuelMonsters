@@ -8,13 +8,6 @@ namespace Assets.Script.Protocol
 {
     class CSurrender : ClientProtocol
     {
-        public CSurrender() : base("CSurrender") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CSurrender();
-        }
-
         public override void Process()
         {
             GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.Surrender();

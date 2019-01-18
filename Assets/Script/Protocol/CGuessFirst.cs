@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Assets.Script.Protocol
 {
@@ -13,18 +14,10 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CGuessFirst : ClientProtocol
     {
-        public CGuessFirst() : base("CGuessFirst") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CGuessFirst();
-        }
-
         public override void Process()
         {
             GuessEnum opponentGuess =(GuessEnum)Enum.Parse(typeof(GuessEnum),GetContent("guess"));
-            //GameManager.GetSingleInstance().SetOpponentGuess(opponentGuess);
-
+            GameObject.Find("Main Camera").GetComponent<GuessFirstSceneScript>().SetOpponentGuess(opponentGuess);
         }
     }
 }

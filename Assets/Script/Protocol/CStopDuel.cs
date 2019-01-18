@@ -13,13 +13,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CStopDuel : ClientProtocol
     {
-        public CStopDuel() : base("CStopDuel") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CStopDuel();
-        }
-
         public override void Process()
         {
             GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.StopDuel();

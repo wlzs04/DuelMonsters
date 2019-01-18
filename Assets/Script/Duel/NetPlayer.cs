@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Script.Duel
 {
@@ -17,15 +18,22 @@ namespace Assets.Script.Duel
             
         }
 
-        public override void InitCardGroup()
+        public override void InitBeforDuel()
         {
+            heartPosition = new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY);
+
+            lifeScrollBar = GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>();
+            lifeNumberText = GameObject.Find("opponentLifeNumberText").GetComponent<Text>();
+
+            life = DuelRuleManager.GetPlayerStartLife();
+
             List<CardBase> opponentCards = duelCardGroup.GetCards();
             for (int i = 0; i < opponentCards.Count; i++)
             {
                 GameObject go = GameObject.Instantiate(duelScene.cardPre, duelScene.duelBackImage.transform);
                 go.GetComponent<DuelCardScript>().SetCard(opponentCards[i]);
                 go.GetComponent<DuelCardScript>().SetOwner(this);
-                opponentCards[i].cardObject = go;
+                opponentCards[i].SetCardObject(go);
                 go.transform.SetParent(duelScene.duelBackImage.transform);
                 go.transform.localPosition = new Vector3(DuelCommonValue.opponentCardGroupPositionX, DuelCommonValue.opponentCardGroupPositionY, 0);
             }
@@ -43,8 +51,7 @@ namespace Assets.Script.Duel
             cEnterDuelProcess.AddContent("duelProcess", duelProcess);
             ClientManager.GetSingleInstance().SendProtocol(cEnterDuelProcess);
         }
-
-
+        
         public override void CallMonsterNotify(int id, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag)
         {
             CCallMonster cCallMonster = new CCallMonster();
@@ -119,9 +126,20 @@ namespace Assets.Script.Duel
 
         public override void GuessFirstNotify(GuessEnum guessEnum)
         {
+            if (guessEnum == GuessEnum.Unknown)
+            {
+                return;
+            }
             CGuessFirst guessFirst = new CGuessFirst();
             guessFirst.AddContent("guess", guessEnum.ToString());
             ClientManager.GetSingleInstance().SendProtocol(guessFirst);
+        }
+
+        public override void SelectFristOrBackNotify(bool opponentSelectFrist)
+        {
+            CSelectFristOrBack selectFristOrBack = new CSelectFristOrBack();
+            selectFristOrBack.AddContent("opponentSelectFrist", opponentSelectFrist.ToString());
+            ClientManager.GetSingleInstance().SendProtocol(selectFristOrBack);
         }
     }
 }

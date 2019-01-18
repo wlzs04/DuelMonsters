@@ -40,6 +40,11 @@ namespace Assets.Script.Duel.Rule
     {
         static RuleConfig ruleConfig;
 
+        private DuelRuleManager()
+        {
+
+        }
+
         /// <summary>
         /// 初始化决斗规则
         /// </summary>

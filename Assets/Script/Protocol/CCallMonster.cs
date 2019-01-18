@@ -1,4 +1,4 @@
-﻿using Assets.Script.Card;
+using Assets.Script.Card;
 using Assets.Script.Net;
 using System;
 using System.Collections.Generic;
@@ -14,13 +14,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CCallMonster : ClientProtocol
     {
-        public CCallMonster() : base("CCallMonster") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CCallMonster();
-        }
-
         public override void Process()
         {
             int cardID = int.Parse(GetContent("cardID"));

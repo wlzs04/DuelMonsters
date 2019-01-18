@@ -1,4 +1,4 @@
-﻿using Assets.Script.Net;
+using Assets.Script.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +13,6 @@ namespace Assets.Script.Protocol
     /// </summary>
     class CAttackMonster : ClientProtocol
     {
-        public CAttackMonster() : base("CAttackMonster") { }
-
-        public override ClientProtocol GetInstance()
-        {
-            return new CAttackMonster();
-        }
-
         public override void Process()
         {
             int cardID = int.Parse(GetContent("cardID"));

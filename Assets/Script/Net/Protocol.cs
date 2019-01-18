@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -13,9 +13,9 @@ namespace Assets.Script.Net
         protected Socket socket;
         protected Dictionary<string, string> contentMap = new Dictionary<string, string>();
 
-        public Protocol(string name)
+        public Protocol()
         {
-            this.name = name;
+            name = GetType().Name;
         }
 
         public string GetName()

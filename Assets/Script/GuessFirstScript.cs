@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// 猜先的选择类型
+/// </summary>
 public enum GuessEnum
 {
     Unknown,
@@ -44,10 +47,7 @@ public class GuessFirstScript : MonoBehaviour, IPointerClickHandler
     {
         if(isMyChoose)
         {
-            if (guessFirstSceneScript.SetMyGuess(selectGuessEnum))
-            {
-                SetChooseState();
-            }
+            guessFirstSceneScript.SetMyGuess(selectGuessEnum);
         }
     }
 }
