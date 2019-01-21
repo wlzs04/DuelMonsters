@@ -65,7 +65,7 @@ namespace Assets.Script.Card
 
         protected GameObject cardObject=null;
 
-        DuelCardScript duelCardScript;
+        DuelCardScript duelCardScript = null;
 
         //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
@@ -77,6 +77,7 @@ namespace Assets.Script.Card
         public void SetCardObject(GameObject gameObject)
         {
             cardObject = gameObject;
+            duelCardScript = cardObject.GetComponent<DuelCardScript>();
         }
 
         public void AddContent(string key, object value)
@@ -135,7 +136,7 @@ namespace Assets.Script.Card
         public void SetCardGameState(CardGameState cardGameState)
         {
             this.cardGameState = cardGameState;
-            cardObject.GetComponent<DuelCardScript>().SetAttackAndDefenseText("");
+            duelCardScript.SetAttackAndDefenseText("");
 
             switch (cardGameState)
             {
@@ -147,31 +148,31 @@ namespace Assets.Script.Card
                     break;
                 case CardGameState.FrontAttack:
                 { 
-                    cardObject.GetComponent<DuelCardScript>().ShowFront();
-                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(0);
+                    duelCardScript.ShowFront();
+                    duelCardScript.SetCardAngle(0);
                     MonsterCard monsterCard = (MonsterCard)this;
                     string attackAndDefenseText = "<color=#FF0000FF>"+ monsterCard.GetAttackNumber() + "</color>/";
                     attackAndDefenseText += "<color=#000000FF>" + monsterCard.GetDefenseNumber() + "</color>";
-                    cardObject.GetComponent<DuelCardScript>().SetAttackAndDefenseText(attackAndDefenseText);
+                    duelCardScript.SetAttackAndDefenseText(attackAndDefenseText);
                     break;
                 }
                 case CardGameState.FrontDefense:
                 {
-                    cardObject.GetComponent<DuelCardScript>().ShowFront();
-                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(90);
+                    duelCardScript.ShowFront();
+                    duelCardScript.SetCardAngle(90);
                     MonsterCard monsterCard = (MonsterCard)this;
                     string attackAndDefenseText = "<color=#000000FF>" + monsterCard.GetAttackNumber() + "</color>/";
                     attackAndDefenseText += "<color=#00FF00FF>" + monsterCard.GetDefenseNumber() + "</color>";
-                    cardObject.GetComponent<DuelCardScript>().SetAttackAndDefenseText(attackAndDefenseText);
+                    duelCardScript.SetAttackAndDefenseText(attackAndDefenseText);
                     break;
                 }
                 case CardGameState.Back:
-                    cardObject.GetComponent<DuelCardScript>().ShowBack();
-                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(90);
+                    duelCardScript.ShowBack();
+                    duelCardScript.SetCardAngle(90);
                     break;
                 case CardGameState.Tomb:
                     cardObject.transform.SetParent(GameManager.GetSingleInstance().GetDuelScene().duelBackImage.transform);
-                    if (cardObject.GetComponent<DuelCardScript>().GetOwner().IsMyPlayer())
+                    if (duelCardScript.GetOwner().IsMyPlayer())
                     {
                         cardObject.transform.localPosition = new Vector3(DuelCommonValue.myTombPositionX, DuelCommonValue.myTombPositionY, 0);
                     }
@@ -179,7 +180,7 @@ namespace Assets.Script.Card
                     {
                        cardObject.transform.localPosition = new Vector3(DuelCommonValue.opponentTombPositionX, DuelCommonValue.opponentTombPositionY, 0);
                     }
-                    cardObject.GetComponent<DuelCardScript>().SetCardAngle(0);
+                    duelCardScript.SetCardAngle(0);
                     break;
                 case CardGameState.Exclusion:
                     break;

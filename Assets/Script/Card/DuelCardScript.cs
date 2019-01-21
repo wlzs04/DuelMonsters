@@ -1,4 +1,5 @@
 using Assets.Script.Duel;
+using Assets.Script.Duel.EffectProcess;
 using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -253,10 +254,11 @@ namespace Assets.Script.Card
             }
             else if(card.GetCardGameState() == CardGameState.Hand)
             {
-                if(ownerPlayer==duelScene.myPlayer && ownerPlayer.GetNeedDiscardCardNumberInHand()>0)
+                if(ownerPlayer==duelScene.myPlayer && ownerPlayer.GetCurrentEffectProcess() is DiscardHandCardEffectProcess)
                 {
+                    DiscardHandCardEffectProcess discardHandCardEffectProcess = ownerPlayer.GetCurrentEffectProcess() as DiscardHandCardEffectProcess;
                     ownerPlayer.MoveCardToTomb(card);
-                    ownerPlayer.AddNeedDiscardCardNumberInHand(-1);
+                    discardHandCardEffectProcess.DiscardOneHandCard();
                 }
             }
         }

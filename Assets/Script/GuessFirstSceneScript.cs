@@ -39,11 +39,6 @@ public class GuessFirstSceneScript : MonoBehaviour {
         }
     }
 
-    void Update()
-    {
-
-    }
-
     void AddCardGroupItemToScrollView(UserCardGroup userCardGroup)
     {
         GameObject gameObject = Instantiate(cardGroupItemPrefab, cardGroupScrollViewTransform);

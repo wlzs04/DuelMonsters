@@ -34,11 +34,6 @@ public class CardOperationButtonScript : MonoBehaviour, IPointerEnterHandler, IP
         buttonText.text = cardOperationConfig.GetRecordById((int)cardOperation).value;
     }
 
-	void Update ()
-    {
-		
-	}
-
     /// <summary>
     /// 操作按钮点击事件
     /// </summary>

@@ -1,4 +1,5 @@
 using Assets.Script.Card;
+using Assets.Script.Duel.EffectProcess;
 using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -51,7 +52,6 @@ namespace Assets.Script.Duel
         bool canBeDirectAttacked = true;
         bool canDirectAttack = true;
 
-
         PlayGameState playGameState;
 
         //为祭品召唤准备的，卡片召唤状态
@@ -65,9 +65,10 @@ namespace Assets.Script.Duel
 
         int normalCallNumber = DuelRuleManager.GetDrawNumberEveryTurn();
 
-        int needDiscardCardInHand = 0;
+        List<EffectProcessBase> effectProcessList = new List<EffectProcessBase>();
 
-        Dictionary<DuelEffectProcess, UnityAction> effectProcessMap=new Dictionary<DuelEffectProcess, UnityAction>();
+        DuelEffectProcess duelEffectProcess;
+        EffectProcessBase currentEffectProcess;
 
         public Player(string name, DuelScene duelScene)
         {
@@ -276,25 +277,37 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 添加效果处理
         /// </summary>
-        public void AddEffectProcess(DuelEffectProcess duelEffectProcess,UnityAction unityAction)
+        public void AddEffectProcess(EffectProcessBase effectProcess)
         {
-            effectProcessMap[duelEffectProcess] = unityAction;
+            effectProcessList.Add(effectProcess);
         }
 
         /// <summary>
-        /// 添加需要丢弃手卡
+        /// 移除效果处理
         /// </summary>
-        public void AddNeedDiscardCardNumberInHand(int needDiscardCardInHand)
+        /// <param name="effectProcess"></param>
+        public void RemoveEffectProcess(EffectProcessBase effectProcess)
         {
-            this.needDiscardCardInHand += needDiscardCardInHand;
+            effectProcessList.Remove(effectProcess);
+        }
+
+        public void SetDuelEffectProcess(DuelEffectProcess duelEffectProcess)
+        {
+            this.duelEffectProcess = duelEffectProcess;
+        }
+
+        public DuelEffectProcess GetDuelEffectProcess()
+        {
+            return duelEffectProcess;
         }
 
         /// <summary>
-        /// 获得需要丢弃手卡的数量
+        /// 获得当前对玩家产生影响的效果处理类
         /// </summary>
-        public int GetNeedDiscardCardNumberInHand()
+        /// <returns></returns>
+        public EffectProcessBase GetCurrentEffectProcess()
         {
-            return needDiscardCardInHand;
+            return currentEffectProcess;
         }
 
         /// <summary>
@@ -513,11 +526,21 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 选择流程
+        /// 检查所有注册到玩家的效果处理，判断是否可以触发并触发
         /// </summary>
-        public void ChooseProcess()
+        /// <returns></returns>
+        public bool CheckAllEffectProcess()
         {
-
+            for (int i = effectProcessList.Count - 1; i >= 0; i--)
+            {
+                if(effectProcessList[i].CheckCanTrigger())
+                {
+                    currentEffectProcess = effectProcessList[i];
+                    effectProcessList[i].Process();
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -542,6 +565,14 @@ namespace Assets.Script.Duel
             });
 
             GameManager.AddTimerFunction(timerFunction);
+        }
+
+        public void Update()
+        {
+            if(duelScene.currentDuelProcess==DuelProcess.End)
+            {
+
+            }
         }
 
         /// <summary>
@@ -570,6 +601,14 @@ namespace Assets.Script.Duel
             else if (duelScene.currentDuelProcess == DuelProcess.Prepare)
             {
                 duelScene.EnterDuelProcess(DuelProcess.Main);
+            }
+            else if (duelScene.currentDuelProcess == DuelProcess.End)
+            {
+                if (duelScene.currentPlayer == this)
+                {
+                    duelScene.ChangeCurrentPlayer();
+                }
+                return;
             }
         }
         
@@ -964,14 +1003,14 @@ namespace Assets.Script.Duel
                 case CardGameState.Hand:
                     handCards.Remove(card);
                     tombCards.Add(card);
-                    if (effectProcessMap.ContainsKey(DuelEffectProcess.Discard))
-                    {
-                        UnityAction action = effectProcessMap[DuelEffectProcess.Discard];
-                        effectProcessMap.Remove(DuelEffectProcess.Discard);
-                        TimerFunction timerFunction = new TimerFunction();
-                        timerFunction.SetFunction(0.5f, action);
-                        GameManager.AddTimerFunction(timerFunction);
-                    }
+                    //if (effectProcessMap.ContainsKey(DuelEffectProcess.Discard))
+                    //{
+                    //    UnityAction action = effectProcessMap[DuelEffectProcess.Discard];
+                    //    effectProcessMap.Remove(DuelEffectProcess.Discard);
+                    //    TimerFunction timerFunction = new TimerFunction();
+                    //    timerFunction.SetFunction(0.5f, action);
+                    //    GameManager.AddTimerFunction(timerFunction);
+                    //}
                     break;
                 case CardGameState.FrontAttack:
                 case CardGameState.FrontDefense:

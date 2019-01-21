@@ -19,16 +19,6 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     /// </summary>
     bool ownedCard = true;
 
-    void Start ()
-    {
-		
-	}
-	
-	void Update ()
-    {
-		
-	}
-
     void OnDestroy()
     {
         if(dragObject)

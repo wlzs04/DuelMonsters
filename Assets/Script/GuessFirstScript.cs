@@ -27,11 +27,6 @@ public class GuessFirstScript : MonoBehaviour, IPointerClickHandler
     {
         guessFirstSceneScript = GameObject.Find("Main Camera").GetComponent<GuessFirstSceneScript>();
     }
-    
-    void Update()
-    {
-
-    }
 
     public void SetChooseState()
     {

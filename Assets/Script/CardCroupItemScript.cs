@@ -31,11 +31,6 @@ public class CardCroupItemScript : MonoBehaviour, IPointerDownHandler
         deleteImage.GetComponent<Button>().onClick.AddListener(() => { DeleteCardGroup(); });
     }
 
-    void Update ()
-    {
-		
-	}
-
     /// <summary>
     /// 设置卡组名称
     /// </summary>

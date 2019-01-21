@@ -12,11 +12,6 @@ public class DropToPanelScript : MonoBehaviour, IDropHandler
     {
 		
 	}
-	
-	void Update ()
-    {
-
-    }
 
     /// <summary>
     /// 添加拖放后进行处理的方法

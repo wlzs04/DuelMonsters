@@ -1,5 +1,6 @@
 using Assets.Script.Card;
 using Assets.Script.Config;
+using Assets.Script.Duel.EffectProcess;
 using Assets.Script.Duel.Rule;
 using Assets.Script.Net;
 using Assets.Script.Protocol;
@@ -25,12 +26,13 @@ namespace Assets.Script.Duel
     }
 
     /// <summary>
-    /// 决斗中的效果处理，用于执行回调
+    /// 决斗中的效果处理，用于作分类判断，执行相应方法
     /// </summary>
     public enum DuelEffectProcess
     {
         Unknown,//未知
         Draw,//抽卡
+        TurnEnd,//回合结束
         Discard,//丢弃卡牌
     }
 
@@ -63,6 +65,9 @@ namespace Assets.Script.Duel
 
         CardBase currentChooseCard = null;
         bool canChoose = false;
+        bool startDuel = false;
+
+        UnityAction nextActionForEffectProcecss;
 
         public DuelScene(DuelMode duelMode)
         {
@@ -348,6 +353,7 @@ namespace Assets.Script.Duel
             });
 
             GameManager.AddTimerFunction(timerFunction);
+            startDuel = false;
         }
 
         /// <summary>
@@ -367,6 +373,19 @@ namespace Assets.Script.Duel
             InitControlFromScene();
             myPlayer.SetCardGroup();
             opponentPlayer.SetCardGroup();
+        }
+
+        public void Update()
+        {
+            if(startDuel)
+            {
+                if (Input.GetMouseButtonDown(1))
+                {
+                    MouseRightButtonDown();
+                }
+                startPlayer.Update();
+                startPlayer.GetOpponentPlayer().Update();
+            }
         }
 
         /// <summary>
@@ -400,6 +419,13 @@ namespace Assets.Script.Duel
             opponentPlayer.InitBeforDuel();
 
             GameManager.ShowMessage("决斗开始！");
+
+            startDuel = true;
+
+            EffectProcessBase myCheckHandCardEffectProcess = new CheckHandCardEffectProcess(myPlayer);
+            myPlayer.AddEffectProcess(myCheckHandCardEffectProcess);
+            EffectProcessBase opponentCheckHandCardEffectProcess = new CheckHandCardEffectProcess(opponentPlayer);
+            opponentPlayer.AddEffectProcess(opponentCheckHandCardEffectProcess);
 
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>
@@ -435,21 +461,40 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 在回合结束后检查手牌，如果手牌超过规定数量后进行丢弃
+        /// 检查是否存在可以触发的效果，将其全部触发完毕，然后执行传入的方法
         /// </summary>
-        public void CheckHandCardsWhenEndTurn()
+        /// <param name=""></param>
+        public void CheckAllEffectProcess(UnityAction nextAction)
         {
-            if(currentPlayer.GetHandCards().Count>DuelRuleManager.GetHandCardNumberUpperLimit())
+            if(nextActionForEffectProcecss!=null)
             {
-                GameManager.ShowMessage("请丢弃多余手牌！");
-                currentPlayer.AddNeedDiscardCardNumberInHand(1);
-                currentPlayer.AddEffectProcess(DuelEffectProcess.Discard, CheckHandCardsWhenEndTurn);
+                if (nextActionForEffectProcecss != nextAction)
+                {
+                    Debug.LogError("nextActionForEffectProcecss被覆盖。");
+                }
             }
-            else
+            nextActionForEffectProcecss = nextAction;
+            if(!currentPlayer.CheckAllEffectProcess() && !currentPlayer.GetOpponentPlayer().CheckAllEffectProcess())
             {
-                ChangeCurrentPlayer();
+                nextActionForEffectProcecss();
+                nextActionForEffectProcecss = null;
             }
         }
+
+        /// <summary>
+        /// 在回合结束后检查手牌，如果手牌超过规定数量后进行丢弃
+        /// </summary>
+        //public void CheckHandCardsWhenEndTurn()
+        //{
+        //    if(currentPlayer.CheckAllEffectProcess())
+        //    {
+
+        //    }
+        //    else
+        //    {
+        //        ChangeCurrentPlayer();
+        //    }
+        //}
 
         /// <summary>
         /// 切换当前玩家一般在结束回合后调用
@@ -526,12 +571,12 @@ namespace Assets.Script.Duel
                     GameManager.ShowMessage(ex + "准备流程！");
                     break;
                 case DuelProcess.Main:
-                    BeginMainDuelProcessEvent();
                     GameManager.ShowMessage(ex + "主要流程！");
+                    BeginMainDuelProcessEvent();
                     break;
                 case DuelProcess.Battle:
-                    BeginBattleDuelProcessEvent();
                     GameManager.ShowMessage(ex + "战斗流程！");
+                    BeginBattleDuelProcessEvent();
                     break;
                 case DuelProcess.Second:
                     GameManager.ShowMessage(ex + "第二主要流程！");
@@ -541,23 +586,13 @@ namespace Assets.Script.Duel
                     break;
                 default:
                     break;
-            }
+            } 
             currentPlayer.GetOpponentPlayer().EnterDuelNotify(currentDuelProcess);
             TimerFunction timerFunction = new TimerFunction();
-            if(duelProcess== DuelProcess.End)
+            timerFunction.SetFunction(1, () =>
             {
-                timerFunction.SetFunction(1, () =>
-                {
-                    CheckHandCardsWhenEndTurn();
-                });
-            }
-            else
-            {
-                timerFunction.SetFunction(1, () =>
-                {
-                    currentPlayer.ThinkAction();
-                });
-            }
+                CheckAllEffectProcess(currentPlayer.ThinkAction);
+            });
             GameManager.AddTimerFunction(timerFunction);
         }
 

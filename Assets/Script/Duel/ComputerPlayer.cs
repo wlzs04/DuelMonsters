@@ -123,6 +123,14 @@ namespace Assets.Script.Duel
             {
 
             }
+            else if(duelScene.currentDuelProcess == DuelProcess.End)
+            {
+                if(duelScene.currentPlayer==this)
+                {
+                    duelScene.ChangeCurrentPlayer();
+                }
+                return;
+            }
             if(duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Battle ||
                 duelScene.currentDuelProcess == DuelProcess.Second)

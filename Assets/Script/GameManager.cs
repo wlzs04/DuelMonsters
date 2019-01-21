@@ -463,12 +463,9 @@ namespace Assets.Script
             {
                 ProcessProtocol();
             }
-            if(Input.GetMouseButtonDown(1))
+            if (duelScene != null)
             {
-                if(duelScene!=null)
-                {
-                    duelScene.MouseRightButtonDown();
-                }
+                duelScene.Update();
             }
         }
 

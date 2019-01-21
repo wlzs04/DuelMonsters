@@ -45,11 +45,6 @@ public class CardGroupScript : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-
-    }
-
     /// <summary>
     /// 通过名称选中指定卡组
     /// </summary>

@@ -64,11 +64,6 @@ public class CardGroupEditScript : MonoBehaviour
         deputyPanelTransform.gameObject.GetComponent<DropToPanelScript>().AddDropHandler(OnDropToDeputyPanel);
     }
 	
-	void Update ()
-    {
-		
-	}
-
     /// <summary>
     /// 重新设置所有卡牌
     /// </summary>
