@@ -258,7 +258,6 @@ namespace Assets.Script.Card
                 {
                     DiscardHandCardEffectProcess discardHandCardEffectProcess = ownerPlayer.GetCurrentEffectProcess() as DiscardHandCardEffectProcess;
                     ownerPlayer.MoveCardToTomb(card);
-                    discardHandCardEffectProcess.DiscardOneHandCard();
                 }
             }
         }

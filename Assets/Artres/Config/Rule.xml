@@ -7,7 +7,7 @@
     <Record id="4" value="3" description="卡组内同名卡牌的最大数量"/>
     <Record id="5" value="5" description="玩家初始手卡数量"/>
     <Record id="6" value="1" description="每到自己回合抽卡数量"/>
-    <Record id="7" value="6" description="最大手卡数量"/>
+    <Record id="7" value="3" description="最大手卡数量"/>
     <Record id="8" value="4000" description="决斗初始血量"/>
     <Record id="9" value="1" description="每个怪兽在战斗流程可以进行攻击的次数"/>
     <Record id="10" value="1" description="自己回合每个怪兽可以进行攻守转换的次数"/>

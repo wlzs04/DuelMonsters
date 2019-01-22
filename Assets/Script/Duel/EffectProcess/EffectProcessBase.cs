@@ -58,6 +58,7 @@ namespace Assets.Script.Duel.EffectProcess
         {
             if(CheckCanTrigger())
             {
+                ownerPlayer.SetCurrentEffectProcess(this);
                 ProcessFunction();
             }
         }

@@ -23,18 +23,24 @@ namespace Assets.Script.Duel.EffectProcess
                 duelScene.currentDuelProcess==DuelProcess.End &&
                 !haveProcess)
             {
-                return ownerPlayer.GetHandCards().Count > DuelRuleManager.GetHandCardNumberUpperLimit();
+                return true;
             }
             return false;
         }
 
         protected override void ProcessFunction()
         {
-            GameManager.ShowMessage("当前手牌数量大于规定数量！");
-            int number = ownerPlayer.GetHandCards().Count - DuelRuleManager.GetHandCardNumberUpperLimit();
-            DiscardHandCardEffectProcess discardHandCardEffectProcess =new DiscardHandCardEffectProcess(number, ownerPlayer, ProcessFunction);
-            ownerPlayer.AddEffectProcess(discardHandCardEffectProcess);
-            ownerPlayer.CheckAllEffectProcess();
+            if(ownerPlayer.GetHandCards().Count > DuelRuleManager.GetHandCardNumberUpperLimit())
+            {
+                GameManager.ShowMessage("当前手牌数量大于规定数量！");
+                int number = ownerPlayer.GetHandCards().Count - DuelRuleManager.GetHandCardNumberUpperLimit();
+                DiscardHandCardEffectProcess discardHandCardEffectProcess = new DiscardHandCardEffectProcess(number, ownerPlayer, ProcessFunction);
+                ownerPlayer.AddEffectProcess(discardHandCardEffectProcess);
+            }
+            else
+            {
+                duelScene.ChangeCurrentPlayer();
+            }
         }
     }
 }

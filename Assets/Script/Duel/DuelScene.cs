@@ -444,7 +444,7 @@ namespace Assets.Script.Duel
         /// </summary>
         public void ShowHelpInfoPanel()
         {
-            duelSceneScript.ShowHelpInfoPanel(opponentPlayer.GetDuelCardGroup().GetCards().Count, myPlayer.GetDuelCardGroup().GetCards().Count);
+            duelSceneScript.ShowHelpInfoPanel(myPlayer.GetDuelCardGroup().GetCards().Count, opponentPlayer.GetDuelCardGroup().GetCards().Count);
         }
 
         void EndDuel()

@@ -25,6 +25,7 @@ namespace Assets.Script.Duel.EffectProcess
         {
             haveProcess = true;
             GameManager.ShowMessage("请丢弃卡牌！");
+            ownerPlayer.ThinkAction();
         }
 
         /// <summary>
@@ -36,6 +37,11 @@ namespace Assets.Script.Duel.EffectProcess
             if(needDiscardHandCardNumber==0)
             {
                 AfterFinishProcessFunction();
+            }
+            else
+            {
+                GameManager.ShowMessage("请丢弃卡牌！");
+                ownerPlayer.ThinkAction();
             }
         }
     }

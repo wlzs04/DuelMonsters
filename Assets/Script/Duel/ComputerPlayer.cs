@@ -1,4 +1,5 @@
 using Assets.Script.Card;
+using Assets.Script.Duel.EffectProcess;
 using Assets.Script.Duel.Rule;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,15 @@ namespace Assets.Script.Duel
         /// </summary>
         public override void ThinkAction()
         {
-            if(duelScene.currentDuelProcess == DuelProcess.Draw)
+            if (currentEffectProcess != null)
+            {
+                if(currentEffectProcess is DiscardHandCardEffectProcess)
+                {
+                    MoveCardToTomb(FindWorstCardInHand());
+                }
+                return;
+            }
+            if (duelScene.currentDuelProcess == DuelProcess.Draw)
             {
                 duelScene.EnterDuelProcess(DuelProcess.Prepare);
                 return;
@@ -125,11 +134,6 @@ namespace Assets.Script.Duel
             }
             else if(duelScene.currentDuelProcess == DuelProcess.End)
             {
-                if(duelScene.currentPlayer==this)
-                {
-                    duelScene.ChangeCurrentPlayer();
-                }
-                return;
             }
             if(duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Battle ||
@@ -137,6 +141,36 @@ namespace Assets.Script.Duel
             {
                 EndTurn();
             }
+        }
+
+        /// <summary>
+        /// 找出手卡中最差的卡,一般用于丢入墓地中(未考虑墓坑)
+        /// </summary>
+        CardBase FindWorstCardInHand()
+        {
+            if(handCards.Count!=0)
+            {
+                foreach (var item in handCards)
+                {
+                    switch (item.GetCardType())
+                    {
+                        case CardType.Monster:
+                            if((item as MonsterCard).GetAttackNumber()==0)
+                            {
+                                return item;
+                            }
+                            break;
+                        case CardType.Magic:
+                            return item;
+                        case CardType.Trap:
+                            return item;
+                        default:
+                            break;
+                    }
+                }
+                return handCards[0];
+            }
+            return null;
         }
 
         public override void GuessFirstNotify(GuessEnum guessEnum)
