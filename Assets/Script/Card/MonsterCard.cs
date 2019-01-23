@@ -82,7 +82,8 @@ namespace Assets.Script.Card
         int canBeSacrificedNumber = 1;//可被当成祭品的个数
 
         bool canDirectAttack = true;//是否可以直接攻击
-        bool canBeAttacked = true;
+        bool canBeAttacked = true;//是否可以被攻击
+        bool canPenetrateDefense = false;//是否可以贯穿守备怪兽
 
         public MonsterCard()
         {
@@ -121,6 +122,11 @@ namespace Assets.Script.Card
         public bool CanAttack()
         {
             return  GetCardGameState() == CardGameState.FrontAttack;
+        }
+
+        public bool GetCanPenetrateDefense()
+        {
+            return canPenetrateDefense;
         }
 
         public int GetCanBeSacrificedNumber()

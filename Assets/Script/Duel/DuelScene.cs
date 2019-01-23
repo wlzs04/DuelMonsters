@@ -215,6 +215,10 @@ namespace Assets.Script.Duel
             {
                 if(currentChooseCard.GetDuelCardScript().GetOwner()!= 
                     card.GetDuelCardScript().GetOwner()&&
+                    card.GetCardType()==CardType.Monster &&
+                    (card.GetCardGameState()== CardGameState.FrontAttack ||
+                    card.GetCardGameState() == CardGameState.FrontDefense ||
+                    card.GetCardGameState() == CardGameState.Back)  &&
                     ((MonsterCard)card).CanBeAttacked)
                 {
                     opponentPlayer.BeAttackedMonsterNotify(currentChooseCard.GetID(), card.GetID());
@@ -233,22 +237,42 @@ namespace Assets.Script.Duel
         void AttackMonster(MonsterCard card1, MonsterCard card2)
         {
             card1.GetDuelCardScript().Attack();
-            int differenceValue = card1.GetAttackNumber() - card2.GetAttackNumber();
-
+            int card2Value = 0;
+            bool card2Defense = false;
+            if (card2.GetCardGameState()==CardGameState.FrontAttack)
+            {
+                card2Value = card2.GetAttackNumber();
+            }
+            else if(card2.GetCardGameState() == CardGameState.FrontDefense ||
+                card2.GetCardGameState() == CardGameState.Back)
+            {
+                card2Value = card2.GetDefenseNumber();
+                card2Defense = true;
+            }
+            int differenceValue = card1.GetAttackNumber() - card2Value;
             if (differenceValue==0)
             {
-                SendCardToTomb(card1);
-                SendCardToTomb(card2);
+                if(!card2Defense)
+                {
+                    SendCardToTomb(card1);
+                    SendCardToTomb(card2);
+                }
             }
             else if(differenceValue>0)
             {
-                card2.GetDuelCardScript().GetOwner().ReduceLife(differenceValue);
+                if(card2Defense && card1.GetCanPenetrateDefense())
+                {
+                    card2.GetDuelCardScript().GetOwner().ReduceLife(differenceValue);
+                }
                 SendCardToTomb(card2);
             }
             else
             {
                 card1.GetDuelCardScript().GetOwner().ReduceLife(-differenceValue);
-                SendCardToTomb(card1);
+                if(!card2Defense)
+                {
+                    SendCardToTomb(card1);
+                }
             }
             canChoose = false;
         }
@@ -484,17 +508,6 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 在回合结束后检查手牌，如果手牌超过规定数量后进行丢弃
         /// </summary>
-        //public void CheckHandCardsWhenEndTurn()
-        //{
-        //    if(currentPlayer.CheckAllEffectProcess())
-        //    {
-
-        //    }
-        //    else
-        //    {
-        //        ChangeCurrentPlayer();
-        //    }
-        //}
 
         /// <summary>
         /// 切换当前玩家一般在结束回合后调用

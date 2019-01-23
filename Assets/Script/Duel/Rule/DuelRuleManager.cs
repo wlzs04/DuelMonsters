@@ -171,21 +171,30 @@ namespace Assets.Script.Duel.Rule
         }
 
         /// <summary>
-        /// 玩家怪兽区的数量
-        /// </summary>
-        /// <returns></returns>
-        public static int GetMonsterAreaNumber()
-        {
-            return ruleConfig.GetRecordById(13).value;
-        }
-
-        /// <summary>
         /// 每回合可进行通常召唤的次数
         /// </summary>
         /// <returns></returns>
         public static int GetNormalCallMonsterNumber()
         {
+            return ruleConfig.GetRecordById(13).value;
+        }
+
+        /// <summary>
+        /// 玩家怪兽区的数量
+        /// </summary>
+        /// <returns></returns>
+        public static int GetMonsterAreaNumber()
+        {
             return ruleConfig.GetRecordById(14).value;
+        }
+
+        /// <summary>
+        /// 玩家魔法陷阱区的数量
+        /// </summary>
+        /// <returns></returns>
+        public static int GetMagicTrapAreaNumber()
+        {
+            return ruleConfig.GetRecordById(15).value;
         }
     }
 }

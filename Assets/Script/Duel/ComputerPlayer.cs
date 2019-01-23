@@ -109,11 +109,20 @@ namespace Assets.Script.Duel
                             }
                             else
                             {
+                                CardGameState nextCardGameState;
+                                if (monsterCard.GetAttackNumber()>= monsterCard.GetDefenseNumber())
+                                {
+                                    nextCardGameState = CardGameState.FrontAttack;
+                                }
+                                else
+                                {
+                                    nextCardGameState = CardGameState.FrontDefense;
+                                }
                                 for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
                                 {
                                     if (monsterCardArea[i] == null)
                                     {
-                                        CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, i);
+                                        CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, nextCardGameState, i);
                                         return;
                                     }
                                 }

@@ -20,11 +20,12 @@ namespace Assets.Script.Card
     {
         NormalCall,//通常召唤
         SacrificCall,//祭品召唤
-        BackPlace,//背面放置
+        BackPlaceToMonsterArea,//背面放置到怪兽区
         SpecailCall,//特殊召唤
         ChangeAttack,//攻击表示
         ChangeDefense,//守备表示
         LaunchEffect,//发动效果 
+        BackPlaceToMagicTrapArea,//背面放置到魔法陷阱区
     }
 
     public class DuelCardScript : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
@@ -49,7 +50,6 @@ namespace Assets.Script.Card
 
         bool haveBeChosen = false;
 
-        string cardOperationButtonPrefabPath = "Prefab/CardOperationButtonPre";
         Transform operationPanelTransform = null;
         
         void Start()
@@ -385,7 +385,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanCall()
         {
-            return CanNormalCall()|| CanSacrificCall()||CanBackPlace();
+            return CanNormalCall()|| CanSacrificCall()||CanBackPlaceToMonsterArea();
         }
 
         /// <summary>
@@ -433,10 +433,10 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
-        /// 判断是否可以背面放置
+        /// 判断是否可以背面放置到怪兽区
         /// </summary>
         /// <returns></returns>
-        public bool CanBackPlace()
+        public bool CanBackPlaceToMonsterArea()
         {
             if (card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
@@ -497,44 +497,78 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 判断是否可以放置到魔法陷阱区
+        /// </summary>
+        /// <returns></returns>
+        public bool CanBackPlaceToMagicTrapArea()
+        {
+            if ((card.GetCardType() == CardType.Magic || 
+                card.GetCardType() == CardType.Trap) &&
+                card.GetCardGameState() == CardGameState.Hand &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                !ownerPlayer.MagicTrapAreaIsFull())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 重新检查当前卡牌允许的操作，并添加到操作面板中
         /// </summary>
         public void RecheckAllowedOperation()
         {
             GameManager.CleanPanelContent(operationPanelTransform);
+            
+            switch (card.GetCardType())
+            {
+                case CardType.Unknown:
+                    break;
+                case CardType.Monster:
+                    if (CanNormalCall())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.NormalCall);
+                    }
+                    if (CanSacrificCall())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.SacrificCall);
+                    }
+                    if (CanBackPlaceToMonsterArea())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.BackPlaceToMonsterArea);
+                    }
+                    if (CanChangeToFrontAttack())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.ChangeAttack);
+                    }
+                    if (CanChangeToFrontDefense())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.ChangeDefense);
+                    }
+                    break;
+                case CardType.Magic:
+                case CardType.Trap:
+                    if(CanBackPlaceToMagicTrapArea())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.BackPlaceToMagicTrapArea);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+        }
 
-            GameObject cardOperationButtonPre = Resources.Load<GameObject>(cardOperationButtonPrefabPath);
-
-            if (CanNormalCall())
-            {
-                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
-                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
-                cardOperationButtonScript.SetInfo(this,CardOperation.NormalCall);
-            }
-            if (CanSacrificCall())
-            {
-                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
-                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
-                cardOperationButtonScript.SetInfo(this,CardOperation.SacrificCall);
-            }
-            if(CanBackPlace())
-            {
-                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
-                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
-                cardOperationButtonScript.SetInfo(this, CardOperation.BackPlace);
-            }
-            if (CanChangeToFrontAttack())
-            {
-                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
-                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
-                cardOperationButtonScript.SetInfo(this, CardOperation.ChangeAttack);
-            }
-            if (CanChangeToFrontDefense())
-            {
-                GameObject gameObject = Instantiate(cardOperationButtonPre, operationPanelTransform);
-                CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
-                cardOperationButtonScript.SetInfo(this, CardOperation.ChangeDefense);
-            }
+        /// <summary>
+        /// 添加卡牌操作按钮到操作面板中
+        /// </summary>
+        void AddCardOperationButtonToOperationPanel(CardOperation cardOperation)
+        {
+            GameObject gameObject = Instantiate(GameManager.GetCardOperationButtonPrefab(), operationPanelTransform);
+            CardOperationButtonScript cardOperationButtonScript = gameObject.GetComponent<CardOperationButtonScript>();
+            cardOperationButtonScript.SetInfo(this, cardOperation);
         }
 
         /// <summary>
@@ -555,7 +589,7 @@ namespace Assets.Script.Card
                         }
                     }
                     break;
-                case CardOperation.BackPlace:
+                case CardOperation.BackPlaceToMonsterArea:
                     if (ownerPlayer.CanCallMonster())
                     {
                         if (CanCall())
@@ -574,6 +608,12 @@ namespace Assets.Script.Card
                     if (CanChangeToFrontDefense())
                     {
                         ChangeToFrontDefense();
+                    }
+                    break;
+                case CardOperation.BackPlaceToMagicTrapArea:
+                    if (CanBackPlaceToMagicTrapArea())
+                    {
+                        ownerPlayer.BackPlaceMagicOrTrap(card);
                     }
                     break;
                 default:

@@ -168,9 +168,18 @@ namespace Assets.Script.Card
                 }
                 case CardGameState.Back:
                     duelCardScript.ShowBack();
-                    duelCardScript.SetCardAngle(90);
+                    if(cardType==CardType.Monster)
+                    {
+                        duelCardScript.SetCardAngle(90);
+                    }
+                    else if(cardType == CardType.Magic || cardType == CardType.Trap)
+                    {
+                        duelCardScript.SetCardAngle(0);
+                    }
                     break;
                 case CardGameState.Tomb:
+                    duelCardScript.ShowFront();
+                    duelCardScript.SetCardAngle(0);
                     cardObject.transform.SetParent(GameManager.GetSingleInstance().GetDuelScene().duelBackImage.transform);
                     if (duelCardScript.GetOwner().IsMyPlayer())
                     {

@@ -128,6 +128,22 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 判断魔法陷阱区是否已满
+        /// </summary>
+        /// <returns></returns>
+        public bool MagicTrapAreaIsFull()
+        {
+            foreach (var item in magicTrapCardArea)
+            {
+                if (item == null)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 在决斗前的初始化
         /// </summary>
         public virtual void InitBeforDuel()
@@ -788,6 +804,32 @@ namespace Assets.Script.Duel
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 放置一张魔法或陷阱卡
+        /// </summary>
+        public void BackPlaceMagicOrTrap(CardBase magicOrTrapCard)
+        {
+            if(magicOrTrapCard.GetCardType()!=CardType.Magic && 
+                magicOrTrapCard.GetCardType() != CardType.Trap)
+            {
+                return;
+            }
+            int index = 0;
+            for (; index < DuelRuleManager.GetMagicTrapAreaNumber(); index++)
+            {
+                if (magicTrapCardArea[index] == null)
+                {
+                    magicTrapCardArea[index] = magicOrTrapCard;
+                    break;
+                }
+            }
+            magicOrTrapCard.AddContent("magicOrTrapIndex", index);
+            magicOrTrapCard.SetCardGameState(CardGameState.Back);
+            magicOrTrapCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
+            magicOrTrapCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMagicTrapCardFarLeftPositionY, 1));
+            handCards.Remove(magicOrTrapCard);
         }
 
         public virtual void CallMonsterNotify(int id,CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState,int flag)

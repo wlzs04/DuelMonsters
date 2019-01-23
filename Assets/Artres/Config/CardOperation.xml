@@ -7,5 +7,6 @@
     <Record id="4" value="攻击表示"/>
     <Record id="5" value="守备表示"/>
     <Record id="6" value="发动效果"/>
+    <Record id="7" value="背面放置"/>
   </RecordList>
 </CardOperation>

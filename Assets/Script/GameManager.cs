@@ -43,6 +43,7 @@ namespace Assets.Script
         #region 决斗
         DuelScene duelScene = null;
         Sprite cardBackImage = null;
+        GameObject cardOperationButtonPrefab = null;
         #endregion
 
         #region 网络
@@ -70,6 +71,8 @@ namespace Assets.Script
             www.LoadImageIntoTexture(texture);
             cardBackImage = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
 
+            string cardOperationButtonPrefabPath = "Prefab/CardOperationButtonPre";
+            cardOperationButtonPrefab = Resources.Load<GameObject>(cardOperationButtonPrefabPath);
             DuelRuleManager.InitDuelRule();
         }
         
@@ -531,6 +534,15 @@ namespace Assets.Script
         public static Sprite GetCardBackImage()
         {
             return GameManager.GetSingleInstance().cardBackImage;
+        }
+
+        /// <summary>
+        /// 获得卡牌操作按钮预设
+        /// </summary>
+        /// <returns></returns>
+        public static GameObject GetCardOperationButtonPrefab()
+        {
+            return GameManager.GetSingleInstance().cardOperationButtonPrefab;
         }
 
         /// <summary>
