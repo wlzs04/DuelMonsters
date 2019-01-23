@@ -53,6 +53,12 @@ namespace Assets.Script.Duel
         /// </summary>
         public override void ThinkAction()
         {
+            //不是自己回合不进行操作
+            if (duelScene.currentPlayer != this)
+            {
+                return;
+            }
+            //受效果处理时进行根据效果类型做特殊操作
             if (currentEffectProcess != null)
             {
                 if(currentEffectProcess is DiscardHandCardEffectProcess)

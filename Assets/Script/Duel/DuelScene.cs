@@ -67,7 +67,10 @@ namespace Assets.Script.Duel
         bool canChoose = false;
         bool startDuel = false;
 
-        UnityAction nextActionForEffectProcecss;
+        //UnityAction nextActionForEffectProcecss;
+
+        bool inChain = false;//是否在连锁中
+        Stack<UnityAction> chainStack=new Stack<UnityAction>();
 
         public DuelScene(DuelMode duelMode)
         {
@@ -407,9 +410,27 @@ namespace Assets.Script.Duel
                 {
                     MouseRightButtonDown();
                 }
+                if(!inChain)
+                {
+                    if (chainStack.Count>0)
+                    {
+                        inChain = true;
+                        UnityAction action = chainStack.Pop();
+                        action += () => 
+                        {
+                            inChain = false;
+                        };
+                        action();
+                    }
+                }
                 startPlayer.Update();
                 startPlayer.GetOpponentPlayer().Update();
             }
+        }
+
+        public bool IsInChain()
+        {
+            return inChain;
         }
 
         /// <summary>
@@ -488,26 +509,16 @@ namespace Assets.Script.Duel
         /// 检查是否存在可以触发的效果，将其全部触发完毕，然后执行传入的方法
         /// </summary>
         /// <param name=""></param>
-        public void CheckAllEffectProcess(UnityAction nextAction)
+        public void CheckAllEffectProcess(UnityAction nextAction = null)
         {
-            if(nextActionForEffectProcecss!=null)
+            if(nextAction!=null)
             {
-                if (nextActionForEffectProcecss != nextAction)
-                {
-                    Debug.LogError("nextActionForEffectProcecss被覆盖。");
-                }
+                chainStack.Push(nextAction);
             }
-            nextActionForEffectProcecss = nextAction;
             if(!currentPlayer.CheckAllEffectProcess() && !currentPlayer.GetOpponentPlayer().CheckAllEffectProcess())
             {
-                nextActionForEffectProcecss();
-                nextActionForEffectProcecss = null;
             }
         }
-
-        /// <summary>
-        /// 在回合结束后检查手牌，如果手牌超过规定数量后进行丢弃
-        /// </summary>
 
         /// <summary>
         /// 切换当前玩家一般在结束回合后调用
@@ -599,7 +610,7 @@ namespace Assets.Script.Duel
                     break;
                 default:
                     break;
-            } 
+            }
             currentPlayer.GetOpponentPlayer().EnterDuelNotify(currentDuelProcess);
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>

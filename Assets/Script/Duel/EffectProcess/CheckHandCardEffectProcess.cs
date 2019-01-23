@@ -11,6 +11,7 @@ namespace Assets.Script.Duel.EffectProcess
         public CheckHandCardEffectProcess(Player ownerPlayer):base(ownerPlayer)
         {
             effectProcessType = EffectProcessType.Forever;
+            finishAction = duelScene.ChangeCurrentPlayer;
         }
 
         /// <summary>
@@ -30,7 +31,8 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
-            if(ownerPlayer.GetHandCards().Count > DuelRuleManager.GetHandCardNumberUpperLimit())
+            haveProcess = true;
+            if (ownerPlayer.GetHandCards().Count > DuelRuleManager.GetHandCardNumberUpperLimit())
             {
                 GameManager.ShowMessage("当前手牌数量大于规定数量！");
                 int number = ownerPlayer.GetHandCards().Count - DuelRuleManager.GetHandCardNumberUpperLimit();
@@ -39,7 +41,7 @@ namespace Assets.Script.Duel.EffectProcess
             }
             else
             {
-                duelScene.ChangeCurrentPlayer();
+                AfterFinishProcessFunction();
             }
         }
     }

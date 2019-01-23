@@ -149,6 +149,8 @@ namespace Assets.Script
                     durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = color;
                 }
             }
+            StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
+            durlProcessPanel.transform.GetChild(1).GetComponent<Text>().text = stringResConfig.GetRecordById(15).value+duelScene.GetCurrentTurnNumber();
         }
 
         /// <summary>

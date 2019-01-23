@@ -27,7 +27,7 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     public abstract class EffectProcessBase
     {
-        public UnityAction finishAction;
+        protected UnityAction finishAction;
         protected EffectProcessType effectProcessType;
         protected Player ownerPlayer;
         protected DuelScene duelScene;
@@ -78,7 +78,11 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 ownerPlayer.RemoveEffectProcess(this);
             }
-            if(finishAction!=null)
+            else
+            {
+                ownerPlayer.RemoveCurrentEffectProcess(this);
+            }
+            if (finishAction!=null)
             {
                 finishAction();
             }

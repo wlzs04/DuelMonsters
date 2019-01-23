@@ -15,5 +15,6 @@
     <Record id="12" value="除外卡牌列表"/>
     <Record id="13" value="请选择"/>
     <Record id="14" value="请等待对方选择"/>
+    <Record id="15" value="当前回合数："/>
   </RecordList>
 </StringRes>

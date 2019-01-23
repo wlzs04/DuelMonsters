@@ -312,6 +312,26 @@ namespace Assets.Script.Duel
             effectProcessList.Remove(effectProcess);
         }
 
+        /// <summary>
+        /// 移除当前效果处理类
+        /// </summary>
+        /// <param name="effectProcess"></param>
+        public void RemoveCurrentEffectProcess(EffectProcessBase effectProcess)
+        {
+            if(currentEffectProcess==null)
+            {
+                return;
+            }
+            else if (currentEffectProcess == effectProcess)
+            {
+                currentEffectProcess = null;
+            }
+            else
+            {
+                Debug.LogError("此玩家无法移除当前效果处理！");
+            }
+        }
+
         public void SetDuelEffectProcess(DuelEffectProcess duelEffectProcess)
         {
             this.duelEffectProcess = duelEffectProcess;
@@ -624,6 +644,10 @@ namespace Assets.Script.Duel
         /// </summary>
         public virtual void ThinkAction()
         {
+            if(duelScene.currentPlayer!=this)
+            {
+                return;
+            }
             if(currentEffectProcess!=null)
             {
                 return;
