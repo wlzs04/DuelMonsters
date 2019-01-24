@@ -6,6 +6,9 @@ using UnityEngine.Events;
 
 namespace Assets.Script.Duel.EffectProcess
 {
+    /// <summary>
+    /// 丢弃手卡
+    /// </summary>
     class DiscardHandCardEffectProcess : EffectProcessBase
     {
         int needDiscardHandCardNumber = 1;//需要丢弃的卡牌数量

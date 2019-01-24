@@ -1,6 +1,7 @@
 using Assets.Script.Card;
 using Assets.Script.Config;
 using Assets.Script.Duel;
+using Assets.Script.Duel.Rule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace Assets.Script
         GameObject attackOrDefensePanel = null;
         GameObject helpInfoPanel = null;
         GameObject cardListPanel = null;
+        GameObject duelResultPanel = null;
         Transform cardListContentTransform = null;
 
         UnityAction<CardGameState> selectAttackOrDefenseFinishAction = null;
@@ -59,7 +61,9 @@ namespace Assets.Script
             cardListPanel = GameObject.Find("CardListPanel");
             cardListContentTransform = cardListPanel.transform.GetChild(0).GetChild(0).GetChild(0);
             cardListPanel.SetActive(false);
-            
+
+            duelResultPanel = GameObject.Find("DuelResultPanel");
+            duelResultPanel.SetActive(false);
         }
 
         /// <summary>
@@ -278,6 +282,33 @@ namespace Assets.Script
                 card.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
                 card.SetCardGameState(card.GetCardGameState());
             }
+        }
+
+        /// <summary>
+        /// 显示决斗结果面板
+        /// </summary>
+        /// <param name="v"></param>
+        public void ShowDuelResultPanel(Player winnerPlayer, DuelEndReason duelEndReason)
+        {
+            duelResultPanel.SetActive(true);
+            StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
+            string resultText = "";
+            if (winnerPlayer == null)
+            {
+                resultText = stringResConfig.GetRecordById(16).value;
+            }
+            else if (winnerPlayer == duelScene.myPlayer)
+            {
+                resultText = stringResConfig.GetRecordById(17).value;
+            }
+            else
+            {
+                resultText = stringResConfig.GetRecordById(18).value;
+            }
+            duelResultPanel.transform.GetChild(1).GetComponent<Text>().text = resultText;
+
+            DuelEndReasonConfig duelEndReasonConfig = ConfigManager.GetConfigByName("DuelEndReason") as DuelEndReasonConfig;
+            duelResultPanel.transform.GetChild(3).GetComponent<Text>().text = duelEndReasonConfig.GetRecordById((int)duelEndReason).value;
         }
     }
 }

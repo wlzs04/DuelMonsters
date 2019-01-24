@@ -264,6 +264,15 @@ namespace Assets.Script.Card
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            //如果卡牌在场上，则置顶，防遮挡
+            if (card.GetCardGameState()==CardGameState.FrontAttack||
+                card.GetCardGameState() == CardGameState.FrontDefense||
+                card.GetCardGameState() == CardGameState.Back)
+            {
+                int count = transform.parent.childCount - 1;
+                transform.SetSiblingIndex(count);
+            }
+
             gameObject.transform.localScale = new Vector3(selectScale, selectScale, 1);
             if(canShowInfo)
             {

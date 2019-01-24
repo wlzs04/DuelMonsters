@@ -139,8 +139,8 @@ namespace Assets.Script.Duel
                 }
                 if (CanBattle())
                 {
-                    duelScene.EnterDuelProcess(DuelProcess.Battle);
-                    return;
+                    //duelScene.EnterDuelProcess(DuelProcess.Battle);
+                    //return;
                 }
             }
             else if(duelScene.currentDuelProcess == DuelProcess.Battle)

@@ -505,26 +505,23 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 抽卡
         /// </summary>
-        public virtual bool Draw()
+        public bool Draw()
         {
-            if(GetDuelCardGroup().GetCards().Count<=0)
+            if (GetDuelCardGroup().GetCards().Count <= 0)
             {
                 return false;
             }
-            CardBase card = duelCardGroup.GetCards()[0];
-            card.GetDuelCardScript().SetParent(handPanel.transform);
-            duelCardGroup.GetCards().RemoveAt(0);
-            handCards.Add(card);
-            card.SetCardGameState(CardGameState.Hand);
-            
+            CardBase card = GetDuelCardGroup().GetCards()[0];
+            AddCardToHand(card);
+            GetDuelCardGroup().GetCards().Remove(card);
             if (this == duelScene.myPlayer)
             {
                 card.GetDuelCardScript().ShowFront();
                 card.GetDuelCardScript().SetCanShowInfo(true);
             }
-            else if(this == duelScene.opponentPlayer)
+            else if (this == duelScene.opponentPlayer)
             {
-                if(GameManager.GetSingleInstance().GetUserData().showOpponentHandCard)
+                if (this is ComputerPlayer && GameManager.GetSingleInstance().GetUserData().showOpponentHandCard)
                 {
                     card.GetDuelCardScript().SetCanShowInfo(true);
                 }
@@ -534,6 +531,13 @@ namespace Assets.Script.Duel
 
             opponentPlayer.DrawNotify();
             return true;
+        }
+
+        public void AddCardToHand(CardBase card)
+        {
+            card.GetDuelCardScript().SetParent(handPanel.transform);
+            GetHandCards().Add(card);
+            card.SetCardGameState(CardGameState.Hand);
         }
 
         /// <summary>
@@ -599,22 +603,8 @@ namespace Assets.Script.Duel
         public void StartTurn()
         {
             playGameState = PlayGameState.Normal;
+            normalCallNumber = DuelRuleManager.GetNormalCallMonsterNumber();
             duelScene.EnterDuelProcess(DuelProcess.Draw);
-
-            TimerFunction timerFunction = new TimerFunction();
-
-            timerFunction.SetFunction(0.5f, () => 
-            {
-                normalCallNumber = DuelRuleManager.GetNormalCallMonsterNumber();
-                if (GetDuelCardGroup().GetCards().Count <= 0)
-                {
-                    duelScene.SetWinner(opponentPlayer, DuelEndReason.Draw);
-                    return;
-                }
-                Draw();
-            });
-
-            GameManager.AddTimerFunction(timerFunction);
         }
 
         public void Update()

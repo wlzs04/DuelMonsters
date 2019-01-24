@@ -91,8 +91,11 @@
     <Compile Include="Assets\Script\Duel\DuelCardGroup.cs" />
     <Compile Include="Assets\Script\Duel\DuelCommonValue.cs" />
     <Compile Include="Assets\Script\Duel\DuelScene.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess\CallMonsterEffectProcess.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess\ChangeAttackDefenseEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\CheckHandCardEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\DiscardHandCardEffectProcess.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess\DrawCardEveryTurnEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\EffectProcessBase.cs" />
     <Compile Include="Assets\Script\Duel\NetPlayer.cs" />
     <Compile Include="Assets\Script\Duel\Player.cs" />

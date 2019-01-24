@@ -224,10 +224,14 @@ namespace Assets.Script.Duel
                     card.GetCardGameState() == CardGameState.Back)  &&
                     ((MonsterCard)card).CanBeAttacked)
                 {
-                    opponentPlayer.BeAttackedMonsterNotify(currentChooseCard.GetID(), card.GetID());
-                    
-                    AttackMonster((MonsterCard)currentChooseCard, (MonsterCard)card);
-                    currentChooseCard = null;
+                    SetAttackAnimationFinishEvent(() =>
+                    {
+                        opponentPlayer.BeAttackedMonsterNotify(currentChooseCard.GetID(), card.GetID());
+
+                        AttackMonster((MonsterCard)currentChooseCard, (MonsterCard)card);
+                        currentChooseCard = null;
+                    });
+                    StartPlayAttackAnimation(currentChooseCard.GetDuelCardScript().GetPosition(), card.GetDuelCardScript().GetPosition());
                 }
             }
         }
@@ -358,18 +362,7 @@ namespace Assets.Script.Duel
         /// <param name="player"></param>
         public void SetWinner(Player player,DuelEndReason duelEndReason)
         {
-            if(player==null)
-            {
-                GameManager.ShowMessage("平局！");
-            }
-            else if(player==myPlayer)
-            {
-                GameManager.ShowMessage("我赢了!");
-            }
-            else
-            {
-                GameManager.ShowMessage("我输了!");
-            }
+            duelSceneScript.ShowDuelResultPanel(player, duelEndReason);
 
             TimerFunction timerFunction = new TimerFunction();
 
@@ -472,6 +465,11 @@ namespace Assets.Script.Duel
             EffectProcessBase opponentCheckHandCardEffectProcess = new CheckHandCardEffectProcess(opponentPlayer);
             opponentPlayer.AddEffectProcess(opponentCheckHandCardEffectProcess);
 
+            EffectProcessBase myDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(myPlayer);
+            myPlayer.AddEffectProcess(myDrawCardEveryTurnEffectProcess);
+            EffectProcessBase opponentDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(opponentPlayer);
+            opponentPlayer.AddEffectProcess(opponentDrawCardEveryTurnEffectProcess);
+
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>
             {
@@ -545,19 +543,24 @@ namespace Assets.Script.Duel
 
         }
 
+        /// <summary>
+        /// 显示指定卡牌的详细信息
+        /// </summary>
+        /// <param name="card"></param>
         public void ShowCardInfo(CardBase card)
         {
             duelSceneScript.SetInfoContent(card);
         }
         
         /// <summary>
-        /// 向玩家显示当前流程
+        /// 进入指定流程
         /// </summary>
         /// <param name="duelProcess"></param>
         public void EnterDuelProcess(DuelProcess duelProcess)
         {
             if(currentDuelProcess == duelProcess)
             {
+                Debug.LogError("当前流程已经是："+ currentDuelProcess + "无法重复进入！");
                 return;
             }
             switch (currentDuelProcess)

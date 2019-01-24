@@ -1,22 +1,26 @@
+using Assets.Script;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 只为MessageTip提供，定时自动回调
+/// </summary>
 public class DestroySelfScript : MonoBehaviour {
 
     public float life = 5;
     float startTime = 0;
-
-	// Use this for initialization
-	void Start () {
+    
+	void Start ()
+    {
         startTime = Time.time;
     }
 	
-	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 		if(Time.time-startTime> life)
         {
-            Destroy(gameObject);
+            GameManager.RemoveMessage(gameObject);
         }
 	}
 }

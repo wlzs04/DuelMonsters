@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Assets.Script.Duel.EffectProcess
 {
+    /// <summary>
+    /// 在回合结束后检查手牌是否超过规定的最大数量，超过的话丢弃多余数量
+    /// </summary>
     class CheckHandCardEffectProcess : EffectProcessBase
     {
         public CheckHandCardEffectProcess(Player ownerPlayer):base(ownerPlayer)
@@ -14,10 +17,6 @@ namespace Assets.Script.Duel.EffectProcess
             finishAction = duelScene.ChangeCurrentPlayer;
         }
 
-        /// <summary>
-        /// 在回合结束后检查手牌
-        /// </summary>
-        /// <returns></returns>
         public override bool CheckCanTrigger()
         {
             if (ownerPlayer == duelScene.currentPlayer &&

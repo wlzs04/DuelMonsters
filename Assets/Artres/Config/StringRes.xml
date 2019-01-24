@@ -16,5 +16,8 @@
     <Record id="13" value="请选择"/>
     <Record id="14" value="请等待对方选择"/>
     <Record id="15" value="当前回合数："/>
+    <Record id="16" value="平局"/>
+    <Record id="17" value="我赢了"/>
+    <Record id="18" value="我输了"/>
   </RecordList>
 </StringRes>

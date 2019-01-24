@@ -54,6 +54,7 @@ namespace Assets.Script
         #endregion
 
         List<TimerFunction> timerFunctions = new List<TimerFunction>();
+        static List<GameObject> messageTipList = new List<GameObject>();
 
         string cardGroupNameForCardGroupEditScene = "";
 
@@ -438,9 +439,31 @@ namespace Assets.Script
         /// <param name="value"></param>
         public static void ShowMessage(string value)
         {
-            GameObject gameObject = MonoBehaviour.Instantiate(Resources.Load<GameObject>("Prefab/MessageTip"), GameObject.Find("Canvas").transform);
-            gameObject.transform.GetChild(0).GetComponent<Text>().text = value;
+            for (int i = messageTipList.Count - 1; i >= 0; i--)
+            {
+                if (messageTipList[i]!=null)
+                {
+                    messageTipList[i].transform.localPosition -= new Vector3(0, 100);
+                }
+                else
+                {
+                    messageTipList.RemoveAt(i);
+                }
+            }
             Debug.Log(value);
+            GameObject gameObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefab/MessageTip"), GameObject.Find("Canvas").transform);
+            gameObject.transform.GetChild(0).GetComponent<Text>().text = value;
+            messageTipList.Add(gameObject);
+        }
+
+        /// <summary>
+        /// 移除提示框
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public static void RemoveMessage(GameObject gameObject)
+        {
+            messageTipList.Remove(gameObject);
+            UnityEngine.Object.DestroyImmediate(gameObject);
         }
 
         /// <summary>
