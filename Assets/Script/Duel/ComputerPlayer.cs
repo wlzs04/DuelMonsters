@@ -116,13 +116,13 @@ namespace Assets.Script.Duel
                             else
                             {
                                 CardGameState nextCardGameState;
-                                if (monsterCard.GetAttackNumber()>= monsterCard.GetDefenseNumber())
+                                if (monsterCard.GetAttackNumber() >= monsterCard.GetDefenseNumber())
                                 {
                                     nextCardGameState = CardGameState.FrontAttack;
                                 }
                                 else
                                 {
-                                    nextCardGameState = CardGameState.FrontDefense;
+                                    nextCardGameState = CardGameState.FrontAttack;
                                 }
                                 for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
                                 {

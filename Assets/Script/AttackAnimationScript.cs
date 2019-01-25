@@ -59,9 +59,14 @@ public class AttackAnimationScript : MonoBehaviour {
     /// <param name="toPosition"></param>
     public void StartPlay(Vector3 fromPosition,Vector3 toPosition)
     {
+        if (startPlay)
+        {
+            Debug.LogError("当前攻击动画正在播放！");
+        }
         transform.SetSiblingIndex(gameObject.transform.parent.childCount - 1);
         transform.localRotation = Quaternion.Euler(0,0, Mathf.Atan2(fromPosition.x - toPosition.x, toPosition.y - fromPosition.y) * 180 / Mathf.PI);
         startPlay = true;
+        transform.localPosition = fromPosition;
         gameObject.SetActive(true);
         this.fromPosition = fromPosition;
         this.toPosition = toPosition;

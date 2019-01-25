@@ -217,7 +217,7 @@ namespace Assets.Script.Card
                     }
                 }
 
-                if (ownerPlayer.CanBattle())
+                if (ownerPlayer.CanBattle() && !(ownerPlayer.GetCurrentEffectProcess() is AttackEffectProcess))
                 {
                     if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
                     {
@@ -226,26 +226,30 @@ namespace Assets.Script.Card
                             !opponentPlayer.HaveBeAttackedMonster() &&
                             ownerPlayer.GetCanDirectAttack() && ((MonsterCard)card).CanDirectAttack)
                         {
-                            card.GetDuelCardScript().Attack();
-                            duelScene.SetAttackAnimationFinishEvent(() =>
-                            {
-                                ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(card.GetID());
+                            AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card as MonsterCard, null, ownerPlayer);
+                            ownerPlayer.AddEffectProcess(attackEffectProcess);
 
-                                duelScene.AttackDirect((MonsterCard)card);
-                            });
-                            duelScene.StartPlayAttackAnimation(GetPosition(), ownerPlayer.GetOpponentPlayer().GetHeartPosition());
                             return;
                         }
                         else
                         {
                             PrepareAttack();
-                            duelScene.SetCanChoose(true);
-                            duelScene.ChooseCard(card);
+
+                            AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card as MonsterCard, null, ownerPlayer);
+                            ownerPlayer.AddEffectProcess(attackEffectProcess);
                             return;
                         }
                     }
                 }
-                duelScene.ChooseCard(card);
+
+                if(ownerPlayer.GetOpponentPlayer().GetCurrentEffectProcess() is AttackEffectProcess)
+                {
+                    AttackEffectProcess attackEffectProcess = ownerPlayer.GetOpponentPlayer().GetCurrentEffectProcess() as AttackEffectProcess;
+                    if(attackEffectProcess.WaitChooseBeAttackedMonster() && card.GetCardType() == CardType.Monster)
+                    {
+                        attackEffectProcess.ChooseBeAttackedMonster(card as MonsterCard);
+                    }
+                }
             }
             else if(card.GetCardGameState() == CardGameState.Tomb ||
                 card.GetCardGameState() == CardGameState.Exclusion)
@@ -331,6 +335,8 @@ namespace Assets.Script.Card
         public void Attack()
         {
             attackNumber--;
+            //攻击过后无法进行攻守转换
+            changeAttackOrDefenseNumber--;
             ClearPrepareAttackState();
             if(attackNumber <= 0)
             {
@@ -368,7 +374,7 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
-        /// 转换成攻击表示
+        /// 转换成守备表示
         /// </summary>
         public void ChangeToFrontDefense()
         {
@@ -610,13 +616,17 @@ namespace Assets.Script.Card
                 case CardOperation.ChangeAttack:
                     if(CanChangeToFrontAttack())
                     {
-                        ChangeToFrontAttack();
+                        ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card as MonsterCard, CardGameState.FrontAttack,ownerPlayer);
+                        changeAttackOrDefenseNumber--;
+                        ownerPlayer.AddEffectProcess(changeAttackDefenseEffectProcess);
                     }
                     break;
                 case CardOperation.ChangeDefense:
                     if (CanChangeToFrontDefense())
                     {
-                        ChangeToFrontDefense();
+                        ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card as MonsterCard, CardGameState.FrontDefense, ownerPlayer);
+                        changeAttackOrDefenseNumber--;
+                        ownerPlayer.AddEffectProcess(changeAttackDefenseEffectProcess);
                     }
                     break;
                 case CardOperation.BackPlaceToMagicTrapArea:

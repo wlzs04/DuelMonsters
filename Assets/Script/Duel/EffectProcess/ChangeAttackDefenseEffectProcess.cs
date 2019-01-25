@@ -23,7 +23,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         public override bool CheckCanTrigger()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         protected override void ProcessFunction()

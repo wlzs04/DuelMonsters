@@ -287,7 +287,7 @@ namespace Assets.Script
         /// <summary>
         /// 显示决斗结果面板
         /// </summary>
-        /// <param name="v"></param>
+        /// <param name="v"> 
         public void ShowDuelResultPanel(Player winnerPlayer, DuelEndReason duelEndReason)
         {
             duelResultPanel.SetActive(true);

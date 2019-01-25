@@ -87,5 +87,13 @@ namespace Assets.Script.Duel.EffectProcess
                 finishAction();
             }
         }
+
+        /// <summary>
+        /// 当前效果处理被中断或停止
+        /// </summary>
+        public virtual void Stop()
+        {
+
+        }
     }
 }

@@ -359,8 +359,7 @@ namespace Assets.Script.Duel
         {
             this.currentEffectProcess = currentEffectProcess;
         }
-                    
-
+        
         /// <summary>
         /// 判断玩家是否有可以被攻击的怪兽
         /// </summary>
@@ -743,12 +742,12 @@ namespace Assets.Script.Duel
         /// 减血
         /// </summary>
         /// <param name="life"></param>
-        public void ReduceLife(int life)
+        public void ReduceLife(int reduceLife)
         {
-            this.life -= life;
-            this.life = this.life > 0 ? this.life : 0;
-            lifeScrollBar.size =(float)this.life / DuelRuleManager.GetPlayerStartLife();
-            lifeNumberText.text = this.life + "/" + DuelRuleManager.GetPlayerStartLife();
+            life -= reduceLife;
+            life = life > 0 ? life : 0;
+            lifeScrollBar.size =(float)life / DuelRuleManager.GetPlayerStartLife();
+            lifeNumberText.text = life + "/" + DuelRuleManager.GetPlayerStartLife();
             duelScene.CheckWinByLife();
         }
 

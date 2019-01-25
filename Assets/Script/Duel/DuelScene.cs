@@ -63,8 +63,8 @@ namespace Assets.Script.Duel
 
         DuelSceneScript duelSceneScript = null;
 
-        CardBase currentChooseCard = null;
-        bool canChoose = false;
+        //CardBase currentChooseCard = null;
+        //bool canChoose = false;
         bool startDuel = false;
 
         //UnityAction nextActionForEffectProcecss;
@@ -138,13 +138,12 @@ namespace Assets.Script.Duel
         /// </summary>
         public void MouseRightButtonDown()
         {
-            //取消当前选中卡牌的状态
-            if(currentChooseCard!=null)
+            //当我方玩家在进行攻击时，取消攻击
+            if (myPlayer.GetCurrentEffectProcess() is AttackEffectProcess)
             {
-                currentChooseCard.GetDuelCardScript().ClearCurrentState();
-                currentChooseCard = null;
+                myPlayer.GetCurrentEffectProcess().Stop();
             }
-            else if(duelSceneScript.AttackOrDefensePanelIsShowing())
+            else if (duelSceneScript.AttackOrDefensePanelIsShowing())
             {
                 //如果攻击防御选择面板正在显示，则不做处理。
             }
@@ -183,65 +182,65 @@ namespace Assets.Script.Duel
         /// 设置为可以选择卡牌的状态
         /// </summary>
         /// <param name="canChoose"></param>
-        public void SetCanChoose(bool canChoose)
-        {
-            this.canChoose = canChoose;
-        }
+        //public void SetCanChoose(bool canChoose)
+        //{
+        //    this.canChoose = canChoose;
+        //}
 
         /// <summary>
         /// 选择一张卡
         /// </summary>
         /// <param name="card"></param>
-        public void ChooseCard(CardBase card)
-        {
-            if(!canChoose)
-            {
-                return;
-            }
-            if(currentChooseCard == null)
-            {
-                currentChooseCard = card;
-            }
-            else
-            {
-                ChooseAnotherCard(card);
-            }
-        }
+        //public void ChooseCard(CardBase card)
+        //{
+        //    //if(!canChoose)
+        //    //{
+        //    //    return;
+        //    //}
+        //    if(currentChooseCard == null)
+        //    {
+        //        currentChooseCard = card;
+        //    }
+        //    else
+        //    {
+        //        ChooseAnotherCard(card);
+        //    }
+        //}
 
         /// <summary>
         /// 选择另一张卡
         /// </summary>
         /// <param name="card"></param>
-        void ChooseAnotherCard(CardBase card)
-        {
-            if(currentDuelProcess==DuelProcess.Battle)
-            {
-                if(currentChooseCard.GetDuelCardScript().GetOwner()!= 
-                    card.GetDuelCardScript().GetOwner()&&
-                    card.GetCardType()==CardType.Monster &&
-                    (card.GetCardGameState()== CardGameState.FrontAttack ||
-                    card.GetCardGameState() == CardGameState.FrontDefense ||
-                    card.GetCardGameState() == CardGameState.Back)  &&
-                    ((MonsterCard)card).CanBeAttacked)
-                {
-                    SetAttackAnimationFinishEvent(() =>
-                    {
-                        opponentPlayer.BeAttackedMonsterNotify(currentChooseCard.GetID(), card.GetID());
+        //void ChooseAnotherCard(CardBase card)
+        //{
+        //    if(currentDuelProcess==DuelProcess.Battle)
+        //    {
+        //        if(currentChooseCard.GetDuelCardScript().GetOwner()!= 
+        //            card.GetDuelCardScript().GetOwner()&&
+        //            card.GetCardType()==CardType.Monster &&
+        //            (card.GetCardGameState()== CardGameState.FrontAttack ||
+        //            card.GetCardGameState() == CardGameState.FrontDefense ||
+        //            card.GetCardGameState() == CardGameState.Back)  &&
+        //            ((MonsterCard)card).CanBeAttacked)
+        //        {
+        //            SetAttackAnimationFinishEvent(() =>
+        //            {
+        //                opponentPlayer.BeAttackedMonsterNotify(currentChooseCard.GetID(), card.GetID());
 
-                        AttackMonster((MonsterCard)currentChooseCard, (MonsterCard)card);
-                        currentChooseCard = null;
-                    });
-                    StartPlayAttackAnimation(currentChooseCard.GetDuelCardScript().GetPosition(), card.GetDuelCardScript().GetPosition());
-                }
-            }
-        }
+        //                AttackMonster((MonsterCard)currentChooseCard, (MonsterCard)card);
+        //                currentChooseCard = null;
+        //            });
+        //            StartPlayAttackAnimation(currentChooseCard.GetDuelCardScript().GetPosition(), card.GetDuelCardScript().GetPosition());
+        //        }
+        //    }
+        //}
 
         /// <summary>
-        /// 攻击
+        /// 攻击，此方法移动到AttackEffectProcess类中
         /// </summary>
         /// <param name="card1"></param>
         /// <param name="card2"></param>
-        void AttackMonster(MonsterCard card1, MonsterCard card2)
+        public void AttackMonster(MonsterCard card1, MonsterCard card2)
         {
             card1.GetDuelCardScript().Attack();
             int card2Value = 0;
@@ -261,36 +260,28 @@ namespace Assets.Script.Duel
             {
                 if(!card2Defense)
                 {
-                    SendCardToTomb(card1);
-                    SendCardToTomb(card2);
+                    SendCardToTomb(card1, MoveCardToTombType.Battle);
+                    SendCardToTomb(card2, MoveCardToTombType.Battle);
                 }
             }
             else if(differenceValue>0)
             {
-                if(card2Defense && card1.GetCanPenetrateDefense())
+                if(!card2Defense || card1.GetCanPenetrateDefense())
                 {
-                    card2.GetDuelCardScript().GetOwner().ReduceLife(differenceValue);
+                    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(differenceValue, ReduceLifeType.Battle, card2.GetDuelCardScript().GetOwner());
+                    card2.GetDuelCardScript().GetOwner().AddEffectProcess(reduceLifeEffectProcess);
                 }
-                SendCardToTomb(card2);
+                SendCardToTomb(card2, MoveCardToTombType.Battle);
             }
             else
             {
-                card1.GetDuelCardScript().GetOwner().ReduceLife(-differenceValue);
+                ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(-differenceValue, ReduceLifeType.Battle, card1.GetDuelCardScript().GetOwner());
+                card1.GetDuelCardScript().GetOwner().AddEffectProcess(reduceLifeEffectProcess);
                 if(!card2Defense)
                 {
-                    SendCardToTomb(card1);
+                    SendCardToTomb(card1,MoveCardToTombType.Battle);
                 }
             }
-            canChoose = false;
-        }
-
-        /// <summary>
-        /// 直接攻击
-        /// </summary>
-        /// <param name="card"></param>
-        public void AttackDirect(MonsterCard card)
-        {
-            card.GetDuelCardScript().GetOwner().GetOpponentPlayer().ReduceLife(card.GetAttackNumber());
         }
 
         /// <summary>
@@ -380,9 +371,10 @@ namespace Assets.Script.Duel
         /// 将卡牌送入墓地
         /// </summary>
         /// <param name="card"></param>
-        public void SendCardToTomb(CardBase card)
+        public void SendCardToTomb(CardBase card,MoveCardToTombType moveCardToTombType)
         {
-            card.GetDuelCardScript().GetOwner().MoveCardToTomb(card);
+            MoveCardToTombEffectProcess moveCardToTombEffectProcess = new MoveCardToTombEffectProcess(card, moveCardToTombType, card.GetDuelCardScript().GetOwner());
+            card.GetDuelCardScript().GetOwner().AddEffectProcess(moveCardToTombEffectProcess);
         }
 
         /// <summary>
@@ -530,6 +522,9 @@ namespace Assets.Script.Duel
             currentPlayer.StartTurn();
         }
 
+        /// <summary>
+        /// 进入战斗流程
+        /// </summary>
         public void Battle()
         {
             EnterDuelProcess(DuelProcess.Battle);
@@ -720,7 +715,7 @@ namespace Assets.Script.Duel
         public void OpponentAttack(int cardID)
         {
             CardBase card1 = opponentPlayer.GetCardByID(cardID);
-            AttackDirect((MonsterCard)card1);
+            //AttackDirect((MonsterCard)card1);
         }
 
         public void OpponentSelectFirstOrBack(bool selectFirstOrBack)
