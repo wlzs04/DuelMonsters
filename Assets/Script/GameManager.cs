@@ -75,6 +75,10 @@ namespace Assets.Script
             string cardOperationButtonPrefabPath = "Prefab/CardOperationButtonPre";
             cardOperationButtonPrefab = Resources.Load<GameObject>(cardOperationButtonPrefabPath);
             DuelRuleManager.InitDuelRule();
+
+            XLua.LuaEnv luaenv = new XLua.LuaEnv();
+            luaenv.DoString("CS.UnityEngine.Debug.Log('hello world')");
+            luaenv.Dispose();
         }
         
         public static GameManager GetSingleInstance()
