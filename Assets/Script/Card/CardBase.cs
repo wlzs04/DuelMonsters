@@ -66,6 +66,7 @@ namespace Assets.Script.Card
         protected GameObject cardObject=null;
 
         DuelCardScript duelCardScript = null;
+        protected DuelScene duelScene = null;
 
         //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
@@ -78,6 +79,10 @@ namespace Assets.Script.Card
         {
             cardObject = gameObject;
             duelCardScript = cardObject.GetComponent<DuelCardScript>();
+            if(duelCardScript!=null)
+            {
+                duelScene = GameManager.GetSingleInstance().GetDuelScene();
+            }
         }
 
         public void AddContent(string key, object value)
@@ -290,5 +295,16 @@ namespace Assets.Script.Card
             CardTypeConfig config = ConfigManager.GetConfigByName("CardType") as CardTypeConfig;
             return config.GetRecordById((int)cardType).value;
         }
+
+        /// <summary>
+        /// 能否发动效果
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool CanLaunchEffect();
+
+        /// <summary>
+        /// 发动效果
+        /// </summary>
+        public abstract void LaunchEffect();
     }
 }

@@ -101,5 +101,19 @@ namespace Assets.Script.Card
             trapCard.effect = effect;
             return trapCard;
         }
+
+        /// <summary>
+        /// 陷阱卡暂时无法发动效果
+        /// </summary>
+        /// <returns></returns>
+        public override bool CanLaunchEffect()
+        {
+            return false;
+        }
+
+        public override void LaunchEffect()
+        {
+            
+        }
     }
 }

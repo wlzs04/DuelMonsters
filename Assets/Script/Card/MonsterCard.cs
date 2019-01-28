@@ -317,5 +317,19 @@ namespace Assets.Script.Card
             monsterCard.effect = effect;
             return monsterCard;
         }
+
+        /// <summary>
+        /// 怪兽卡暂时无法发动效果
+        /// </summary>
+        /// <returns></returns>
+        public override bool CanLaunchEffect()
+        {
+            return false;
+        }
+
+        public override void LaunchEffect()
+        {
+            
+        }
     }
 }

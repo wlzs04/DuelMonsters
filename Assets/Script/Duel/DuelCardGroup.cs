@@ -34,10 +34,9 @@ namespace Assets.Script.Duel
         public void ShuffleCardGroup()
         {
             int count = cards.Count;
-            Random random = new Random();
             while (count>1)
             {
-                int randomIndex = random.Next(0, count);
+                int randomIndex = UnityEngine.Random.Range(0, count);
                 count--;
                 CardBase card = cards[randomIndex];
                 cards[randomIndex] = cards[count];

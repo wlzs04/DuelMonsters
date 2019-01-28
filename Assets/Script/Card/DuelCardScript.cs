@@ -536,6 +536,14 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 判断是否可以发动效果
+        /// </summary>
+        public bool CanLaunchEffect()
+        {
+            return card.CanLaunchEffect();
+        }
+
+        /// <summary>
         /// 重新检查当前卡牌允许的操作，并添加到操作面板中
         /// </summary>
         public void RecheckAllowedOperation()
@@ -573,6 +581,10 @@ namespace Assets.Script.Card
                     if(CanBackPlaceToMagicTrapArea())
                     {
                         AddCardOperationButtonToOperationPanel(CardOperation.BackPlaceToMagicTrapArea);
+                    }
+                    if(CanLaunchEffect())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.LaunchEffect);
                     }
                     break;
                 default:
@@ -638,6 +650,12 @@ namespace Assets.Script.Card
                     if (CanBackPlaceToMagicTrapArea())
                     {
                         ownerPlayer.BackPlaceMagicOrTrap(card);
+                    }
+                    break;
+                case CardOperation.LaunchEffect:
+                    if (CanLaunchEffect())
+                    {
+                        ownerPlayer.LaunchEffect(card);
                     }
                     break;
                 default:

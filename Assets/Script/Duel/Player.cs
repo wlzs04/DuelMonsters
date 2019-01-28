@@ -13,6 +13,9 @@ using UnityEngine.UI;
 
 namespace Assets.Script.Duel
 {
+    /// <summary>
+    /// 玩家类
+    /// </summary>
     public class Player
     {
         string name = "玩家";
@@ -786,6 +789,11 @@ namespace Assets.Script.Duel
             return monsterCardArea;
         }
 
+        public CardBase[] GetMagicTrapCardArea()
+        {
+            return magicTrapCardArea;
+        }
+
         /// <summary>
         /// 放置一张魔法或陷阱卡
         /// </summary>
@@ -796,20 +804,14 @@ namespace Assets.Script.Duel
             {
                 return;
             }
-            int index = 0;
-            for (; index < DuelRuleManager.GetMagicTrapAreaNumber(); index++)
-            {
-                if (magicTrapCardArea[index] == null)
-                {
-                    magicTrapCardArea[index] = magicOrTrapCard;
-                    break;
-                }
-            }
-            magicOrTrapCard.AddContent("magicOrTrapIndex", index);
-            magicOrTrapCard.SetCardGameState(CardGameState.Back);
-            magicOrTrapCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
-            magicOrTrapCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMagicTrapCardFarLeftPositionY, 1));
-            handCards.Remove(magicOrTrapCard);
+            BackPlaceMagicOrTrapEffectProcess backPlaceMagicOrTrapEffectProcess = new BackPlaceMagicOrTrapEffectProcess(magicOrTrapCard,this);
+            AddEffectProcess(backPlaceMagicOrTrapEffectProcess);
+        }
+
+        public void LaunchEffect(CardBase card)
+        {
+            LaunchEffectEffectProcess launchEffectEffectProcess = new LaunchEffectEffectProcess(card, this);
+            AddEffectProcess(launchEffectEffectProcess);
         }
 
         public virtual void CallMonsterNotify(int id,CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState,int flag)
@@ -982,7 +984,14 @@ namespace Assets.Script.Duel
                 case CardGameState.FrontAttack:
                 case CardGameState.FrontDefense:
                 case CardGameState.Back:
-                    monsterCardArea[int.Parse(card.GetContent("monsterCardAreaIndex").ToString())]=null;
+                    if(card.GetCardType()==CardType.Monster)
+                    {
+                        monsterCardArea[int.Parse(card.GetContent("monsterCardAreaIndex").ToString())] = null;
+                    }
+                    else if(card.GetCardType() == CardType.Magic || card.GetCardType() == CardType.Trap)
+                    {
+                        magicTrapCardArea[int.Parse(card.GetContent("magicTrapCardAreaIndex").ToString())] = null;
+                    }
                     card.ClearAllContent();
                     
                     tombCards.Add(card);

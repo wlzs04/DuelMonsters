@@ -1,4 +1,6 @@
 using Assets.Script.Config;
+using Assets.Script.Duel.EffectProcess;
+using Assets.Script.Duel.Rule;
 using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
@@ -103,6 +105,31 @@ namespace Assets.Script.Card
             magicCard.magicType = magicType;
             magicCard.effect = effect;
             return magicCard;
+        }
+
+        /// <summary>
+        /// 发动效果
+        /// </summary>
+        /// <returns></returns>
+        public override bool CanLaunchEffect()
+        {
+            if ((GetCardType() == CardType.Magic ||
+                GetCardType() == CardType.Trap) &&
+                GetCardGameState() == CardGameState.Hand &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null &&
+                !GetDuelCardScript().GetOwner().MagicTrapAreaIsFull())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public override void LaunchEffect()
+        {
+            ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(500, ReduceLifeType.Effect, GetDuelCardScript().GetOwner().GetOpponentPlayer());
+            GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
         }
     }
 }
