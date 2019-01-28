@@ -13,14 +13,6 @@ using UnityEngine.UI;
 
 namespace Assets.Script.Duel
 {
-    public enum PlayGameState
-    {
-        Unknown,
-        Normal,
-        AttackPrepare,//攻击准备
-        ChooseSacrifice,//选择祭品
-    }
-
     public class Player
     {
         string name = "玩家";
@@ -31,8 +23,6 @@ namespace Assets.Script.Duel
         protected List<CardBase> handCards = new List<CardBase>();
         protected List<CardBase> tombCards = new List<CardBase>();
         protected List<CardBase> exceptCards = new List<CardBase>();
-
-        protected List<MonsterCard> sacrificeCards = new List<MonsterCard>();
 
         protected CardBase[] monsterCardArea = new CardBase[DuelRuleManager.GetMonsterAreaNumber()];
         protected CardBase[] magicTrapCardArea = new CardBase[DuelRuleManager.GetMonsterAreaNumber()];
@@ -51,19 +41,12 @@ namespace Assets.Script.Duel
         
         bool canBeDirectAttacked = true;
         bool canDirectAttack = true;
-
-        PlayGameState playGameState;
-
-        //为祭品召唤准备的，卡片召唤状态
-        CardGameState cardGameStateForSacrifice = CardGameState.Unknown;
         
-        MonsterCard needSacrificeCallMonster = null;
-
         GuessEnum guessEnum = GuessEnum.Unknown;
 
         bool iamReady = false;//判断玩家是否准备完成
 
-        int normalCallNumber = DuelRuleManager.GetDrawNumberEveryTurn();
+        int normalCallNumber = 0;
 
         List<EffectProcessBase> effectProcessList = new List<EffectProcessBase>();
 
@@ -548,7 +531,7 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 进入流程通知，
+        /// 进入流程通知
         /// </summary>
         public virtual void EnterDuelNotify(DuelProcess duelProcess)
         {
@@ -556,7 +539,7 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 进入流程通知，
+        /// 结束回合通知
         /// </summary>
         public virtual void EndTurnNotify()
         {
@@ -601,9 +584,18 @@ namespace Assets.Script.Duel
         /// </summary>
         public void StartTurn()
         {
-            playGameState = PlayGameState.Normal;
             normalCallNumber = DuelRuleManager.GetNormalCallMonsterNumber();
             duelScene.EnterDuelProcess(DuelProcess.Draw);
+        }
+
+        public void SetNormalCallNumber(int normalCallNumber)
+        {
+            this.normalCallNumber = normalCallNumber;
+        }
+
+        public int GetNormalCallNumber()
+        {
+            return normalCallNumber;
         }
 
         public void Update()
@@ -783,40 +775,15 @@ namespace Assets.Script.Duel
                 //检测召唤条件是否满足
                 if (normalCallNumber > 0)
                 {
-                    //先判断是否可以直接进行召唤
-                    if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
-                    {
-                        int index = 0;
-                        for (; index < DuelRuleManager.GetMonsterAreaNumber(); index++)
-                        {
-                            if (monsterCardArea[index] == null)
-                            {
-                                monsterCardArea[index] = monsterCard;
-                                break;
-                            }
-                        }
-                        monsterCard.AddContent("monsterCardAreaIndex", index);
-                        monsterCard.SetCardGameState(cardGameState);
-                        monsterCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
-                        monsterCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1));
-                        handCards.Remove(monsterCard);
-                        normalCallNumber--;
-
-                        CallMonsterNotify(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index);
-                        playGameState = PlayGameState.Normal;
-                    }
-                    else//使用祭品召唤
-                    {
-                        int monsterLevel = monsterCard.GetLevel();
-                        if (GetCanBeSacrificeMonsterNumber() >= 1)
-                        {
-                            playGameState = PlayGameState.ChooseSacrifice;
-                            cardGameStateForSacrifice = cardGameState;
-                            needSacrificeCallMonster = monsterCard;
-                        }
-                    }
+                    CallMonsterEffectProcess callMonsterEffectProcess = new CallMonsterEffectProcess(monsterCard, cardGameState, this);
+                    AddEffectProcess(callMonsterEffectProcess);
                 }
             }
+        }
+
+        public CardBase[] GetMonsterCardArea()
+        {
+            return monsterCardArea;
         }
 
         /// <summary>
@@ -853,70 +820,6 @@ namespace Assets.Script.Duel
         public virtual void CallMonsterWithSacrificeNotify(int id, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeInfo)
         {
 
-        }
-
-        /// <summary>
-        /// 使用祭品召唤怪兽
-        /// </summary>
-        /// <param name="monsterCard"></param>
-        public void CallMonsterWithSacrifice(MonsterCard monsterCard)
-        {
-            if (IsMyPlayer())
-            {
-                if(cardGameStateForSacrifice==CardGameState.Unknown)
-                {
-                    Debug.LogError("祭品召唤时卡片状态出现问题！");
-                    return;
-                }
-                foreach (var item in sacrificeCards)
-                {
-                    item.GetDuelCardScript().ClearCurrentState();
-                    MoveCardToTomb(item);
-                }
-                int index = 0;
-                for (; index < DuelRuleManager.GetMonsterAreaNumber(); index++)
-                {
-                    if (monsterCardArea[index] == null)
-                    {
-                        monsterCardArea[index] = monsterCard;
-                        break;
-                    }
-                }
-                monsterCard.AddContent("monsterCardAreaIndex", index);
-                monsterCard.SetCardGameState(cardGameStateForSacrifice);
-                monsterCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
-                monsterCard.GetDuelCardScript().SetLocalPosition( new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1));
-                handCards.Remove(monsterCard);
-                normalCallNumber--;
-
-                playGameState = PlayGameState.Normal;
-
-                StringBuilder sacrificeInfo = new StringBuilder();
-                for (int i = 0; i < sacrificeCards.Count; i++)
-                {
-                    if(i== sacrificeCards.Count-1)
-                    {
-                        sacrificeInfo.Append(sacrificeCards[i].GetID());
-                    }
-                    else
-                    {
-                        sacrificeInfo.Append(sacrificeCards[i].GetID() + ":");
-                    }
-                }
-                opponentPlayer.CallMonsterWithSacrificeNotify(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, index, sacrificeInfo.ToString());
-                
-                sacrificeCards.Clear();
-                cardGameStateForSacrifice = CardGameState.Unknown;
-            }
-        }
-
-        /// <summary>
-        /// 获得玩家在游戏中的状态
-        /// </summary>
-        /// <returns></returns>
-        public PlayGameState GetPlayGameState()
-        {
-            return playGameState;
         }
 
         /// <summary>
@@ -1092,37 +995,6 @@ namespace Assets.Script.Duel
                     break;
             }
             card.SetCardGameState(CardGameState.Tomb);
-        }
-
-        /// <summary>
-        /// 判断是否可以选择作为祭品
-        /// </summary>
-        /// <param name="card"></param>
-        /// <returns></returns>
-        public bool CanChooseMonsterAsSacrifice(MonsterCard card)
-        {
-            if (!sacrificeCards.Contains(card))
-            {
-                sacrificeCards.Add(card);
-                return true;
-            }
-            else
-            {
-                Debug.LogError("ChooseMonsterAsSacrifice 已经选中了此怪兽:" + card.GetName());
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 检测当前祭品数量是否足够,足够则直接进行祭品召唤
-        /// </summary>
-        /// <returns></returns>
-        public void TrySacrificeCall()
-        {
-            if (sacrificeCards.Count>= needSacrificeCallMonster.NeedSacrificeMonsterNumer())
-            {
-                CallMonsterWithSacrifice(needSacrificeCallMonster);
-            }
         }
 
         /// <summary>

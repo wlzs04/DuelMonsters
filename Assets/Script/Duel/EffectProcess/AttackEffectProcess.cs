@@ -86,11 +86,69 @@ namespace Assets.Script.Duel.EffectProcess
                 duelScene.SetAttackAnimationFinishEvent(() =>
                 {
                     beAttackedCard.GetDuelCardScript().GetOwner().BeAttackedMonsterNotify(attackCard.GetID(), beAttackedCard.GetID());
-                    duelScene.AttackMonster(attackCard, beAttackedCard);
+                    Attack();
                     AfterFinishProcessFunction();
                 });
                 duelScene.StartPlayAttackAnimation(attackCard.GetDuelCardScript().GetPosition(), beAttackedCard.GetDuelCardScript().GetPosition());
             }
+        }
+
+        /// <summary>
+        /// 进行攻击
+        /// </summary>
+        public void Attack()
+        {
+            attackCard.GetDuelCardScript().Attack();
+            int card2Value = 0;
+            bool card2Defense = false;
+            if (beAttackedCard.GetCardGameState() == CardGameState.FrontAttack)
+            {
+                card2Value = beAttackedCard.GetAttackNumber();
+            }
+            else if (beAttackedCard.GetCardGameState() == CardGameState.FrontDefense ||
+                beAttackedCard.GetCardGameState() == CardGameState.Back)
+            {
+                card2Value = beAttackedCard.GetDefenseNumber();
+                card2Defense = true;
+            }
+            int differenceValue = attackCard.GetAttackNumber() - card2Value;
+            if (differenceValue == 0)
+            {
+                if (!card2Defense)
+                {
+                    SendCardToTomb(attackCard, MoveCardToTombType.Battle);
+                    SendCardToTomb(beAttackedCard, MoveCardToTombType.Battle);
+                }
+            }
+            else if (differenceValue > 0)
+            {
+                if (!card2Defense || attackCard.GetCanPenetrateDefense())
+                {
+                    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(differenceValue, ReduceLifeType.Battle, beAttackedCard.GetDuelCardScript().GetOwner());
+                    beAttackedCard.GetDuelCardScript().GetOwner().AddEffectProcess(reduceLifeEffectProcess);
+                }
+                SendCardToTomb(beAttackedCard, MoveCardToTombType.Battle);
+            }
+            else
+            {
+                ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(-differenceValue, ReduceLifeType.Battle, attackCard.GetDuelCardScript().GetOwner());
+                attackCard.GetDuelCardScript().GetOwner().AddEffectProcess(reduceLifeEffectProcess);
+                if (!card2Defense)
+                {
+                    SendCardToTomb(attackCard, MoveCardToTombType.Battle);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将卡牌送入墓地
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="moveCardToTombType"></param>
+        public void SendCardToTomb(CardBase card, MoveCardToTombType moveCardToTombType)
+        {
+            MoveCardToTombEffectProcess moveCardToTombEffectProcess = new MoveCardToTombEffectProcess(card, moveCardToTombType, card.GetDuelCardScript().GetOwner());
+            card.GetDuelCardScript().GetOwner().AddEffectProcess(moveCardToTombEffectProcess);
         }
 
         public override void Stop()

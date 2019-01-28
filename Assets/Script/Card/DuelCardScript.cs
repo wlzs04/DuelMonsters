@@ -203,20 +203,23 @@ namespace Assets.Script.Card
                 card.GetCardGameState() == CardGameState.FrontDefense ||
                 card.GetCardGameState() == CardGameState.Back)
             {
-                if (ownerPlayer.GetPlayGameState() == PlayGameState.ChooseSacrifice && !haveBeChosen && card.GetCardType() == CardType.Monster)
+                if(card.GetCardType() == CardType.Monster && 
+                    !haveBeChosen&&
+                    ownerPlayer.GetCurrentEffectProcess() is CallMonsterEffectProcess)
                 {
                     int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
                     if (tempInt > 0)
                     {
-                        if (ownerPlayer.CanChooseMonsterAsSacrifice((MonsterCard)card))
+                        CallMonsterEffectProcess callMonsterEffectProcess = ownerPlayer.GetCurrentEffectProcess() as CallMonsterEffectProcess;
+                        
+                        if (callMonsterEffectProcess.CanChooseMonsterAsSacrifice((MonsterCard)card))
                         {
                             haveBeChosen = true;
                             ChooseThisCard();
-                            ownerPlayer.TrySacrificeCall();
+                            callMonsterEffectProcess.TrySacrificeCall();
                         }
                     }
                 }
-
                 if (ownerPlayer.CanBattle() && !(ownerPlayer.GetCurrentEffectProcess() is AttackEffectProcess))
                 {
                     if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
@@ -353,7 +356,7 @@ namespace Assets.Script.Card
             if (ownerPlayer.IsMyTurn() &&
                 duelScene.currentDuelProcess ==DuelProcess.Battle &&
                 card.GetCardType() == CardType.Monster &&
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+                ownerPlayer.GetCurrentEffectProcess() == null)
             {
                 MonsterCard monsterCard = card as MonsterCard;
                 return monsterCard.CanAttack() && attackNumber > 0;
@@ -413,7 +416,7 @@ namespace Assets.Script.Card
                 card.GetCardType() == CardType.Monster &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
@@ -435,7 +438,7 @@ namespace Assets.Script.Card
                 card.GetCardType() == CardType.Monster &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second)&&
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
@@ -457,7 +460,7 @@ namespace Assets.Script.Card
                 card.GetCardType() == CardType.Monster &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
                 MonsterCard monsterCard = (MonsterCard)card;
@@ -482,10 +485,11 @@ namespace Assets.Script.Card
             if (card.GetCardType() == CardType.Monster &&
                 (card.GetCardGameState() == CardGameState.FrontDefense ||
                 card.GetCardGameState() == CardGameState.Back) &&
-                GetChangeAttackOrDefenseNumber()>0 &&
+                GetChangeAttackOrDefenseNumber() > 0 &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+                ownerPlayer.GetCurrentEffectProcess() == null
+                )
             {
                 return true;
             }
@@ -504,7 +508,8 @@ namespace Assets.Script.Card
                 GetChangeAttackOrDefenseNumber() > 0 &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal)
+                ownerPlayer.GetCurrentEffectProcess() == null 
+                )
             {
                 return true;
             }
@@ -522,7 +527,7 @@ namespace Assets.Script.Card
                 card.GetCardGameState() == CardGameState.Hand &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
-                ownerPlayer.GetPlayGameState() == PlayGameState.Normal &&
+                ownerPlayer.GetCurrentEffectProcess() == null &&
                 !ownerPlayer.MagicTrapAreaIsFull())
             {
                 return true;
