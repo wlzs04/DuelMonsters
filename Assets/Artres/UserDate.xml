@@ -66,5 +66,19 @@
         <UserCardData cardNo="58984738" number="1" />
       </Deputy>
     </UserCardGroup>
+    <UserCardGroup cardGroupName="magictest">
+      <Main>
+        <UserCardData cardNo="2370081" number="3" />
+        <UserCardData cardNo="87769556" number="3" />
+        <UserCardData cardNo="58984738" number="1" />
+        <UserCardData cardNo="56649609" number="1" />
+        <UserCardData cardNo="52589809" number="1" />
+        <UserCardData cardNo="58518520" number="1" />
+        <UserCardData cardNo="45221020" number="1" />
+        <UserCardData cardNo="45159319" number="1" />
+      </Main>
+      <Extra />
+      <Deputy />
+    </UserCardGroup>
   </UserCardGroupList>
 </UserData>

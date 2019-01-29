@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using XLua;
 
 namespace Assets.Script
 {
@@ -23,15 +24,17 @@ namespace Assets.Script
     /// </summary>
     class GameManager
     {
+        static string cardResourceRootDirectory = "CardData";
+
         //单例
+        static LuaEnv luaEnv = new LuaEnv(); //all lua behaviour shared one luaenv only!
         static GameManager gameManagerInstance = new GameManager();
 
         AudioScript audioScript;
         GameState currentGameState;
-        
+
         #region 路径与文件名
         string saveFileName = "UserDate.xml";
-        string cardResourceRootDirectory = "CardData";
         string bgmName = "DuelBGM";
         #endregion
 
@@ -75,15 +78,16 @@ namespace Assets.Script
             string cardOperationButtonPrefabPath = "Prefab/CardOperationButtonPre";
             cardOperationButtonPrefab = Resources.Load<GameObject>(cardOperationButtonPrefabPath);
             DuelRuleManager.InitDuelRule();
-
-            XLua.LuaEnv luaenv = new XLua.LuaEnv();
-            luaenv.DoString("CS.UnityEngine.Debug.Log('hello world')");
-            luaenv.Dispose();
         }
         
         public static GameManager GetSingleInstance()
         {
             return gameManagerInstance;
+        }
+
+        public static LuaEnv GetLuaEnv()
+        {
+            return luaEnv;
         }
 
         /// <summary>
@@ -110,7 +114,7 @@ namespace Assets.Script
         /// 获得用户存档路径
         /// </summary>
         /// <returns></returns>
-        public string GetUserDataPath()
+        string GetUserDataPath()
         {
             return Application.dataPath + "/Artres/" + saveFileName;
         }
@@ -161,7 +165,7 @@ namespace Assets.Script
         /// 获得卡牌路径
         /// </summary>
         /// <returns></returns>
-        public string GetCardResourceRootPath()
+        public static string GetCardResourceRootPath()
         {
             return Application.dataPath + "/Artres/" + cardResourceRootDirectory + "/";
         }
@@ -473,9 +477,12 @@ namespace Assets.Script
         /// <summary>
         /// 退出游戏
         /// </summary>
-        public void QuitGame()
+        public static void QuitGame()
         {
-            SaveUserData();
+            if(gameManagerInstance!=null)
+            {
+                gameManagerInstance.SaveUserData();
+            }
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else

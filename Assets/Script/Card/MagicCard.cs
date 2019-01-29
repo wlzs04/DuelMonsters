@@ -4,8 +4,11 @@ using Assets.Script.Duel.Rule;
 using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using XLua;
 
 namespace Assets.Script.Card
 {
@@ -28,9 +31,47 @@ namespace Assets.Script.Card
     /// </summary>
     class MagicCard : CardBase
     {
-        public MagicCard()
+        private LuaTable scriptEnv;
+        private Action<CardBase> launchEffect = null;
+
+        private string luaPath;
+        private LuaTable cardLuaTable;
+
+        public MagicCard(int cardNo) :base(cardNo)
         {
             cardType = CardType.Magic;
+
+            LuaEnv.CustomLoader method = CustomLoaderMethod;
+            GameManager.GetLuaEnv().AddLoader(method);
+
+            scriptEnv = GameManager.GetLuaEnv().NewTable();
+
+            // 为每个脚本设置一个独立的环境，可一定程度上防止脚本间全局变量、函数冲突
+            LuaTable meta = GameManager.GetLuaEnv().NewTable();
+            meta.Set("__index", GameManager.GetLuaEnv().Global);
+            scriptEnv.SetMetaTable(meta);
+            meta.Dispose();
+            luaPath = cardNo + ".C"+ cardNo;
+            GameManager.GetLuaEnv().DoString(@"C" + cardNo + " = require('"+ luaPath + "')", "LuaMagicCard", scriptEnv);
+            
+            scriptEnv.Set("self", this);
+
+            launchEffect = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".LaunchEffect");
+        }
+
+        private byte[] CustomLoaderMethod(ref string fileName)
+        {
+            fileName = fileName.Replace('.', '/');
+            //找到指定文件  
+            fileName = GameManager.GetCardResourceRootPath() + fileName + ".lua";
+            if (File.Exists(fileName))
+            {
+                return File.ReadAllBytes(fileName);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         MagicType magicType = MagicType.Normal;
@@ -96,7 +137,7 @@ namespace Assets.Script.Card
 
         public override CardBase GetInstance()
         {
-            MagicCard magicCard = new MagicCard();
+            MagicCard magicCard = new MagicCard(cardNo);
             magicCard.SetImage(GetImage());
             magicCard.cardNo = cardNo;
             magicCard.cardID = RandomHelper.random.Next();
@@ -128,8 +169,18 @@ namespace Assets.Script.Card
 
         public override void LaunchEffect()
         {
-            ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(500, ReduceLifeType.Effect, GetDuelCardScript().GetOwner().GetOpponentPlayer());
-            GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
+            if(launchEffect!=null)
+            {
+                launchEffect(this);
+            }
+            //ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(500, ReduceLifeType.Effect, GetDuelCardScript().GetOwner().GetOpponentPlayer());
+            //GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
         }
+
+        //public void SetDamage(int value)
+        //{
+        //    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(value, ReduceLifeType.Effect, GetDuelCardScript().GetOwner().GetOpponentPlayer());
+        //    GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
+        //}
     }
 }

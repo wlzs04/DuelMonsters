@@ -10,6 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using XLua;
 
 namespace Assets.Script.Card
 {

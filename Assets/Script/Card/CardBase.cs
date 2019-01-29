@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using XLua;
 
 namespace Assets.Script.Card
 {
@@ -70,6 +71,11 @@ namespace Assets.Script.Card
 
         //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
+
+        public CardBase(int cardNo)
+        {
+            this.cardNo = cardNo;
+        }
 
         /// <summary>
         /// 为卡牌设置场景内依附的物体
@@ -246,13 +252,13 @@ namespace Assets.Script.Card
                 switch (value)
                 {
                     case "怪兽":
-                        card = new MonsterCard();
+                        card = new MonsterCard(cardNo);
                         break;
                     case "魔法":
-                        card = new MagicCard();
+                        card = new MagicCard(cardNo);
                         break;
                     case "陷阱":
-                        card = new TrapCard();
+                        card = new TrapCard(cardNo);
                         break;
                     default:
                         break;

@@ -10,6 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using XLua;
 
 namespace Assets.Script.Duel
 {

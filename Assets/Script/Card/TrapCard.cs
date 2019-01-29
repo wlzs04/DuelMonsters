@@ -25,7 +25,7 @@ namespace Assets.Script.Card
     {
         TrapType trapType = TrapType.Normal;
 
-        public TrapCard()
+        public TrapCard(int cardNo) : base(cardNo)
         {
             cardType = CardType.Trap;
         }
@@ -91,7 +91,7 @@ namespace Assets.Script.Card
 
         public override CardBase GetInstance()
         {
-            TrapCard trapCard = new TrapCard();
+            TrapCard trapCard = new TrapCard(cardNo);
             trapCard.name = name;
             trapCard.SetImage(GetImage());
             trapCard.cardNo = cardNo;

@@ -85,7 +85,7 @@ namespace Assets.Script.Card
         bool canBeAttacked = true;//是否可以被攻击
         bool canPenetrateDefense = false;//是否可以贯穿守备怪兽
 
-        public MonsterCard()
+        public MonsterCard(int cardNo) : base(cardNo)
         {
             cardType = CardType.Monster;
         }
@@ -302,7 +302,7 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public override CardBase GetInstance()
         {
-            MonsterCard monsterCard = new MonsterCard();
+            MonsterCard monsterCard = new MonsterCard(cardNo);
             monsterCard.name = name;
             monsterCard.SetImage(GetImage());
             monsterCard.cardNo = cardNo;

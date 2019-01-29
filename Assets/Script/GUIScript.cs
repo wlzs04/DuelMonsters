@@ -55,7 +55,7 @@ public class GUIScript : MonoBehaviour {
 
     public void QuitButtonClick()
     {
-        gameManager.QuitGame();
+        GameManager.QuitGame();
     }
 
     public void ReturnButtonClick()
