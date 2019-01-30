@@ -1,6 +1,7 @@
 using Assets.Script.Config;
 using Assets.Script.Duel;
 using Assets.Script.Duel.Rule;
+using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,7 +54,7 @@ namespace Assets.Script.Card
     /// </summary>
     public partial class CardBase
     {
-        protected CardType cardType = CardType.Monster;//卡片类型
+        protected CardType cardType = CardType.Unknown;//卡片类型
         CardGameState cardGameState = CardGameState.Group;
         Sprite image;
         protected string name = "未命名";//名称
@@ -313,41 +314,16 @@ namespace Assets.Script.Card
             return GetStringByCardType(cardType);
         }
 
-        //protected abstract void LoadInfo(string info);
-
-        public static CardBase LoadCardFromInfo(int cardNo)//,string info
+        public static CardBase LoadCardFromInfo(int cardNo)
         {
-            //string item = info.Substring(0,info.IndexOf(Environment.NewLine));
-            //string key = item.Substring(0, item.IndexOf(':'));
-            //string value = item.Substring(item.IndexOf(':') + 1);
             CardBase card = new CardBase(cardNo);
-            //card.
-            //if(key == "CardType")
-            //{
-            //    switch (value)
-            //    {
-            //        case "怪兽":
-            //            card = new MonsterCard(cardNo);
-            //            break;
-            //        case "魔法":
-            //            card = new MagicCard(cardNo);
-            //            break;
-            //        case "陷阱":
-            //            card = new TrapCard(cardNo);
-            //            break;
-            //        default:
-            //            break;
-            //    }
-            //    card.cardNo = cardNo;
-            //    card.info = info;
-            //    card.LoadInfo(info);
-            //}
             return card;
         }
 
         public CardBase GetInstance()
         {
             CardBase cardBase = new CardBase(cardNo);
+            cardBase.cardID = RandomHelper.random.Next();
             cardBase.SetImage(GetImage());
             return cardBase;
         }

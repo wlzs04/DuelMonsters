@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,11 +26,13 @@ namespace Assets.Script
     class GameManager
     {
         static string cardResourceRootDirectory = "CardData";
+        static string rootPath;
 
         //单例
         static LuaEnv luaEnv = new LuaEnv(); //all lua behaviour shared one luaenv only!
         static GameManager gameManagerInstance = new GameManager();
 
+        bool initDataFinish = false;
         AudioScript audioScript;
         GameState currentGameState;
 
@@ -63,13 +66,30 @@ namespace Assets.Script
 
         private GameManager()
         {
-            currentGameState = GameState.MainScene;
+            currentGameState = GameState.Init;
+            rootPath = Application.dataPath;
 
-            LoadUserData();
-            InitAudio();
-            LoadAllCardData();
+            InitData();
+            InitDataFinishCallBack();
+        }
+        
+        public static GameManager GetSingleInstance()
+        {
+            return gameManagerInstance;
+        }
 
-            string cardBackPath = Application.dataPath + "/Texture/CardBack.jpg";
+        /// <summary>
+        /// 初始化数据
+        /// </summary>
+        public void InitData()
+        {
+            if(initDataFinish)
+            {
+                Debug.LogError("游戏中数据仅初始化一次！");
+                return;
+            }
+
+            string cardBackPath = rootPath + "/Texture/CardBack.jpg";
             WWW www = new WWW(cardBackPath);
             Texture2D texture = new Texture2D(177, 254);
             www.LoadImageIntoTexture(texture);
@@ -78,11 +98,15 @@ namespace Assets.Script
             string cardOperationButtonPrefabPath = "Prefab/CardOperationButtonPre";
             cardOperationButtonPrefab = Resources.Load<GameObject>(cardOperationButtonPrefabPath);
             DuelRuleManager.InitDuelRule();
+
+            LoadUserData();
+            LoadAllCardData();
         }
-        
-        public static GameManager GetSingleInstance()
+
+        public void InitDataFinishCallBack()
         {
-            return gameManagerInstance;
+            initDataFinish = true;
+            InitAudio();
         }
 
         public static LuaEnv GetLuaEnv()
@@ -96,7 +120,6 @@ namespace Assets.Script
         void InitAudio()
         {
             audioScript = GameObject.Find("BGMAudio").GetComponent<AudioScript>();
-            audioScript.Init();
             audioScript.SetAudioByName(bgmName);
             audioScript.SetVolume(userData.audioValue);
         }
@@ -116,7 +139,7 @@ namespace Assets.Script
         /// <returns></returns>
         string GetUserDataPath()
         {
-            return Application.dataPath + "/Artres/" + saveFileName;
+            return rootPath + "/Artres/" + saveFileName;
         }
 
         /// <summary>
@@ -167,7 +190,7 @@ namespace Assets.Script
         /// <returns></returns>
         public static string GetCardResourceRootPath()
         {
-            return Application.dataPath + "/Artres/" + cardResourceRootDirectory + "/";
+            return rootPath + "/Artres/" + cardResourceRootDirectory + "/";
         }
 
         /// <summary>
@@ -246,6 +269,11 @@ namespace Assets.Script
                 allCardInfoList[card.GetCardNo()] = card;
             }
             Debug.Log("加载卡牌数量："+allCardInfoList.Count);
+        }
+
+        public void CleanDuelScene()
+        {
+            duelScene = null;
         }
 
         /// <summary>
@@ -435,7 +463,7 @@ namespace Assets.Script
         public void StopDuel()
         {
             ShowMessage("停止决斗。");
-            duelScene = null;
+            CleanDuelScene();
             CloseNet();
         }
         
@@ -494,9 +522,31 @@ namespace Assets.Script
         public void Update()
         {
             CheckTimerFunction();
-            if (currentGameState==GameState.DuelScene)
+            switch (currentGameState)
             {
-                ProcessProtocol();
+                case GameState.Init:
+                    if(initDataFinish)
+                    {
+                        EnterMainScene();
+                    }
+                    break;
+                case GameState.MainScene:
+                    break;
+                case GameState.SeleteDuelModeScene:
+                    break;
+                case GameState.GuessFirstScene:
+                    break;
+                case GameState.DuelScene:
+                    ProcessProtocol();
+                    break;
+                case GameState.CardGroupScene:
+                    break;
+                case GameState.CardGroupEditScene:
+                    break;
+                case GameState.SettingScene:
+                    break;
+                default:
+                    break;
             }
             if (duelScene != null)
             {

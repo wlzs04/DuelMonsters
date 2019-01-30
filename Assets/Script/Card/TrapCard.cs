@@ -74,18 +74,5 @@ namespace Assets.Script.Card
             TrapTypeConfig config = ConfigManager.GetConfigByName("TrapType") as TrapTypeConfig;
             return config.GetRecordById((int)trapType).value;
         }
-
-        //public override CardBase GetInstance()
-        //{
-        //    TrapCard trapCard = new TrapCard(cardNo);
-        //    trapCard.name = name;
-        //    trapCard.SetImage(GetImage());
-        //    trapCard.cardNo = cardNo;
-        //    trapCard.cardID = RandomHelper.random.Next();
-        //    trapCard.cardType = cardType;
-        //    trapCard.trapType = trapType;
-        //    trapCard.effectInfo = effectInfo;
-        //    return trapCard;
-        //}
     }
 }

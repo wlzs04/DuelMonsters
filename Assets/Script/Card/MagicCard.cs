@@ -77,18 +77,5 @@ namespace Assets.Script.Card
             MagicTypeConfig config = ConfigManager.GetConfigByName("MagicType") as MagicTypeConfig;
             return config.GetRecordById((int)magicType).value;
         }
-
-        //public override CardBase GetInstance()
-        //{
-        //    MagicCard magicCard = new MagicCard(cardNo);
-        //    magicCard.SetImage(GetImage());
-        //    magicCard.cardNo = cardNo;
-        //    magicCard.cardID = RandomHelper.random.Next();
-        //    magicCard.cardType = cardType;
-        //    magicCard.name = name;
-        //    magicCard.magicType = magicType;
-        //    magicCard.effectInfo = effectInfo;
-        //    return magicCard;
-        //}
     }
 }

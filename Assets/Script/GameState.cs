@@ -10,6 +10,7 @@ namespace Assets.Script
     /// </summary>
     enum GameState
     {
+        Init,//初始场景
         MainScene,//主场景
         SeleteDuelModeScene,//选择决斗模式场景
         GuessFirstScene,//选择决斗模式场景

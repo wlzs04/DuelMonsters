@@ -5,26 +5,25 @@ using UnityEngine;
 
 public class AudioScript : MonoBehaviour
 {
-
     AudioSource bgmPlayer;
     Dictionary<string, AudioClip> audioMap=new Dictionary<string, AudioClip>();
 
     string audioPath = "Audio/";
     string currentPlayAudioName = "";
+
+    GameManager gameManager;
     
     void Start ()
     {
         DontDestroyOnLoad(gameObject);
-    }
-
-    public void Init()
-    {
         bgmPlayer = gameObject.GetComponent<AudioSource>();
+
+        gameManager = GameManager.GetSingleInstance();
     }
 	
 	void Update ()
     {
-        GameManager.GetSingleInstance().Update();
+        gameManager.Update();
 	}
 
     /// <summary>

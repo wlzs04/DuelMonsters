@@ -239,6 +239,7 @@ namespace Assets.Script.Duel
             timerFunction.SetFunction(2, () =>
             {
                 Thread.Sleep(2000);
+                GameManager.GetSingleInstance().CleanDuelScene();
                 GameManager.GetSingleInstance().EnterMainScene();
             });
 

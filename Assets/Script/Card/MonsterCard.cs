@@ -84,11 +84,6 @@ namespace Assets.Script.Card
         bool canBeAttacked = true;//是否可以被攻击
         bool canPenetrateDefense = false;//是否可以贯穿守备怪兽
 
-        //public MonsterCard(int cardNo) : base(cardNo)
-        //{
-        //    cardType = CardType.Monster;
-        //}
-
         public bool CanDirectAttack
         {
             get
@@ -231,45 +226,6 @@ namespace Assets.Script.Card
             return GetStringByMonsterType(monsterType);
         }
 
-        //protected override void LoadInfo(string info)
-        //{
-        //    string[] keyValues = info.Split(new string[] { "\n", "\r\n" },StringSplitOptions.None);
-        //    foreach (var item in keyValues)
-        //    {
-        //        string key = item.Substring(0, item.IndexOf(':'));
-        //        string value = item.Substring(item.IndexOf(':') + 1);
-        //        switch (key)
-        //        {
-        //            case "Name":
-        //                name = value;
-        //                break;
-        //            case "PropertyType":
-        //                propertyType = GetPropertyTypeByString(value);
-        //                break;
-        //            case "MonsterType":
-        //                monsterType = GetMonsterTypeByString(value);
-        //                break;
-        //            case "Level":
-        //                level = int.Parse(value);
-        //                break;
-        //            case "ATK":
-        //                attackNumber = int.Parse(value);
-        //                break;
-        //            case "DEF":
-        //                defenseNumber = int.Parse(value);
-        //                break;
-        //            case "Noraml":
-        //                isNormal = bool.Parse(value);
-        //                break;
-        //            case "Effect":
-        //                effectInfo = value;
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// 将汉字转换为属性种类
         /// </summary>
@@ -329,41 +285,5 @@ namespace Assets.Script.Card
             MonsterTypeConfig config = ConfigManager.GetConfigByName("MonsterType") as MonsterTypeConfig;
             return config.GetRecordById((int)monsterType).value;
         }
-
-        /// <summary>
-        /// 获得当前卡牌的一个实例
-        /// </summary>
-        /// <returns></returns>
-        //public override CardBase GetInstance()
-        //{
-        //    MonsterCard monsterCard = new MonsterCard(cardNo);
-        //    monsterCard.name = name;
-        //    monsterCard.SetImage(GetImage());
-        //    monsterCard.cardNo = cardNo;
-        //    monsterCard.cardID = RandomHelper.random.Next();
-        //    monsterCard.cardType = cardType;
-        //    monsterCard.propertyType = propertyType;
-        //    monsterCard.monsterType = monsterType;
-        //    monsterCard.level = level;
-        //    monsterCard.attackNumber = attackNumber;
-        //    monsterCard.defenseNumber = defenseNumber;
-        //    monsterCard.isNormal = isNormal;
-        //    monsterCard.effectInfo = effectInfo;
-        //    return monsterCard;
-        //}
-
-        /// <summary>
-        /// 怪兽卡暂时无法发动效果
-        /// </summary>
-        /// <returns></returns>
-        //public override bool CanLaunchEffect()
-        //{
-        //    return false;
-        //}
-
-        //public override void LaunchEffect()
-        //{
-            
-        //}
     }
 }
