@@ -232,8 +232,7 @@ namespace Assets.Script
                 Debug.LogError("卡牌资源路径不存在："+ GetCardResourceRootPath());
                 return;
             }
-
-            int i = 1;
+            
             DirectoryInfo directoryInfo = new DirectoryInfo(GetCardResourceRootPath());
             foreach (var item in directoryInfo.GetDirectories())
             {
@@ -242,10 +241,9 @@ namespace Assets.Script
                 www.LoadImageIntoTexture(texture);
                 Sprite image = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
                 
-                CardBase card = CardBase.LoadCardFromInfo(int.Parse(item.Name), File.ReadAllText(item.FullName + "/script.txt"));
+                CardBase card = CardBase.LoadCardFromInfo(int.Parse(item.Name));
                 card.SetImage(image);
-                i = int.Parse(item.Name);
-                allCardInfoList[i] = card;
+                allCardInfoList[card.GetCardNo()] = card;
             }
             Debug.Log("加载卡牌数量："+allCardInfoList.Count);
         }

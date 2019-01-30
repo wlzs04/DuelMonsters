@@ -68,15 +68,14 @@ namespace Assets.Script.Card
     }
 
     /// <summary>
-    /// 怪兽卡
+    /// 怪兽卡部分
     /// </summary>
-    public class MonsterCard : CardBase
+    public partial class CardBase
     {
         int level = 4;//等级
         PropertyType propertyType = PropertyType.Unknown;//属性
         MonsterType monsterType = MonsterType.Unknown;//种族
 
-        bool isNormal = true;//是否为通常怪
         int attackNumber = 1500;//攻击力
         int defenseNumber = 500;//防御力
         int canBeSacrificedNumber = 1;//可被当成祭品的个数
@@ -85,10 +84,10 @@ namespace Assets.Script.Card
         bool canBeAttacked = true;//是否可以被攻击
         bool canPenetrateDefense = false;//是否可以贯穿守备怪兽
 
-        public MonsterCard(int cardNo) : base(cardNo)
-        {
-            cardType = CardType.Monster;
-        }
+        //public MonsterCard(int cardNo) : base(cardNo)
+        //{
+        //    cardType = CardType.Monster;
+        //}
 
         public bool CanDirectAttack
         {
@@ -154,9 +153,19 @@ namespace Assets.Script.Card
             return 0;
         }
 
+        public void SetLevel(int level)
+        {
+            this.level = level;
+        }
+
         public int GetLevel()
         {
             return level;
+        }
+
+        public void SetAttackNumber(int attackNumber)
+        {
+            this.attackNumber = attackNumber;
         }
 
         public int GetAttackNumber()
@@ -164,14 +173,24 @@ namespace Assets.Script.Card
             return attackNumber;
         }
 
+        public void SetDefenseNumber(int defenseNumber)
+        {
+            this.defenseNumber = defenseNumber;
+        }
+
         public int GetDefenseNumber()
         {
             return defenseNumber;
         }
 
-        public bool IsNormal()
+        public void SetPropertyType(PropertyType propertyType)
         {
-            return isNormal;
+            this.propertyType = propertyType;
+        }
+
+        public void SetPropertyTypeByString(string value)
+        {
+            propertyType = GetPropertyTypeByString(value);
         }
 
         public PropertyType GetPropertyType()
@@ -188,6 +207,21 @@ namespace Assets.Script.Card
             return GetStringByPropertyType(propertyType);
         }
 
+        public void SetMonsterType(MonsterType monsterType)
+        {
+            this.monsterType = monsterType;
+        }
+
+        public void SetMonsterTypeByString(string value)
+        {
+            monsterType = GetMonsterTypeByString(value);
+        }
+
+        public MonsterType GetMonsterType()
+        {
+            return monsterType;
+        }
+
         /// <summary>
         /// 获得种族类型的文字描述
         /// </summary>
@@ -197,44 +231,44 @@ namespace Assets.Script.Card
             return GetStringByMonsterType(monsterType);
         }
 
-        protected override void LoadInfo(string info)
-        {
-            string[] keyValues = info.Split(new string[] { "\n", "\r\n" },StringSplitOptions.None);
-            foreach (var item in keyValues)
-            {
-                string key = item.Substring(0, item.IndexOf(':'));
-                string value = item.Substring(item.IndexOf(':') + 1);
-                switch (key)
-                {
-                    case "Name":
-                        name = value;
-                        break;
-                    case "PropertyType":
-                        propertyType = GetPropertyTypeByString(value);
-                        break;
-                    case "MonsterType":
-                        monsterType = GetMonsterTypeByString(value);
-                        break;
-                    case "Level":
-                        level = int.Parse(value);
-                        break;
-                    case "ATK":
-                        attackNumber = int.Parse(value);
-                        break;
-                    case "DEF":
-                        defenseNumber = int.Parse(value);
-                        break;
-                    case "Noraml":
-                        isNormal = bool.Parse(value);
-                        break;
-                    case "Effect":
-                        effect = value;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+        //protected override void LoadInfo(string info)
+        //{
+        //    string[] keyValues = info.Split(new string[] { "\n", "\r\n" },StringSplitOptions.None);
+        //    foreach (var item in keyValues)
+        //    {
+        //        string key = item.Substring(0, item.IndexOf(':'));
+        //        string value = item.Substring(item.IndexOf(':') + 1);
+        //        switch (key)
+        //        {
+        //            case "Name":
+        //                name = value;
+        //                break;
+        //            case "PropertyType":
+        //                propertyType = GetPropertyTypeByString(value);
+        //                break;
+        //            case "MonsterType":
+        //                monsterType = GetMonsterTypeByString(value);
+        //                break;
+        //            case "Level":
+        //                level = int.Parse(value);
+        //                break;
+        //            case "ATK":
+        //                attackNumber = int.Parse(value);
+        //                break;
+        //            case "DEF":
+        //                defenseNumber = int.Parse(value);
+        //                break;
+        //            case "Noraml":
+        //                isNormal = bool.Parse(value);
+        //                break;
+        //            case "Effect":
+        //                effectInfo = value;
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 将汉字转换为属性种类
@@ -300,36 +334,36 @@ namespace Assets.Script.Card
         /// 获得当前卡牌的一个实例
         /// </summary>
         /// <returns></returns>
-        public override CardBase GetInstance()
-        {
-            MonsterCard monsterCard = new MonsterCard(cardNo);
-            monsterCard.name = name;
-            monsterCard.SetImage(GetImage());
-            monsterCard.cardNo = cardNo;
-            monsterCard.cardID = RandomHelper.random.Next();
-            monsterCard.cardType = cardType;
-            monsterCard.propertyType = propertyType;
-            monsterCard.monsterType = monsterType;
-            monsterCard.level = level;
-            monsterCard.attackNumber = attackNumber;
-            monsterCard.defenseNumber = defenseNumber;
-            monsterCard.isNormal = isNormal;
-            monsterCard.effect = effect;
-            return monsterCard;
-        }
+        //public override CardBase GetInstance()
+        //{
+        //    MonsterCard monsterCard = new MonsterCard(cardNo);
+        //    monsterCard.name = name;
+        //    monsterCard.SetImage(GetImage());
+        //    monsterCard.cardNo = cardNo;
+        //    monsterCard.cardID = RandomHelper.random.Next();
+        //    monsterCard.cardType = cardType;
+        //    monsterCard.propertyType = propertyType;
+        //    monsterCard.monsterType = monsterType;
+        //    monsterCard.level = level;
+        //    monsterCard.attackNumber = attackNumber;
+        //    monsterCard.defenseNumber = defenseNumber;
+        //    monsterCard.isNormal = isNormal;
+        //    monsterCard.effectInfo = effectInfo;
+        //    return monsterCard;
+        //}
 
         /// <summary>
         /// 怪兽卡暂时无法发动效果
         /// </summary>
         /// <returns></returns>
-        public override bool CanLaunchEffect()
-        {
-            return false;
-        }
+        //public override bool CanLaunchEffect()
+        //{
+        //    return false;
+        //}
 
-        public override void LaunchEffect()
-        {
+        //public override void LaunchEffect()
+        //{
             
-        }
+        //}
     }
 }

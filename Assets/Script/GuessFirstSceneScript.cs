@@ -18,8 +18,6 @@ public class GuessFirstSceneScript : MonoBehaviour {
 
     DuelScene duelScene;
 
-    string cardGroupName;
-
     int iGuessWin = 0;//0-未知 1-成功 2-失败
 
     void Start()
@@ -52,7 +50,6 @@ public class GuessFirstSceneScript : MonoBehaviour {
     /// <param name="cardGroupName"></param>
     public void SelectCardGroupByName(string cardGroupName)
     {
-        this.cardGroupName = cardGroupName;
         //暂时将我方和对方卡组设为一样
         GameManager.GetSingleInstance().GetDuelScene().myPlayer.SetCardGroupName(cardGroupName);
         GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.SetCardGroupName(cardGroupName);

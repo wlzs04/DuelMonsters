@@ -54,7 +54,6 @@ namespace Assets.Script.Duel
 
         List<EffectProcessBase> effectProcessList = new List<EffectProcessBase>();
 
-        DuelEffectProcess duelEffectProcess;
         protected EffectProcessBase currentEffectProcess;
 
         public Player(string name, DuelScene duelScene)
@@ -319,16 +318,6 @@ namespace Assets.Script.Duel
             }
         }
 
-        public void SetDuelEffectProcess(DuelEffectProcess duelEffectProcess)
-        {
-            this.duelEffectProcess = duelEffectProcess;
-        }
-
-        public DuelEffectProcess GetDuelEffectProcess()
-        {
-            return duelEffectProcess;
-        }
-
         /// <summary>
         /// 获得当前对玩家产生影响的效果处理类
         /// </summary>
@@ -355,7 +344,7 @@ namespace Assets.Script.Duel
         {
             foreach (var item in monsterCardArea)
             {
-                if(item!=null&& ((MonsterCard)item).CanBeAttacked)
+                if(item!=null&& item.CanBeAttacked)
                 {
                     return true;
                 }
@@ -461,7 +450,7 @@ namespace Assets.Script.Duel
             {
                 if(item!=null)
                 {
-                    canBeSacrificeMonsterNumber+=((MonsterCard)item).GetCanBeSacrificedNumber();
+                    canBeSacrificeMonsterNumber+=item.GetCanBeSacrificedNumber();
                 }
             }
 
@@ -760,7 +749,7 @@ namespace Assets.Script.Duel
         /// 召唤怪兽到场上，未指定表侧形式，所以显示攻守选择面板
         /// </summary>
         /// <param name="monsterCard"></param>
-        public void CallMonster(MonsterCard monsterCard)
+        public void CallMonster(CardBase monsterCard)
         {
             duelScene.ShowAttackOrDefensePanel(monsterCard,(cardGameState)=> 
             {
@@ -772,7 +761,7 @@ namespace Assets.Script.Duel
         /// 召唤怪兽到场上
         /// </summary>
         /// <param name="monsterCard"></param>
-        public void CallMonster(MonsterCard monsterCard, CardGameState cardGameState)
+        public void CallMonster(CardBase monsterCard, CardGameState cardGameState)
         {
             if (IsMyPlayer())
             {
@@ -870,12 +859,12 @@ namespace Assets.Script.Duel
                 }
             }
 
-            MonsterCard monsterCard = null;
+            CardBase monsterCard = null;
             foreach (var item in handCards)
             {
                 if(item.GetID()==cardID)
                 {
-                    monsterCard = (MonsterCard)item;
+                    monsterCard = item;
                     break;
                 }
             }

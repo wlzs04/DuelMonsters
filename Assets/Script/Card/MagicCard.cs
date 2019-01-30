@@ -15,7 +15,7 @@ namespace Assets.Script.Card
     /// <summary>
     /// 魔法卡种类
     /// </summary>
-    enum MagicType
+    public enum MagicType
     {
         Unknown,//未知
         Normal,//通常
@@ -27,82 +27,25 @@ namespace Assets.Script.Card
     }
 
     /// <summary>
-    /// 魔法卡
+    /// 魔法卡部分
     /// </summary>
-    class MagicCard : CardBase
+    public partial class CardBase
     {
-        private LuaTable scriptEnv;
-        private Action<CardBase> launchEffect = null;
-
-        private string luaPath;
-        private LuaTable cardLuaTable;
-
-        public MagicCard(int cardNo) :base(cardNo)
-        {
-            cardType = CardType.Magic;
-
-            LuaEnv.CustomLoader method = CustomLoaderMethod;
-            GameManager.GetLuaEnv().AddLoader(method);
-
-            scriptEnv = GameManager.GetLuaEnv().NewTable();
-
-            // 为每个脚本设置一个独立的环境，可一定程度上防止脚本间全局变量、函数冲突
-            LuaTable meta = GameManager.GetLuaEnv().NewTable();
-            meta.Set("__index", GameManager.GetLuaEnv().Global);
-            scriptEnv.SetMetaTable(meta);
-            meta.Dispose();
-            luaPath = cardNo + ".C"+ cardNo;
-            GameManager.GetLuaEnv().DoString(@"C" + cardNo + " = require('"+ luaPath + "')", "LuaMagicCard", scriptEnv);
-            
-            scriptEnv.Set("self", this);
-
-            launchEffect = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".LaunchEffect");
-        }
-
-        private byte[] CustomLoaderMethod(ref string fileName)
-        {
-            fileName = fileName.Replace('.', '/');
-            //找到指定文件  
-            fileName = GameManager.GetCardResourceRootPath() + fileName + ".lua";
-            if (File.Exists(fileName))
-            {
-                return File.ReadAllBytes(fileName);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         MagicType magicType = MagicType.Normal;
+
+        public void SetMagicType(MagicType magicType)
+        {
+            this.magicType = magicType;
+        }
+
+        public void SetMagicTypeByString(string value)
+        {
+            magicType = GetMagicTypeByString(value);
+        }
 
         public string GetMagicTypeString()
         {
             return GetStringByMagicType(magicType);
-        }
-
-        protected override void LoadInfo(string info)
-        {
-            string[] keyValues = info.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
-            foreach (var item in keyValues)
-            {
-                string key = item.Substring(0, item.IndexOf(':'));
-                string value = item.Substring(item.IndexOf(':') + 1);
-                switch (key)
-                {
-                    case "Name":
-                        name = value;
-                        break;
-                    case "MagicType":
-                        magicType = GetMagicTypeByString(value);
-                        break;
-                    case "Effect":
-                        effect = value;
-                        break;
-                    default:
-                        break;
-                }
-            }
         }
 
         /// <summary>
@@ -135,52 +78,17 @@ namespace Assets.Script.Card
             return config.GetRecordById((int)magicType).value;
         }
 
-        public override CardBase GetInstance()
-        {
-            MagicCard magicCard = new MagicCard(cardNo);
-            magicCard.SetImage(GetImage());
-            magicCard.cardNo = cardNo;
-            magicCard.cardID = RandomHelper.random.Next();
-            magicCard.cardType = cardType;
-            magicCard.name = name;
-            magicCard.magicType = magicType;
-            magicCard.effect = effect;
-            return magicCard;
-        }
-
-        /// <summary>
-        /// 发动效果
-        /// </summary>
-        /// <returns></returns>
-        public override bool CanLaunchEffect()
-        {
-            if ((GetCardType() == CardType.Magic ||
-                GetCardType() == CardType.Trap) &&
-                GetCardGameState() == CardGameState.Hand &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
-                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null &&
-                !GetDuelCardScript().GetOwner().MagicTrapAreaIsFull())
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public override void LaunchEffect()
-        {
-            if(launchEffect!=null)
-            {
-                launchEffect(this);
-            }
-            //ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(500, ReduceLifeType.Effect, GetDuelCardScript().GetOwner().GetOpponentPlayer());
-            //GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
-        }
-
-        //public void SetDamage(int value)
+        //public override CardBase GetInstance()
         //{
-        //    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(value, ReduceLifeType.Effect, GetDuelCardScript().GetOwner().GetOpponentPlayer());
-        //    GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
+        //    MagicCard magicCard = new MagicCard(cardNo);
+        //    magicCard.SetImage(GetImage());
+        //    magicCard.cardNo = cardNo;
+        //    magicCard.cardID = RandomHelper.random.Next();
+        //    magicCard.cardType = cardType;
+        //    magicCard.name = name;
+        //    magicCard.magicType = magicType;
+        //    magicCard.effectInfo = effectInfo;
+        //    return magicCard;
         //}
     }
 }

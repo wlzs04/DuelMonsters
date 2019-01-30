@@ -11,10 +11,10 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class ChangeAttackDefenseEffectProcess : EffectProcessBase
     {
-        MonsterCard monsterCard;
+        CardBase monsterCard;
         CardGameState cardGameState;
 
-        public ChangeAttackDefenseEffectProcess(MonsterCard monsterCard,CardGameState cardGameState,Player ownerPlayer) : base(ownerPlayer)
+        public ChangeAttackDefenseEffectProcess(CardBase monsterCard,CardGameState cardGameState,Player ownerPlayer) : base(ownerPlayer)
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.monsterCard = monsterCard;

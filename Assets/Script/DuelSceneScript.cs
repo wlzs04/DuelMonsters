@@ -170,29 +170,29 @@ namespace Assets.Script
             GameObject gameObject = null;
             if (card.GetCardType() == CardType.Monster)
             {
-                MonsterCard monsterCard = (MonsterCard)card;
+                //MonsterCard monsterCard = (MonsterCard)card;
                 gameObject = Instantiate(monsterCardPre, infoContentTransform);
-                gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + monsterCard.GetName();
-                gameObject.transform.GetChild(1).GetComponent<Text>().text = "属性：" + monsterCard.GetPropertyTypeString() + "/" + monsterCard.GetMonsterTypeString() + "/" + monsterCard.GetLevel();
-                gameObject.transform.GetChild(2).GetComponent<Text>().text = "攻击力：" + monsterCard.GetAttackNumber();
-                gameObject.transform.GetChild(3).GetComponent<Text>().text = "防御力：" + monsterCard.GetDefenseNumber();
-                gameObject.transform.GetChild(4).GetComponent<Text>().text = "效果：" + monsterCard.GetEffect();
+                gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + card.GetName();
+                gameObject.transform.GetChild(1).GetComponent<Text>().text = "属性：" + card.GetPropertyTypeString() + "/" + card.GetMonsterTypeString() + "/" + card.GetLevel();
+                gameObject.transform.GetChild(2).GetComponent<Text>().text = "攻击力：" + card.GetAttackNumber();
+                gameObject.transform.GetChild(3).GetComponent<Text>().text = "防御力：" + card.GetDefenseNumber();
+                gameObject.transform.GetChild(4).GetComponent<Text>().text = "效果：" + card.GetEffectInfo();
             }
             else if (card.GetCardType() == CardType.Magic)
             {
-                MagicCard magicCard = (MagicCard)card;
+                //MagicCard magicCard = (MagicCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
-                gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + magicCard.GetName();
-                gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + magicCard.GetMagicTypeString() + magicCard.GetCardTypeString();
-                gameObject.transform.GetChild(2).GetComponent<Text>().text = "效果：" + magicCard.GetEffect();
+                gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + card.GetName();
+                gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + card.GetMagicTypeString() + card.GetCardTypeString();
+                gameObject.transform.GetChild(2).GetComponent<Text>().text = "效果：" + card.GetEffectInfo();
             }
             else if (card.GetCardType() == CardType.Trap)
             {
-                TrapCard trapCard = (TrapCard)card;
+                //TrapCard trapCard = (TrapCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
-                gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + trapCard.GetName();
-                gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + trapCard.GetTrapTypeString() + trapCard.GetCardTypeString();
-                gameObject.transform.GetChild(2).GetComponent<Text>().text = "效果：" + trapCard.GetEffect();
+                gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + card.GetName();
+                gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + card.GetTrapTypeString() + card.GetCardTypeString();
+                gameObject.transform.GetChild(2).GetComponent<Text>().text = "效果：" + card.GetEffectInfo();
             }
             else
             {
@@ -211,7 +211,7 @@ namespace Assets.Script
         /// <summary>
         /// 显示攻击防御选择面板
         /// </summary>
-        public void ShowAttackOrDefensePanel(MonsterCard monsterCard, UnityAction<CardGameState> finishAction)
+        public void ShowAttackOrDefensePanel(CardBase monsterCard, UnityAction<CardGameState> finishAction)
         {
             attackOrDefensePanel.SetActive(true);
             attackOrDefensePanel.transform.Find("BackPanel").Find("LeftPanel").Find("LeftImage").GetComponent<Image>().sprite = monsterCard.GetImage();

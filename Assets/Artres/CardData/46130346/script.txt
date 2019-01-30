@@ -1,4 +1,0 @@
-CardType:魔法
-Name:火球
-MagicType:通常
-Effect:给予对手LP500点伤害。

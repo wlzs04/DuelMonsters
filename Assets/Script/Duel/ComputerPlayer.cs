@@ -88,8 +88,8 @@ namespace Assets.Script.Duel
                         DuelCardScript duelCardScript = item.GetDuelCardScript();
                         if (duelCardScript.CanCall())
                         {
-                            MonsterCard monsterCard = (MonsterCard)item;
-                            int sacrificeMonsterNumer = monsterCard.NeedSacrificeMonsterNumer();
+                            //MonsterCard monsterCard = (MonsterCard)item;
+                            int sacrificeMonsterNumer = item.NeedSacrificeMonsterNumer();
                             if(sacrificeMonsterNumer>0)
                             {
                                 string sacrificeInfo = "";
@@ -111,12 +111,12 @@ namespace Assets.Script.Duel
                                 {
                                     sacrificeInfo = sacrificeInfo.Substring(0, sacrificeInfo.Length - 1);
                                 }
-                                CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, index,sacrificeInfo);
+                                CallMonsterByProtocol(item.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, index,sacrificeInfo);
                             }
                             else
                             {
                                 CardGameState nextCardGameState;
-                                if (monsterCard.GetAttackNumber() >= monsterCard.GetDefenseNumber())
+                                if (item.GetAttackNumber() >= item.GetDefenseNumber())
                                 {
                                     nextCardGameState = CardGameState.FrontAttack;
                                 }
@@ -128,7 +128,7 @@ namespace Assets.Script.Duel
                                 {
                                     if (monsterCardArea[i] == null)
                                     {
-                                        CallMonsterByProtocol(monsterCard.GetID(), CallType.Normal, CardGameState.Hand, nextCardGameState, i);
+                                        CallMonsterByProtocol(item.GetID(), CallType.Normal, CardGameState.Hand, nextCardGameState, i);
                                         return;
                                     }
                                 }
@@ -170,7 +170,7 @@ namespace Assets.Script.Duel
                     switch (item.GetCardType())
                     {
                         case CardType.Monster:
-                            if((item as MonsterCard).GetAttackNumber()==0)
+                            if(item.GetAttackNumber()==0)
                             {
                                 return item;
                             }

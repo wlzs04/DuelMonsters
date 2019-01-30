@@ -26,17 +26,6 @@ namespace Assets.Script.Duel
     }
 
     /// <summary>
-    /// 决斗中的效果处理，用于作分类判断，执行相应方法
-    /// </summary>
-    public enum DuelEffectProcess
-    {
-        Unknown,//未知
-        Draw,//抽卡
-        TurnEnd,//回合结束
-        Discard,//丢弃卡牌
-    }
-
-    /// <summary>
     /// 决斗场
     /// </summary>
     public class DuelScene
@@ -169,7 +158,7 @@ namespace Assets.Script.Duel
         /// </summary>
         /// <param name="monsterCard"></param>
         /// <param name="finishAction"></param>
-        public void ShowAttackOrDefensePanel(MonsterCard monsterCard,UnityAction<CardGameState> finishAction)
+        public void ShowAttackOrDefensePanel(CardBase monsterCard,UnityAction<CardGameState> finishAction)
         {
             duelSceneScript.ShowAttackOrDefensePanel(monsterCard, finishAction);
         }
@@ -520,14 +509,6 @@ namespace Assets.Script.Duel
         void EndBattleDuelProcessEvent()
         {
             currentPlayer.ClearAllMonsterCanAttack();
-        }
-
-        /// <summary>
-        /// 将怪兽召唤到怪兽区
-        /// </summary>
-        public bool AddMonsterCardToDuelArea(MonsterCard monsterCard,CallType callType)
-        {
-            return false;
         }
         
         //带有Opponent前缀的方法

@@ -40,5 +40,10 @@ namespace Assets.Script.Duel.EffectProcess
             ownerPlayer.ReduceLife(reduceLife);
             AfterFinishProcessFunction();
         }
+
+        public ReduceLifeType GetReduceLifeType()
+        {
+            return reduceLifeType;
+        }
     }
 }

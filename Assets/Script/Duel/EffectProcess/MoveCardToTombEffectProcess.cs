@@ -40,5 +40,10 @@ namespace Assets.Script.Duel.EffectProcess
             ownerPlayer.MoveCardToTomb(card);
             AfterFinishProcessFunction();
         }
+
+        public MoveCardToTombType GetMoveCardToTombType()
+        {
+            return moveCardToTombType;
+        }
     }
 }

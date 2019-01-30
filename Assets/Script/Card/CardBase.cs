@@ -1,7 +1,9 @@
 using Assets.Script.Config;
 using Assets.Script.Duel;
+using Assets.Script.Duel.Rule;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -47,17 +49,16 @@ namespace Assets.Script.Card
     }
 
     /// <summary>
-    /// 卡牌基类
+    /// 卡牌基础部分
     /// </summary>
-    public abstract class CardBase
+    public partial class CardBase
     {
         protected CardType cardType = CardType.Monster;//卡片类型
         CardGameState cardGameState = CardGameState.Group;
-        //CardGroupType cardGroupType = CardGroupType.Unknown;
         Sprite image;
         protected string name = "未命名";//名称
         protected int cardNo = 0;//唯一编号，0代表为假卡。
-        protected string effect = "没有效果。";
+        protected string effectInfo = "没有效果。";
 
         protected int cardID = 0;//代表在决斗过程中的唯一标志
 
@@ -72,9 +73,64 @@ namespace Assets.Script.Card
         //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
 
+        //lua部分
+        private LuaTable scriptEnv;
+        private Action<CardBase> initInfoAction = null;
+        private Action<CardBase> launchEffectAction = null;
+        private string luaPath;
+
         public CardBase(int cardNo)
         {
             this.cardNo = cardNo;
+            InitLua();
+        }
+
+        /// <summary>
+        /// 初始化lua部分
+        /// </summary>
+        void InitLua()
+        {
+            LuaEnv.CustomLoader method = CustomLoaderMethod;
+            GameManager.GetLuaEnv().AddLoader(method);
+
+            scriptEnv = GameManager.GetLuaEnv().NewTable();
+
+            // 为每个脚本设置一个独立的环境，可一定程度上防止脚本间全局变量、函数冲突
+            LuaTable meta = GameManager.GetLuaEnv().NewTable();
+            meta.Set("__index", GameManager.GetLuaEnv().Global);
+            scriptEnv.SetMetaTable(meta);
+            meta.Dispose();
+            luaPath = cardNo + ".C" + cardNo;
+            GameManager.GetLuaEnv().DoString(@"C" + cardNo + " = require('" + luaPath + "')", "LuaMagicCard", scriptEnv);
+
+            scriptEnv.Set("self", this);
+
+            initInfoAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".InitInfo");
+            launchEffectAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".LaunchEffect");
+
+            if (initInfoAction != null)
+            {
+                initInfoAction(this);
+            }
+            else
+            {
+                Debug.LogError("卡牌：" + cardNo + "缺少SetInfo方法！");
+            }
+        }
+
+        private byte[] CustomLoaderMethod(ref string fileName)
+        {
+            fileName = fileName.Replace('.', '/');
+            //找到指定文件  
+            fileName = GameManager.GetCardResourceRootPath() + fileName + ".lua";
+            if (File.Exists(fileName))
+            {
+                return File.ReadAllBytes(fileName);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -129,6 +185,11 @@ namespace Assets.Script.Card
             cardID=ID;
         }
 
+        public void SetName(string name)
+        {
+            this.name = name;
+        }
+
         public string GetName()
         {
             return name;
@@ -161,9 +222,8 @@ namespace Assets.Script.Card
                 { 
                     duelCardScript.ShowFront();
                     duelCardScript.SetCardAngle(0);
-                    MonsterCard monsterCard = (MonsterCard)this;
-                    string attackAndDefenseText = "<color=#FF0000FF>"+ monsterCard.GetAttackNumber() + "</color>/";
-                    attackAndDefenseText += "<color=#000000FF>" + monsterCard.GetDefenseNumber() + "</color>";
+                    string attackAndDefenseText = "<color=#FF0000FF>"+ GetAttackNumber() + "</color>/";
+                    attackAndDefenseText += "<color=#000000FF>" + GetDefenseNumber() + "</color>";
                     duelCardScript.SetAttackAndDefenseText(attackAndDefenseText);
                     break;
                 }
@@ -171,9 +231,8 @@ namespace Assets.Script.Card
                 {
                     duelCardScript.ShowFront();
                     duelCardScript.SetCardAngle(90);
-                    MonsterCard monsterCard = (MonsterCard)this;
-                    string attackAndDefenseText = "<color=#000000FF>" + monsterCard.GetAttackNumber() + "</color>/";
-                    attackAndDefenseText += "<color=#00FF00FF>" + monsterCard.GetDefenseNumber() + "</color>";
+                    string attackAndDefenseText = "<color=#000000FF>" + GetAttackNumber() + "</color>/";
+                    attackAndDefenseText += "<color=#00FF00FF>" + GetDefenseNumber() + "</color>";
                     duelCardScript.SetAttackAndDefenseText(attackAndDefenseText);
                     break;
                 }
@@ -214,9 +273,14 @@ namespace Assets.Script.Card
             return cardGameState;
         }
 
-        public string GetEffect()
+        public void SetEffectInfo(string effectInfo)
         {
-            return effect;
+            this.effectInfo = effectInfo;
+        }
+
+        public string GetEffectInfo()
+        {
+            return effectInfo;
         }
 
         public void SetImage(Sprite image)
@@ -234,43 +298,59 @@ namespace Assets.Script.Card
             return cardType;
         }
 
+        public void SetCardType(CardType cardType)
+        {
+            this.cardType = cardType;
+        }
+
+        public void SetCardTypeByString(string value)
+        {
+            cardType = GetCardTypeByString(value);
+        }
+
         public string GetCardTypeString()
         {
             return GetStringByCardType(cardType);
         }
 
-        protected abstract void LoadInfo(string info);
+        //protected abstract void LoadInfo(string info);
 
-        public static CardBase LoadCardFromInfo(int cardNo,string info)
+        public static CardBase LoadCardFromInfo(int cardNo)//,string info
         {
-            string item = info.Substring(0,info.IndexOf(Environment.NewLine));
-            string key = item.Substring(0, item.IndexOf(':'));
-            string value = item.Substring(item.IndexOf(':') + 1);
-            CardBase card = null;
-            if(key== "CardType")
-            {
-                switch (value)
-                {
-                    case "怪兽":
-                        card = new MonsterCard(cardNo);
-                        break;
-                    case "魔法":
-                        card = new MagicCard(cardNo);
-                        break;
-                    case "陷阱":
-                        card = new TrapCard(cardNo);
-                        break;
-                    default:
-                        break;
-                }
-                card.cardNo = cardNo;
-                card.info = info;
-                card.LoadInfo(info);
-            }
+            //string item = info.Substring(0,info.IndexOf(Environment.NewLine));
+            //string key = item.Substring(0, item.IndexOf(':'));
+            //string value = item.Substring(item.IndexOf(':') + 1);
+            CardBase card = new CardBase(cardNo);
+            //card.
+            //if(key == "CardType")
+            //{
+            //    switch (value)
+            //    {
+            //        case "怪兽":
+            //            card = new MonsterCard(cardNo);
+            //            break;
+            //        case "魔法":
+            //            card = new MagicCard(cardNo);
+            //            break;
+            //        case "陷阱":
+            //            card = new TrapCard(cardNo);
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //    card.cardNo = cardNo;
+            //    card.info = info;
+            //    card.LoadInfo(info);
+            //}
             return card;
         }
 
-        public abstract CardBase GetInstance();
+        public CardBase GetInstance()
+        {
+            CardBase cardBase = new CardBase(cardNo);
+            cardBase.SetImage(GetImage());
+            return cardBase;
+        }
 
         /// <summary>
         /// 将汉字转换为卡片种类
@@ -303,14 +383,32 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
-        /// 能否发动效果
+        /// 判断是否可以发动效果
         /// </summary>
         /// <returns></returns>
-        public abstract bool CanLaunchEffect();
+        public bool CanLaunchEffect()
+        {
+            if ((GetCardType() == CardType.Magic) &&
+                GetCardGameState() == CardGameState.Hand &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null &&
+                !GetDuelCardScript().GetOwner().MagicTrapAreaIsFull())
+            {
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// 发动效果
         /// </summary>
-        public abstract void LaunchEffect();
+        public void LaunchEffect()
+        {
+            if (launchEffectAction != null)
+            {
+                launchEffectAction(this);
+            }
+        }
     }
 }

@@ -208,12 +208,12 @@ namespace Assets.Script.Card
                     !haveBeChosen&&
                     ownerPlayer.GetCurrentEffectProcess() is CallMonsterEffectProcess)
                 {
-                    int tempInt = ((MonsterCard)card).GetCanBeSacrificedNumber();
+                    int tempInt = card.GetCanBeSacrificedNumber();
                     if (tempInt > 0)
                     {
                         CallMonsterEffectProcess callMonsterEffectProcess = ownerPlayer.GetCurrentEffectProcess() as CallMonsterEffectProcess;
                         
-                        if (callMonsterEffectProcess.CanChooseMonsterAsSacrifice((MonsterCard)card))
+                        if (callMonsterEffectProcess.CanChooseMonsterAsSacrifice(card))
                         {
                             haveBeChosen = true;
                             ChooseThisCard();
@@ -228,9 +228,9 @@ namespace Assets.Script.Card
                         Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
                         if (opponentPlayer.CanBeDirectAttacked() &&
                             !opponentPlayer.HaveBeAttackedMonster() &&
-                            ownerPlayer.GetCanDirectAttack() && ((MonsterCard)card).CanDirectAttack)
+                            ownerPlayer.GetCanDirectAttack() && (card).CanDirectAttack)
                         {
-                            AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card as MonsterCard, null, ownerPlayer);
+                            AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card, null, ownerPlayer);
                             ownerPlayer.AddEffectProcess(attackEffectProcess);
 
                             return;
@@ -239,7 +239,7 @@ namespace Assets.Script.Card
                         {
                             PrepareAttack();
 
-                            AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card as MonsterCard, null, ownerPlayer);
+                            AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card, null, ownerPlayer);
                             ownerPlayer.AddEffectProcess(attackEffectProcess);
                             return;
                         }
@@ -251,7 +251,7 @@ namespace Assets.Script.Card
                     AttackEffectProcess attackEffectProcess = ownerPlayer.GetOpponentPlayer().GetCurrentEffectProcess() as AttackEffectProcess;
                     if(attackEffectProcess.WaitChooseBeAttackedMonster() && card.GetCardType() == CardType.Monster)
                     {
-                        attackEffectProcess.ChooseBeAttackedMonster(card as MonsterCard);
+                        attackEffectProcess.ChooseBeAttackedMonster(card);
                     }
                 }
             }
@@ -264,7 +264,6 @@ namespace Assets.Script.Card
             {
                 if(ownerPlayer==duelScene.myPlayer && ownerPlayer.GetCurrentEffectProcess() is DiscardHandCardEffectProcess)
                 {
-                    DiscardHandCardEffectProcess discardHandCardEffectProcess = ownerPlayer.GetCurrentEffectProcess() as DiscardHandCardEffectProcess;
                     ownerPlayer.MoveCardToTomb(card);
                 }
             }
@@ -359,8 +358,8 @@ namespace Assets.Script.Card
                 card.GetCardType() == CardType.Monster &&
                 ownerPlayer.GetCurrentEffectProcess() == null)
             {
-                MonsterCard monsterCard = card as MonsterCard;
-                return monsterCard.CanAttack() && attackNumber > 0;
+                //MonsterCard monsterCard = card as MonsterCard;
+                return card.CanAttack() && attackNumber > 0;
             }
             return false;
         }
@@ -420,8 +419,8 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
-                MonsterCard monsterCard = (MonsterCard)card;
-                if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
+                //MonsterCard monsterCard = (MonsterCard)card;
+                if (card.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
                     return !ownerPlayer.MonsterAreaIsFull();
                 }
@@ -442,8 +441,8 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
-                MonsterCard monsterCard = (MonsterCard)card;
-                if (monsterCard.NeedSacrificeMonsterNumer()>0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= monsterCard.NeedSacrificeMonsterNumer())
+                //MonsterCard monsterCard = (MonsterCard)card;
+                if (card.NeedSacrificeMonsterNumer()>0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= card.NeedSacrificeMonsterNumer())
                 {
                     return true;
                 }
@@ -464,12 +463,12 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
-                MonsterCard monsterCard = (MonsterCard)card;
-                if (monsterCard.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
+                //MonsterCard monsterCard = (MonsterCard)card;
+                if (card.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
                     return !ownerPlayer.MonsterAreaIsFull();
                 }
-                else if(monsterCard.NeedSacrificeMonsterNumer() > 0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= monsterCard.NeedSacrificeMonsterNumer())
+                else if(card.NeedSacrificeMonsterNumer() > 0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= card.NeedSacrificeMonsterNumer())
                 {
                     return true;
                 }
@@ -618,7 +617,7 @@ namespace Assets.Script.Card
                     {
                         if (CanCall())
                         {
-                            ownerPlayer.CallMonster((MonsterCard)card);
+                            ownerPlayer.CallMonster(card);
                         }
                     }
                     break;
@@ -627,14 +626,14 @@ namespace Assets.Script.Card
                     {
                         if (CanCall())
                         {
-                            ownerPlayer.CallMonster((MonsterCard)card, CardGameState.Back);
+                            ownerPlayer.CallMonster(card, CardGameState.Back);
                         }
                     }
                     break;
                 case CardOperation.ChangeAttack:
                     if(CanChangeToFrontAttack())
                     {
-                        ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card as MonsterCard, CardGameState.FrontAttack,ownerPlayer);
+                        ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card, CardGameState.FrontAttack,ownerPlayer);
                         changeAttackOrDefenseNumber--;
                         ownerPlayer.AddEffectProcess(changeAttackDefenseEffectProcess);
                     }
@@ -642,7 +641,7 @@ namespace Assets.Script.Card
                 case CardOperation.ChangeDefense:
                     if (CanChangeToFrontDefense())
                     {
-                        ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card as MonsterCard, CardGameState.FrontDefense, ownerPlayer);
+                        ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card, CardGameState.FrontDefense, ownerPlayer);
                         changeAttackOrDefenseNumber--;
                         ownerPlayer.AddEffectProcess(changeAttackDefenseEffectProcess);
                     }

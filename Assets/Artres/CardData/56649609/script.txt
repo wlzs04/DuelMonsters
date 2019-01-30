@@ -1,9 +1,0 @@
-CardType:怪兽
-Name:幻煌龙 螺旋
-PropertyType:水
-MonsterType:幻龙
-Level:8
-ATK:2900
-DEF:2900
-Normal:True
-Effect:历经炽烈战涡的猛龙。其负伤的身躯接触古老之光达成浸涡。随即，那龙展开双翅，成为制霸天涡的煌者。那全新的煌，不知是梦是真还是幻。

@@ -11,11 +11,11 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class AttackEffectProcess : EffectProcessBase
     {
-        MonsterCard attackCard = null;
-        MonsterCard beAttackedCard;
+        CardBase attackCard = null;
+        CardBase beAttackedCard;
         bool directAttack = false;
 
-        public AttackEffectProcess(MonsterCard attackCard, MonsterCard beAttackedCard, Player ownerPlayer) : base(ownerPlayer)
+        public AttackEffectProcess(CardBase attackCard, CardBase beAttackedCard, Player ownerPlayer) : base(ownerPlayer)
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             //如果对方没有可以被攻击的怪兽，则进行直接攻击
@@ -73,7 +73,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// 选择我方怪兽将攻击的怪兽
         /// </summary>
         /// <param name=""></param>
-        public void ChooseBeAttackedMonster(MonsterCard monsterCard)
+        public void ChooseBeAttackedMonster(CardBase monsterCard)
         {
             if (attackCard.GetDuelCardScript().GetOwner() !=
                 monsterCard.GetDuelCardScript().GetOwner() &&

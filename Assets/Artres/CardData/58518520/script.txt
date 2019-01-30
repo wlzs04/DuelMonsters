@@ -1,9 +1,0 @@
-CardType:怪兽
-Name:净化施效者
-PropertyType:光
-MonsterType:魔法师
-Level:2
-ATK:0
-DEF:900
-Normal:False
-Effect:①：这张卡作为同调素材送去墓地的场合发动。自己从卡组抽1张。②：这张卡为同调素材的同调怪兽不会被效果破坏。

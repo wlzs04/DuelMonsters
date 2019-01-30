@@ -10,7 +10,7 @@ namespace Assets.Script.Card
     /// <summary>
     /// 陷阱卡种类
     /// </summary>
-    enum TrapType
+    public enum TrapType
     {
         Unknown,//未知
         Normal,//通常
@@ -19,44 +19,30 @@ namespace Assets.Script.Card
     }
 
     /// <summary>
-    /// 陷阱卡
+    /// 陷阱卡部分
     /// </summary>
-    class TrapCard : CardBase
+    public partial class CardBase
     {
         TrapType trapType = TrapType.Normal;
 
-        public TrapCard(int cardNo) : base(cardNo)
+        public void SetTrapType(TrapType trapType)
         {
-            cardType = CardType.Trap;
+            this.trapType = trapType;
+        }
+
+        public void SetTrapTypeByString(string value)
+        {
+            trapType = GetTrapTypeByString(value);
+        }
+
+        public TrapType GetTrapType()
+        {
+            return trapType;
         }
 
         public string GetTrapTypeString()
         {
             return GetStringByTrapType(trapType);
-        }
-
-        protected override void LoadInfo(string info)
-        {
-            string[] keyValues = info.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
-            foreach (var item in keyValues)
-            {
-                string key = item.Substring(0, item.IndexOf(':'));
-                string value = item.Substring(item.IndexOf(':') + 1);
-                switch (key)
-                {
-                    case "Name":
-                        name = value;
-                        break;
-                    case "TrapType":
-                        trapType = GetTrapTypeByString(value);
-                        break;
-                    case "Effect":
-                        effect = value;
-                        break;
-                    default:
-                        break;
-                }
-            }
         }
 
         /// <summary>
@@ -89,31 +75,17 @@ namespace Assets.Script.Card
             return config.GetRecordById((int)trapType).value;
         }
 
-        public override CardBase GetInstance()
-        {
-            TrapCard trapCard = new TrapCard(cardNo);
-            trapCard.name = name;
-            trapCard.SetImage(GetImage());
-            trapCard.cardNo = cardNo;
-            trapCard.cardID = RandomHelper.random.Next();
-            trapCard.cardType = cardType;
-            trapCard.trapType = trapType;
-            trapCard.effect = effect;
-            return trapCard;
-        }
-
-        /// <summary>
-        /// 陷阱卡暂时无法发动效果
-        /// </summary>
-        /// <returns></returns>
-        public override bool CanLaunchEffect()
-        {
-            return false;
-        }
-
-        public override void LaunchEffect()
-        {
-            
-        }
+        //public override CardBase GetInstance()
+        //{
+        //    TrapCard trapCard = new TrapCard(cardNo);
+        //    trapCard.name = name;
+        //    trapCard.SetImage(GetImage());
+        //    trapCard.cardNo = cardNo;
+        //    trapCard.cardID = RandomHelper.random.Next();
+        //    trapCard.cardType = cardType;
+        //    trapCard.trapType = trapType;
+        //    trapCard.effectInfo = effectInfo;
+        //    return trapCard;
+        //}
     }
 }

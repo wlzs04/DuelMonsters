@@ -25,13 +25,13 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class CallMonsterEffectProcess : EffectProcessBase
     {
-        MonsterCard callMonster = null;//被召唤的怪兽
+        CardBase callMonster = null;//被召唤的怪兽
         CardGameState cardGameState;//召唤后卡牌状态
         CallMonsterType callMonsterType;//召唤类型
 
-        List<MonsterCard> sacrificeCards = new List<MonsterCard>();//祭品列表
+        List<CardBase> sacrificeCards = new List<CardBase>();//祭品列表
 
-        public CallMonsterEffectProcess(MonsterCard callMonster, CardGameState cardGameState, Player ownerPlayer) : base(ownerPlayer)
+        public CallMonsterEffectProcess(CardBase callMonster, CardGameState cardGameState, Player ownerPlayer) : base(ownerPlayer)
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.callMonster = callMonster;
@@ -47,8 +47,9 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
+            int monsterLevel = callMonster.GetLevel();
             //先判断是否可以直接进行召唤
-            if (callMonster.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
+            if (monsterLevel <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
             {
                 int index = CallMonster();
                 ownerPlayer.GetOpponentPlayer().CallMonsterNotify(callMonster.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index);
@@ -56,8 +57,7 @@ namespace Assets.Script.Duel.EffectProcess
             }
             else//使用祭品召唤
             {
-                int monsterLevel = callMonster.GetLevel();
-                if (ownerPlayer.GetCanBeSacrificeMonsterNumber() >= 1)
+                if (ownerPlayer.GetCanBeSacrificeMonsterNumber() >= callMonster.NeedSacrificeMonsterNumer())
                 {
                     callMonsterType = CallMonsterType.Sacrifice;
                 }
@@ -93,7 +93,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public bool CanChooseMonsterAsSacrifice(MonsterCard card)
+        public bool CanChooseMonsterAsSacrifice(CardBase card)
         {
             if (!sacrificeCards.Contains(card))
             {

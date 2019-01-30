@@ -12,7 +12,6 @@ namespace Assets.Script
     class TimerFunction
     {
         UnityAction action = null;
-        float time = 0;
         float remainTime = 0;
 
         public void Update(float deltaTime)
@@ -27,7 +26,6 @@ namespace Assets.Script
         /// <param name="action"></param>
         public void SetFunction(float time,UnityAction action)
         {
-            this.time = time;
             remainTime = time;
             this.action = action;
         }
