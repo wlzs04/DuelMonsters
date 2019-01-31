@@ -42,12 +42,16 @@ namespace Assets.Script.Card
         Unknown,//未知
         Group,//在卡组中
         Hand,//手牌中
-        FrontAttack,//表侧表示攻击
-        FrontDefense,//表侧表示防守
+        FrontAttack,//表侧表示攻击(怪兽使用)
+        FrontDefense,//表侧表示防守(怪兽使用)
+        Front,//表侧表示(魔法陷阱使用)
         Back,//覆盖表示
         Tomb,//在墓地中
         Exclusion,//被排除在游戏外
     }
+
+    [CSharpCallLua]
+    public delegate bool ActionJudge(CardBase cardBase) ;
 
     /// <summary>
     /// 卡牌基础部分
@@ -79,6 +83,7 @@ namespace Assets.Script.Card
         //lua部分
         private LuaTable scriptEnv;
         private Action<CardBase> initInfoAction = null;
+        private ActionJudge canLaunchEffectAction = null;
         private Action<CardBase> launchEffectAction = null;
         private string luaPath;
 
@@ -109,6 +114,7 @@ namespace Assets.Script.Card
             scriptEnv.Set("self", this);
 
             initInfoAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".InitInfo");
+            canLaunchEffectAction = scriptEnv.GetInPath<ActionJudge>("C" + cardNo + ".CanLaunchEffect");
             launchEffectAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".LaunchEffect");
 
             if (initInfoAction != null)
@@ -222,12 +228,10 @@ namespace Assets.Script.Card
             }
 
             this.cardGameState = cardGameState;
-            duelCardScript.SetAttackAndDefenseText("");
+            duelCardScript.ResetAttackAndDefenseText();
 
             switch (cardGameState)
             {
-                case CardGameState.Unknown:
-                    break;
                 case CardGameState.Group:
                     break;
                 case CardGameState.Hand:
@@ -236,20 +240,18 @@ namespace Assets.Script.Card
                 { 
                     duelCardScript.ShowFront();
                     duelCardScript.SetCardAngle(0);
-                    string attackAndDefenseText = "<color=#FF0000FF>"+ GetAttackNumber() + "</color>/";
-                    attackAndDefenseText += "<color=#000000FF>" + GetDefenseNumber() + "</color>";
-                    duelCardScript.SetAttackAndDefenseText(attackAndDefenseText);
                     break;
                 }
                 case CardGameState.FrontDefense:
                 {
                     duelCardScript.ShowFront();
                     duelCardScript.SetCardAngle(90);
-                    string attackAndDefenseText = "<color=#000000FF>" + GetAttackNumber() + "</color>/";
-                    attackAndDefenseText += "<color=#00FF00FF>" + GetDefenseNumber() + "</color>";
-                    duelCardScript.SetAttackAndDefenseText(attackAndDefenseText);
                     break;
                 }
+                case CardGameState.Front:
+                    duelCardScript.ShowFront();
+                    duelCardScript.SetCardAngle(0);
+                    break;
                 case CardGameState.Back:
                     duelCardScript.ShowBack();
                     if(cardType==CardType.Monster)
@@ -278,6 +280,7 @@ namespace Assets.Script.Card
                 case CardGameState.Exclusion:
                     break;
                 default:
+                    Debug.LogError("未知CardGameState：" + cardGameState);
                     break;
             }
         }
@@ -388,7 +391,6 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanLaunchEffect()
         {
-
             if ((GetCardType() == CardType.Magic) &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
@@ -397,11 +399,11 @@ namespace Assets.Script.Card
             {
                 if(GetCardGameState() == CardGameState.Hand)
                 {
-                    return true;
+                    return canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
                 }
-                else if(IsInArea(cardGameState))
+                else if(IsInArea(cardGameState) && duelScene.GetCurrentTurnNumber()> GetBePlacedAreaTurnNumber())
                 {
-                    return duelScene.GetCurrentTurnNumber()> GetBePlacedAreaTurnNumber();
+                    return canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
                 }
             }
             return false;
@@ -415,6 +417,20 @@ namespace Assets.Script.Card
             if (launchEffectAction != null)
             {
                 launchEffectAction(this);
+            }
+            switch (cardType)
+            {
+                case CardType.Monster:
+                    MonsterLaunchEffectCalback();
+                    break;
+                case CardType.Magic:
+                    MagicLaunchEffectCalback();
+                    break;
+                case CardType.Trap:
+                    TrapLaunchEffectCalback();
+                    break;
+                default:
+                    break;
             }
         }
     }

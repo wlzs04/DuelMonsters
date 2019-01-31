@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Assets.Script.Card
 {
@@ -84,6 +85,8 @@ namespace Assets.Script.Card
         bool canBeAttacked = true;//是否可以被攻击
         bool canPenetrateDefense = false;//是否可以贯穿守备怪兽
 
+        List<CardBase> equipCards = new List<CardBase>();//怪兽的装备卡列表
+
         public bool CanDirectAttack
         {
             get
@@ -160,7 +163,12 @@ namespace Assets.Script.Card
 
         public void SetAttackNumber(int attackNumber)
         {
+            attackNumber = attackNumber > 0 ? attackNumber : 0;
             this.attackNumber = attackNumber;
+            if(GetDuelCardScript()!=null)
+            {
+                GetDuelCardScript().ResetAttackAndDefenseText();
+            }
         }
 
         public int GetAttackNumber()
@@ -170,7 +178,12 @@ namespace Assets.Script.Card
 
         public void SetDefenseNumber(int defenseNumber)
         {
+            defenseNumber = defenseNumber > 0 ? defenseNumber : 0;
             this.defenseNumber = defenseNumber;
+            if (GetDuelCardScript()!= null)
+            {
+                GetDuelCardScript().ResetAttackAndDefenseText();
+            }
         }
 
         public int GetDefenseNumber()
@@ -224,6 +237,27 @@ namespace Assets.Script.Card
         public string GetMonsterTypeString()
         {
             return GetStringByMonsterType(monsterType);
+        }
+
+        /// <summary>
+        /// 怪兽卡发动效果后的回调
+        /// </summary>
+        public void MonsterLaunchEffectCalback()
+        {
+
+        }
+
+        /// <summary>
+        /// 为怪兽添加装备卡
+        /// </summary>
+        public void AddEquip(CardBase equipCard)
+        {
+            if(equipCards.Contains(equipCard))
+            {
+                Debug.LogError("当前怪兽已经装备此卡牌！");
+                return;
+            }
+            equipCards.Add(equipCard);
         }
 
         /// <summary>

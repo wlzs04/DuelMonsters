@@ -961,6 +961,7 @@ namespace Assets.Script.Duel
                     break;
                 case CardGameState.FrontAttack:
                 case CardGameState.FrontDefense:
+                case CardGameState.Front:
                 case CardGameState.Back:
                     if(card.GetCardType()==CardType.Monster)
                     {
@@ -979,6 +980,7 @@ namespace Assets.Script.Duel
                 case CardGameState.Exclusion:
                     break;
                 default:
+                    Debug.LogError("未知CardGameState："+card.GetCardGameState());
                     break;
             }
             card.SetCardGameState(CardGameState.Tomb);

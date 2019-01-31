@@ -255,7 +255,7 @@ namespace Assets.Script
         /// <summary>
         /// 显示卡牌列表面板
         /// </summary>
-        public void ShowCardListPanel(List<CardBase> cardList,string title, bool canHideByPlayerForCardListPanel, Action<Player,CardBase> clickCalback)
+        public void ShowCardListPanel(List<CardBase> cardList,string title, bool canHideByPlayerForCardListPanel, CardBase launchEffectCard, Action<CardBase, CardBase> clickCalback)
         {
             this.canHideByPlayerForCardListPanel = canHideByPlayerForCardListPanel;
             cardListPanel.SetActive(true);
@@ -263,7 +263,7 @@ namespace Assets.Script
             foreach (var item in cardList)
             {
                 item.GetDuelCardScript().SetParent(cardListContentTransform);
-                item.GetDuelCardScript().SetClickCallback(clickCalback);
+                item.GetDuelCardScript().SetClickCallback(launchEffectCard, clickCalback);
             }
         }
 

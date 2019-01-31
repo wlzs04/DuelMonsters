@@ -54,7 +54,8 @@ namespace Assets.Script.Card
 
         Transform operationPanelTransform = null;
 
-        Action<Player,CardBase> clickCallback = null;
+        CardBase launchEffectCard=null;
+        Action<CardBase, CardBase> clickCallback = null;
 
         void Start()
         {
@@ -210,7 +211,7 @@ namespace Assets.Script.Card
         {
             if(clickCallback!=null)
             {
-                clickCallback(duelScene.myPlayer,card);
+                clickCallback(launchEffectCard,card);
                 return;
             }
             if(card.GetCardGameState() == CardGameState.FrontAttack || 
@@ -271,7 +272,7 @@ namespace Assets.Script.Card
             else if(card.GetCardGameState() == CardGameState.Tomb ||
                 card.GetCardGameState() == CardGameState.Exclusion)
             {
-                duelScene.ShowCardList(ownerPlayer, card.GetCardGameState(), true, null);
+                duelScene.ShowCardList(ownerPlayer, card.GetCardGameState(), true, null, null);
             }
             else if(card.GetCardGameState() == CardGameState.Hand)
             {
@@ -287,6 +288,7 @@ namespace Assets.Script.Card
             //如果卡牌在场上，则置顶，防遮挡
             if (card.GetCardGameState()==CardGameState.FrontAttack||
                 card.GetCardGameState() == CardGameState.FrontDefense||
+                card.GetCardGameState() == CardGameState.Front ||
                 card.GetCardGameState() == CardGameState.Back)
             {
                 int count = transform.parent.childCount - 1;
@@ -315,9 +317,28 @@ namespace Assets.Script.Card
             attackNumber = number;
         }
 
-        public void SetAttackAndDefenseText(string text)
+        /// <summary>
+        /// 重新设置攻击力和防御力数值
+        /// </summary>
+        /// <param name="text"></param>
+        public void ResetAttackAndDefenseText()
         {
-            attackAndDefenseText.GetComponent<Text>().text = text;
+            if (card.GetCardGameState() == CardGameState.FrontAttack)
+            {
+                string text = "<color=#FF0000FF>" + card.GetAttackNumber() + "</color>/";
+                text += "<color=#000000FF>" + card.GetDefenseNumber() + "</color>";
+                attackAndDefenseText.GetComponent<Text>().text = text;
+            }
+            else if(card.GetCardGameState() == CardGameState.FrontDefense)
+            {
+                string text = "<color=#000000FF>" + card.GetAttackNumber() + "</color>/";
+                text += "<color=#00FF00FF>" + card.GetDefenseNumber() + "</color>";
+                attackAndDefenseText.GetComponent<Text>().text = text;
+            }
+            else
+            {
+                attackAndDefenseText.GetComponent<Text>().text = "";
+            }
         }
 
         public void SetAttackNumber()
@@ -344,9 +365,14 @@ namespace Assets.Script.Card
         /// 设置卡牌点击回调事件
         /// </summary>
         /// <param name="clickCalback"></param>
-        public void SetClickCallback(Action<Player,CardBase> clickCalback)
+        public void SetClickCallback(CardBase launchEffectCard,Action<CardBase, CardBase> clickCallback)
         {
-            this.clickCallback = clickCalback;
+            if(this.clickCallback!=null)
+            {
+                Debug.LogError("当前卡牌：" + name + "已存在点击回调事件，将被替换。");
+            }
+            this.launchEffectCard = launchEffectCard;
+            this.clickCallback = clickCallback;
         }
 
         /// <summary>
@@ -354,6 +380,7 @@ namespace Assets.Script.Card
         /// </summary>
         public void RemoveClickCallback()
         {
+            launchEffectCard = null;
             clickCallback = null;
         }
 

@@ -96,5 +96,10 @@ namespace Assets.Script.Duel.EffectProcess
         {
 
         }
+
+        public void SetEffectProcessType(EffectProcessType effectProcessType)
+        {
+            this.effectProcessType = effectProcessType;
+        }
     }
 }

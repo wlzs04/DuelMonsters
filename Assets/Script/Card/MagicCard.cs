@@ -43,9 +43,40 @@ namespace Assets.Script.Card
             magicType = GetMagicTypeByString(value);
         }
 
+        public MagicType GetMagicType()
+        {
+            return magicType;
+        }
+
         public string GetMagicTypeString()
         {
             return GetStringByMagicType(magicType);
+        }
+
+        /// <summary>
+        /// 魔法卡发动效果后的回调
+        /// </summary>
+        public void MagicLaunchEffectCalback()
+        {
+            switch (magicType)
+            {
+                case MagicType.Normal:
+                    GetDuelCardScript().GetOwner().MoveCardToTomb(this);
+                    break;
+                case MagicType.Equipment:
+                    break;
+                case MagicType.Terrain:
+                    break;
+                case MagicType.Forever:
+                    break;
+                case MagicType.Ceremony:
+                    break;
+                case MagicType.Quick:
+                    break;
+                default:
+                    Debug.LogError("未知MagicType：" + cardGameState);
+                    break;
+            }
         }
 
         /// <summary>

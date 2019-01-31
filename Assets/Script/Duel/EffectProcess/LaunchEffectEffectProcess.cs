@@ -43,14 +43,15 @@ namespace Assets.Script.Duel.EffectProcess
                 }
             }
             launchEffectCard.AddContent("magicTrapCardAreaIndex", index);
-            launchEffectCard.SetCardGameState(CardGameState.Back);
+            if(launchEffectCard.GetCardGameState()==CardGameState.Hand)
+            {
+                ownerPlayer.GetHandCards().Remove(launchEffectCard);
+            }
+            launchEffectCard.SetCardGameState(CardGameState.Front);
             launchEffectCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
             launchEffectCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMagicTrapCardFarLeftPositionY, 1));
-            ownerPlayer.GetHandCards().Remove(launchEffectCard);
             
             launchEffectCard.LaunchEffect();
-
-            ownerPlayer.MoveCardToTomb(launchEffectCard);
 
             AfterFinishProcessFunction();
         }

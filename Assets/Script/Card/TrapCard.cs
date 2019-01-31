@@ -46,6 +46,14 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 陷阱卡发动效果后的回调
+        /// </summary>
+        public void TrapLaunchEffectCalback()
+        {
+
+        }
+
+        /// <summary>
         /// 将汉字转换为陷阱种类
         /// </summary>
         /// <param name="value"></param>

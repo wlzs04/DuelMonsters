@@ -91,6 +91,7 @@
     <Compile Include="Assets\Script\Duel\DuelCardGroup.cs" />
     <Compile Include="Assets\Script\Duel\DuelCommonValue.cs" />
     <Compile Include="Assets\Script\Duel\DuelScene.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess\AddEquipEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\AttackEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\BackPlaceMagicOrTrapEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\CallMonsterEffectProcess.cs" />
