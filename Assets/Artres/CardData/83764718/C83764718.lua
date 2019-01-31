@@ -8,8 +8,27 @@ function C83764718.InitInfo(card)
 end
 
 function C83764718.LaunchEffect(card)
-	local reduceLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ReduceLifeEffectProcess(500, CS.Assets.Script.Duel.EffectProcess.ReduceLifeType.Effect, card:GetDuelCardScript():GetOwner():GetOpponentPlayer())
-    card:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(reduceLifeEffectProcess);
+	local myTombCardList = card:GetDuelCardScript():GetOwner():GetTombCards();
+	local opponentTombCardList = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetTombCards();
+	
+	local totalCardList = CS.Assets.Script.Helper.XLuaHelper.CreateCardBaseList();
+	for i=0,myTombCardList.Count-1 do
+		totalCardList:Add(myTombCardList[i])
+	end
+	for i=0,opponentTombCardList.Count-1 do
+		totalCardList:Add(opponentTombCardList[i])
+	end
+
+	card:GetDuelCardScript():GetDuelScene():ShowCardList(totalCardList,"请选择要召唤的怪兽:",false,C83764718.ChooseCardCallback);
+end
+
+function C83764718.ChooseCardCallback(player,card)
+	if(card:GetCardType()~=CS.Assets.Script.Card.CardType.Monster)then
+		return
+	end
+	card:GetDuelCardScript():GetDuelScene():HideCardList(false);
+	local callMonsterEffectProcess = CS.Assets.Script.Duel.EffectProcess.CallMonsterEffectProcess(card,CS.Assets.Script.Card.CardGameState.Unknown, player)
+    player:AddEffectProcess(callMonsterEffectProcess);
 end
 
 return C83764718

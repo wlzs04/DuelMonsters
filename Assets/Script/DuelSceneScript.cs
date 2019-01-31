@@ -22,7 +22,11 @@ namespace Assets.Script
         GameObject durlProcessPanel = null;
         GameObject attackOrDefensePanel = null;
         GameObject helpInfoPanel = null;
+
         GameObject cardListPanel = null;
+        //此列表是否可以由玩家隐藏(点击右键)
+        bool canHideByPlayerForCardListPanel;
+
         GameObject duelResultPanel = null;
         Transform cardListContentTransform = null;
 
@@ -251,13 +255,15 @@ namespace Assets.Script
         /// <summary>
         /// 显示卡牌列表面板
         /// </summary>
-        public void ShowCardListPanel(List<CardBase> cardList,string title)
+        public void ShowCardListPanel(List<CardBase> cardList,string title, bool canHideByPlayerForCardListPanel, Action<Player,CardBase> clickCalback)
         {
+            this.canHideByPlayerForCardListPanel = canHideByPlayerForCardListPanel;
             cardListPanel.SetActive(true);
             cardListPanel.transform.GetChild(1).GetComponent<Text>().text = title;
             foreach (var item in cardList)
             {
                 item.GetDuelCardScript().SetParent(cardListContentTransform);
+                item.GetDuelCardScript().SetClickCallback(clickCalback);
             }
         }
 
@@ -273,13 +279,18 @@ namespace Assets.Script
         /// <summary>
         /// 隐藏卡牌列表面板
         /// </summary>
-        public void HideCardListPanel()
+        public void HideCardListPanel(bool fromPlayer)
         {
+            if(!canHideByPlayerForCardListPanel && fromPlayer)
+            {
+                return;
+            }
             cardListPanel.SetActive(false);
             for (int i = 0; i < cardListContentTransform.childCount; i++)
             {
                 CardBase card = cardListContentTransform.GetChild(i).GetComponent<DuelCardScript>().GetCard();
                 card.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
+                card.GetDuelCardScript().RemoveClickCallback();
                 card.SetCardGameState(card.GetCardGameState());
             }
         }

@@ -13,6 +13,7 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     public enum CallMonsterType
     {
+        Unknown,//未知
         Normal,//通常
         Flip,//反转
         Sacrifice,//祭品
@@ -22,7 +23,7 @@ namespace Assets.Script.Duel.EffectProcess
     /// <summary>
     /// 召唤怪兽
     /// </summary>
-    class CallMonsterEffectProcess : EffectProcessBase
+    public class CallMonsterEffectProcess : EffectProcessBase
     {
         CardBase callMonster = null;//被召唤的怪兽
         CardGameState cardGameState;//召唤后卡牌状态
@@ -46,12 +47,30 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
+            if(cardGameState== CardGameState.Unknown)
+            {
+                duelScene.ShowAttackOrDefensePanel(callMonster, (cardGameState) =>
+                {
+                    this.cardGameState= cardGameState;
+                    RealFunction();
+                });
+                return;
+            }
+            RealFunction();
+        }
+
+        /// <summary>
+        /// 当所有信息齐后进行
+        /// </summary>
+        void RealFunction()
+        {
             //如果当前怪兽的状态是里侧表示，则进行反转召唤
-            if(callMonster.GetCardGameState()==CardGameState.Back)
+            if (callMonster.GetCardGameState() == CardGameState.Back)
             {
                 callMonsterType = CallMonsterType.Flip;
                 callMonster.SetCardGameState(cardGameState);
                 callMonster.GetDuelCardScript().SetChangeAttackOrDefenseNumber(0);
+                callMonster.GetDuelCardScript().SetOwner(ownerPlayer);
                 AfterFinishProcessFunction();
                 return;
             }
@@ -60,6 +79,7 @@ namespace Assets.Script.Duel.EffectProcess
             if (monsterLevel <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
             {
                 int index = CallMonster();
+                callMonster.GetDuelCardScript().SetOwner(ownerPlayer);
                 ownerPlayer.GetOpponentPlayer().CallMonsterNotify(callMonster.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index);
                 AfterFinishProcessFunction();
             }
@@ -88,10 +108,20 @@ namespace Assets.Script.Duel.EffectProcess
             }
             callMonsterType = CallMonsterType.Normal;
             callMonster.AddContent("monsterCardAreaIndex", index);
+
+            if(callMonster.GetCardGameState()==CardGameState.Tomb)
+            {
+                callMonster.GetDuelCardScript().GetOwner().GetTombCards().Remove(callMonster);
+            }
+            else if(callMonster.GetCardGameState() == CardGameState.Hand)
+            {
+                callMonster.GetDuelCardScript().GetOwner().GetHandCards().Remove(callMonster);
+            }
+
             callMonster.SetCardGameState(cardGameState);
             callMonster.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
             callMonster.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1));
-            ownerPlayer.GetHandCards().Remove(callMonster);
+            
             ownerPlayer.SetNormalCallNumber(ownerPlayer.GetNormalCallNumber() - 1);
             return index;
         }
@@ -160,6 +190,7 @@ namespace Assets.Script.Duel.EffectProcess
                     sacrificeInfo.Append(sacrificeCards[i].GetID() + ":");
                 }
             }
+            callMonster.GetDuelCardScript().SetOwner(ownerPlayer);
             ownerPlayer.GetOpponentPlayer().CallMonsterWithSacrificeNotify(callMonster.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index, sacrificeInfo.ToString());
 
             sacrificeCards.Clear();

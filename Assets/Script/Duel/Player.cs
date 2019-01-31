@@ -746,22 +746,10 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 召唤怪兽到场上，未指定表侧形式，所以显示攻守选择面板
-        /// </summary>
-        /// <param name="monsterCard"></param>
-        public void CallMonster(CardBase monsterCard)
-        {
-            duelScene.ShowAttackOrDefensePanel(monsterCard,(cardGameState)=> 
-            {
-                CallMonster(monsterCard, cardGameState);
-            });
-        }
-
-        /// <summary>
         /// 召唤怪兽到场上
         /// </summary>
         /// <param name="monsterCard"></param>
-        public void CallMonster(CardBase monsterCard, CardGameState cardGameState)
+        public void CallMonster(CardBase monsterCard, CardGameState cardGameState = CardGameState.Unknown)
         {
             if (IsMyPlayer())
             {

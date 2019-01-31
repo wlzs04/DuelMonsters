@@ -135,7 +135,7 @@ namespace Assets.Script.Duel
             else if (duelSceneScript.CardListPanelIsShowing())
             {
                 //如果卡牌列表正在显示，则隐藏。
-                duelSceneScript.HideCardListPanel();
+                HideCardList(true);
             }
             else
             {
@@ -168,7 +168,7 @@ namespace Assets.Script.Duel
         /// </summary>
         /// <param name="ownerPlayer"></param>
         /// <param name="cardGameState"></param>
-        public void ShowCardList(Player ownerPlayer, CardGameState cardGameState)
+        public void ShowCardList(Player ownerPlayer, CardGameState cardGameState,bool canHideByPlayer, Action<Player,CardBase> clickCalback)
         {
             if(duelSceneScript.CardListPanelIsShowing())
             {
@@ -179,15 +179,33 @@ namespace Assets.Script.Duel
             switch (cardGameState)
             {
                 case CardGameState.Tomb:
-                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetTombCards(), titleText+ stringResConfig.GetRecordById(11).value);
+                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetTombCards(), titleText + stringResConfig.GetRecordById(11).value, canHideByPlayer, clickCalback);
                     break;
                 case CardGameState.Exclusion:
-                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetExceptCards(),titleText + stringResConfig.GetRecordById(12).value);
+                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetExceptCards(),titleText + stringResConfig.GetRecordById(12).value, canHideByPlayer, clickCalback);
                     break;
                 default:
                     Debug.LogError("无法显示当前卡牌状态的列表:" + cardGameState);
                     break;
             }
+        }
+
+        /// <summary>
+        /// 显示卡牌列表
+        /// </summary>
+        /// <param name="cardList"></param>
+        /// <param name="title"></param>
+        /// <param name="canHideByPlayer"></param>
+        /// <param name="clickCalback"></param>
+        public void ShowCardList(List<CardBase> cardList, string title, bool canHideByPlayer, Action<Player, CardBase> clickCalback)
+        {
+            duelSceneScript.ShowCardListPanel(cardList, title, canHideByPlayer, clickCalback);
+        }
+
+        public void HideCardList(bool fromPlayer)
+        {
+
+            duelSceneScript.HideCardListPanel(fromPlayer);
         }
 
         public void StartPlayAttackAnimation(Vector3 fromPosition,Vector3 toPosition)

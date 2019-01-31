@@ -112,6 +112,7 @@
     <Compile Include="Assets\Script\GuessFirstScript.cs" />
     <Compile Include="Assets\Script\GUIScript.cs" />
     <Compile Include="Assets\Script\Helper\RandomHelper.cs" />
+    <Compile Include="Assets\Script\Helper\XluaHelper.cs" />
     <Compile Include="Assets\Script\Helper\XMLHelper.cs" />
     <Compile Include="Assets\Script\Net\ClientManager.cs" />
     <Compile Include="Assets\Script\Net\ClientProtocol.cs" />

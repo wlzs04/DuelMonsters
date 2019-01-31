@@ -18,7 +18,7 @@ namespace Assets.Script.Duel.EffectProcess
     /// <summary>
     /// 减少生命值
     /// </summary>
-    class ReduceLifeEffectProcess : EffectProcessBase
+    public class ReduceLifeEffectProcess : EffectProcessBase
     {
         int reduceLife = 0;
         ReduceLifeType reduceLifeType;

@@ -53,7 +53,9 @@ namespace Assets.Script.Card
         bool haveBeChosen = false;
 
         Transform operationPanelTransform = null;
-        
+
+        Action<Player,CardBase> clickCallback = null;
+
         void Start()
         {
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
@@ -199,8 +201,18 @@ namespace Assets.Script.Card
             transform.localPosition = newPosition;
         }
 
+        public DuelScene GetDuelScene()
+        {
+            return duelScene;
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
+            if(clickCallback!=null)
+            {
+                clickCallback(duelScene.myPlayer,card);
+                return;
+            }
             if(card.GetCardGameState() == CardGameState.FrontAttack || 
                 card.GetCardGameState() == CardGameState.FrontDefense ||
                 card.GetCardGameState() == CardGameState.Back)
@@ -259,7 +271,7 @@ namespace Assets.Script.Card
             else if(card.GetCardGameState() == CardGameState.Tomb ||
                 card.GetCardGameState() == CardGameState.Exclusion)
             {
-                duelScene.ShowCardList(ownerPlayer, card.GetCardGameState());
+                duelScene.ShowCardList(ownerPlayer, card.GetCardGameState(), true, null);
             }
             else if(card.GetCardGameState() == CardGameState.Hand)
             {
@@ -326,6 +338,23 @@ namespace Assets.Script.Card
         public void SetChangeAttackOrDefenseNumber()
         {
             SetChangeAttackOrDefenseNumber(DuelRuleManager.GetMonsterChangeAttackOrDefenseNumberEveryTurn());
+        }
+
+        /// <summary>
+        /// 设置卡牌点击回调事件
+        /// </summary>
+        /// <param name="clickCalback"></param>
+        public void SetClickCallback(Action<Player,CardBase> clickCalback)
+        {
+            this.clickCallback = clickCalback;
+        }
+
+        /// <summary>
+        /// 移除卡牌点击回调事件
+        /// </summary>
+        public void RemoveClickCallback()
+        {
+            clickCallback = null;
         }
 
         public int GetChangeAttackOrDefenseNumber()
