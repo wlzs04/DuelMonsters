@@ -88,7 +88,6 @@ namespace Assets.Script.Duel
                         DuelCardScript duelCardScript = item.GetDuelCardScript();
                         if (duelCardScript.CanCall())
                         {
-                            //MonsterCard monsterCard = (MonsterCard)item;
                             int sacrificeMonsterNumer = item.NeedSacrificeMonsterNumer();
                             if(sacrificeMonsterNumer>0)
                             {

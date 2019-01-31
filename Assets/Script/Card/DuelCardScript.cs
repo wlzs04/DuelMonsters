@@ -22,6 +22,7 @@ namespace Assets.Script.Card
         NormalCall,//通常召唤
         SacrificCall,//祭品召唤
         BackPlaceToMonsterArea,//背面放置到怪兽区
+        FlipCall,//反转召唤
         SpecailCall,//特殊召唤
         ChangeAttack,//攻击表示
         ChangeDefense,//守备表示
@@ -358,7 +359,6 @@ namespace Assets.Script.Card
                 card.GetCardType() == CardType.Monster &&
                 ownerPlayer.GetCurrentEffectProcess() == null)
             {
-                //MonsterCard monsterCard = card as MonsterCard;
                 return card.CanAttack() && attackNumber > 0;
             }
             return false;
@@ -419,7 +419,6 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
-                //MonsterCard monsterCard = (MonsterCard)card;
                 if (card.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
                     return !ownerPlayer.MonsterAreaIsFull();
@@ -441,7 +440,6 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
-                //MonsterCard monsterCard = (MonsterCard)card;
                 if (card.NeedSacrificeMonsterNumer()>0 && ownerPlayer.GetCanBeSacrificeMonsterNumber() >= card.NeedSacrificeMonsterNumer())
                 {
                     return true;
@@ -463,7 +461,6 @@ namespace Assets.Script.Card
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
-                //MonsterCard monsterCard = (MonsterCard)card;
                 if (card.GetLevel() <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
                 {
                     return !ownerPlayer.MonsterAreaIsFull();
@@ -477,14 +474,31 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 判断是否可以进行反转召唤
+        /// </summary>
+        /// <returns></returns>
+        public bool CanFlipCall()
+        {
+            if (card.GetCardGameState() == CardGameState.Back &&
+                card.GetCardType() == CardType.Monster &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                duelScene.GetCurrentTurnNumber() > card.GetBePlacedAreaTurnNumber() &&
+                ownerPlayer.GetCurrentEffectProcess() == null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 判断是否可以转换成攻击表示
         /// </summary>
         /// <returns></returns>
         public bool CanChangeToFrontAttack()
         {
             if (card.GetCardType() == CardType.Monster &&
-                (card.GetCardGameState() == CardGameState.FrontDefense ||
-                card.GetCardGameState() == CardGameState.Back) &&
+                (card.GetCardGameState() == CardGameState.FrontDefense) &&
                 GetChangeAttackOrDefenseNumber() > 0 &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
@@ -503,8 +517,7 @@ namespace Assets.Script.Card
         public bool CanChangeToFrontDefense()
         {
             if (card.GetCardType() == CardType.Monster &&
-                (card.GetCardGameState() == CardGameState.FrontAttack ||
-                card.GetCardGameState() == CardGameState.Back) &&
+                (card.GetCardGameState() == CardGameState.FrontAttack) &&
                 GetChangeAttackOrDefenseNumber() > 0 &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
@@ -567,6 +580,10 @@ namespace Assets.Script.Card
                     {
                         AddCardOperationButtonToOperationPanel(CardOperation.BackPlaceToMonsterArea);
                     }
+                    if (CanFlipCall())
+                    {
+                        AddCardOperationButtonToOperationPanel(CardOperation.FlipCall);
+                    }
                     if (CanChangeToFrontAttack())
                     {
                         AddCardOperationButtonToOperationPanel(CardOperation.ChangeAttack);
@@ -628,6 +645,12 @@ namespace Assets.Script.Card
                         {
                             ownerPlayer.CallMonster(card, CardGameState.Back);
                         }
+                    }
+                    break;
+                case CardOperation.FlipCall:
+                    if (CanFlipCall())
+                    {
+                        ownerPlayer.CallMonster(card);
                     }
                     break;
                 case CardOperation.ChangeAttack:

@@ -3,10 +3,11 @@
     <Record id="0" value="通常召唤"/>
     <Record id="1" value="祭品召唤"/>
     <Record id="2" value="背面放置"/>
-    <Record id="3" value="特殊召唤"/>
-    <Record id="4" value="攻击表示"/>
-    <Record id="5" value="守备表示"/>
-    <Record id="6" value="发动效果"/>
-    <Record id="7" value="背面放置"/>
+    <Record id="3" value="反转召唤"/>
+    <Record id="4" value="特殊召唤"/>
+    <Record id="5" value="攻击表示"/>
+    <Record id="6" value="守备表示"/>
+    <Record id="7" value="发动效果"/>
+    <Record id="8" value="背面放置"/>
   </RecordList>
 </CardOperation>

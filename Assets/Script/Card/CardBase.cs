@@ -66,6 +66,8 @@ namespace Assets.Script.Card
         protected string info ="";//卡片信息
         protected int limitNumber = 3;//数量限制
 
+        protected int bePlacedAreaTurnNumber = 0;//被放置到场上的第回合数
+
         protected GameObject cardObject=null;
 
         DuelCardScript duelCardScript = null;
@@ -152,7 +154,7 @@ namespace Assets.Script.Card
         {
             if(contentMap.ContainsKey(key))
             {
-                Debug.LogError("已存在key：" + key + "value:" + value);
+                Debug.Log("卡牌的key：" + key + " 由：" + contentMap[key] + " 改为：" + value);
             }
             contentMap[key] = value;
         }
@@ -201,6 +203,11 @@ namespace Assets.Script.Card
             return cardNo;
         }
 
+        public int GetBePlacedAreaTurnNumber()
+        {
+            return bePlacedAreaTurnNumber;
+        }
+
         public DuelCardScript GetDuelCardScript()
         {
             return duelCardScript;
@@ -208,6 +215,12 @@ namespace Assets.Script.Card
 
         public void SetCardGameState(CardGameState cardGameState)
         {
+            //卡牌刚进入场上开始计被放置到场上的第回合数
+            if (!IsInArea(this.cardGameState) && IsInArea(cardGameState))
+            {
+                bePlacedAreaTurnNumber = duelScene.GetCurrentTurnNumber();
+            }
+
             this.cardGameState = cardGameState;
             duelCardScript.SetAttackAndDefenseText("");
 
@@ -314,6 +327,17 @@ namespace Assets.Script.Card
             return GetStringByCardType(cardType);
         }
 
+        /// <summary>
+        /// 判断当前是否在场上
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsInArea(CardGameState cardGameState)
+        {
+            return cardGameState==CardGameState.FrontAttack ||
+                cardGameState == CardGameState.FrontDefense ||
+                cardGameState == CardGameState.Back;
+        }
+
         public static CardBase LoadCardFromInfo(int cardNo)
         {
             CardBase card = new CardBase(cardNo);
@@ -364,14 +388,21 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanLaunchEffect()
         {
+
             if ((GetCardType() == CardType.Magic) &&
-                GetCardGameState() == CardGameState.Hand &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
                 GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null &&
                 !GetDuelCardScript().GetOwner().MagicTrapAreaIsFull())
             {
-                return true;
+                if(GetCardGameState() == CardGameState.Hand)
+                {
+                    return true;
+                }
+                else if(IsInArea(cardGameState))
+                {
+                    return duelScene.GetCurrentTurnNumber()> GetBePlacedAreaTurnNumber();
+                }
             }
             return false;
         }

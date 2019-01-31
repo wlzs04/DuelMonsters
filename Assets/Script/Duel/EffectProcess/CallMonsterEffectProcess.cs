@@ -14,11 +14,10 @@ namespace Assets.Script.Duel.EffectProcess
     public enum CallMonsterType
     {
         Normal,//通常
-        Reverse,//反转
+        Flip,//反转
         Sacrifice,//祭品
         Special,//特殊
     }
-
 
     /// <summary>
     /// 召唤怪兽
@@ -47,6 +46,15 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
+            //如果当前怪兽的状态是里侧表示，则进行反转召唤
+            if(callMonster.GetCardGameState()==CardGameState.Back)
+            {
+                callMonsterType = CallMonsterType.Flip;
+                callMonster.SetCardGameState(cardGameState);
+                callMonster.GetDuelCardScript().SetChangeAttackOrDefenseNumber(0);
+                AfterFinishProcessFunction();
+                return;
+            }
             int monsterLevel = callMonster.GetLevel();
             //先判断是否可以直接进行召唤
             if (monsterLevel <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
