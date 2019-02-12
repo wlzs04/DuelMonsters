@@ -27,7 +27,8 @@ end
 
 function C5318639.LaunchEffect(card)
 	
-	CS.Assets.Script.GameManager.ShowMessage("请选择被破坏的魔法陷阱卡！")
+	CS.Assets.Script.GameManager.ShowMessage("请选择被破坏的魔法陷阱卡！");
+	card:GetDuelCardScript():GetDuelScene():LockScene();
 
 	local myMagicTrapCardArea = card:GetDuelCardScript():GetOwner():GetMagicTrapCardArea();
 	local opponentMagicTrapCardArea = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMagicTrapCardArea();
@@ -48,6 +49,8 @@ function C5318639.ChooseCardCallback(launchEffectCard,chooseCard)
 	if((chooseCard:GetCardType()~=CS.Assets.Script.Card.CardType.Magic and chooseCard:GetCardType()~=CS.Assets.Script.Card.CardType.Trap) or launchEffectCard==chooseCard)then
 		return
 	end
+	
+	launchEffectCard:GetDuelCardScript():GetDuelScene():UnlockScene();
 
 	local myMagicTrapCardArea = launchEffectCard:GetDuelCardScript():GetOwner():GetMagicTrapCardArea();
 	local opponentMagicTrapCardArea = launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMagicTrapCardArea();

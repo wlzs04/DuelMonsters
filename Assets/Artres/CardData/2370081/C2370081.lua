@@ -28,6 +28,7 @@ end
 function C2370081.LaunchEffect(card)
 	
 	CS.Assets.Script.GameManager.ShowMessage("请选择被装备的怪兽！")
+	card:GetDuelCardScript():GetDuelScene():LockScene();
 
 	local myMonsterCardArea = card:GetDuelCardScript():GetOwner():GetMonsterCardArea();
 	local opponentMonsterCardArea = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();
@@ -48,6 +49,8 @@ function C2370081.ChooseCardCallback(launchEffectCard,chooseCard)
 	if(chooseCard:GetCardType()~=CS.Assets.Script.Card.CardType.Monster or chooseCard:GetPropertyTypeString()~="水")then
 		return
 	end
+
+	launchEffectCard:GetDuelCardScript():GetDuelScene():UnlockScene();
 
 	local myMonsterCardArea = chooseCard:GetDuelCardScript():GetOwner():GetMonsterCardArea();
 	local opponentMonsterCardArea = chooseCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();

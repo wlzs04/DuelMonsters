@@ -529,7 +529,6 @@ namespace Assets.Script.Card
                 SetAttackNumber(cardBase.GetAttackNumber());
                 SetDefenseNumber(cardBase.GetDefenseNumber());
             }
-
             foreach (var effectCard in cardEffectMap)
             {
                 foreach (var cardEffect in effectCard.Value)

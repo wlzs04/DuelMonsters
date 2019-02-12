@@ -42,6 +42,7 @@ namespace Assets.Script.Duel
         public DuelProcess currentDuelProcess = DuelProcess.Unknown;//当前流程
 
         bool inSpecialState = false;//在特殊状态，例如进入流程选择界面
+        bool lockScene = false;//锁定场景，例如选择卡牌做效果对象，防止右键点击或卡牌操作等进行干扰
 
         public Image duelBackImage = null;
         public AttackAnimationScript attackAnimationScript = null;
@@ -119,10 +120,39 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 锁定场景
+        /// </summary>
+        public void LockScene()
+        {
+            lockScene = true;
+        }
+
+        /// <summary>
+        /// 解锁场景
+        /// </summary>
+        public void UnlockScene()
+        {
+            lockScene = false;
+        }
+
+        /// <summary>
+        /// 获得当前场景是否被锁定
+        /// </summary>
+        /// <returns></returns>
+        public bool GetLockScene()
+        {
+            return lockScene;
+        }
+
+        /// <summary>
         /// 右键点击
         /// </summary>
         public void MouseRightButtonDown()
         {
+            if(lockScene)
+            {
+                return;
+            }
             //当我方玩家在进行攻击时，取消攻击
             if (myPlayer.GetCurrentEffectProcess() is AttackEffectProcess)
             {

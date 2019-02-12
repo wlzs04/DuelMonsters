@@ -300,7 +300,7 @@ namespace Assets.Script.Card
             {
                 duelScene.ShowCardInfo(card);
             }
-            if(ownerPlayer.IsMyTurn())
+            if(!duelScene.GetLockScene() && ownerPlayer.IsMyTurn())
             {
                 RecheckAllowedOperation();
             }
