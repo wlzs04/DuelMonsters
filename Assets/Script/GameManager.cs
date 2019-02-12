@@ -44,7 +44,7 @@ namespace Assets.Script
 
         #region 用户和卡组信息
         UserData userData;
-        public Dictionary<int,CardBase> allCardInfoList { get; private set; }
+        Dictionary<int, CardBase> allCardInfoList;
         #endregion
 
         #region 决斗
@@ -224,14 +224,17 @@ namespace Assets.Script
                     break;
                 case GameState.CardGroupScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+                    SaveUserData();
                     currentGameState = GameState.MainScene;
                     break;
                 case GameState.SettingScene:
                     SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+                    SaveUserData();
                     currentGameState = GameState.MainScene;
                     break;
                 case GameState.CardGroupEditScene:
                     SceneManager.LoadScene("CardGroupScene", LoadSceneMode.Single);
+                    SaveUserData();
                     currentGameState = GameState.CardGroupScene;
                     break;
                 case GameState.GuessFirstScene:
@@ -634,6 +637,7 @@ namespace Assets.Script
         public void SetGuessMustWin(bool value)
         {
             userData.guessMustWin = value;
+            SaveUserData();
         }
 
         /// <summary>
@@ -642,6 +646,12 @@ namespace Assets.Script
         public void SetShowOpponentHandCard(bool value)
         {
             userData.showOpponentHandCard = value;
+            SaveUserData();
+        }
+
+        public Dictionary<int,CardBase> GetAllCardInfoList()
+        {
+            return allCardInfoList;
         }
     }
 }

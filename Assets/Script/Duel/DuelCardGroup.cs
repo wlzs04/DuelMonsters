@@ -12,13 +12,13 @@ namespace Assets.Script.Duel
 
         public void AddCard(int cardNo)
         {
-            CardBase card = GameManager.GetSingleInstance().allCardInfoList[cardNo].GetInstance();
+            CardBase card = GameManager.GetSingleInstance().GetAllCardInfoList()[cardNo].GetInstance();
             cards.Add(card);
         }
 
         public void AddCard(int cardNo,int ID)
         {
-            CardBase card = GameManager.GetSingleInstance().allCardInfoList[cardNo].GetInstance();
+            CardBase card = GameManager.GetSingleInstance().GetAllCardInfoList()[cardNo].GetInstance();
             card.SetID(ID);
             cards.Add(card);
         }

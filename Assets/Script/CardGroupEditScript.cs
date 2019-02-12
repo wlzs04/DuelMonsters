@@ -27,6 +27,7 @@ public class CardGroupEditScript : MonoBehaviour
     public GameObject magicTrapCardPre;
 
     Image cardImage;
+    Text cardNoText;
 
     string currentCardGroupName = "";
 
@@ -58,6 +59,7 @@ public class CardGroupEditScript : MonoBehaviour
         ResetDeputyCardGroup();
 
         cardImage = GameObject.Find("CardImage").GetComponent<Image>();
+        cardNoText = GameObject.Find("CardNoText").GetComponent<Text>();
 
         mainPanelTransform.gameObject.GetComponent<DropToPanelScript>().AddDropHandler(OnDropToMainPanel);
         extraPanelTransform.gameObject.GetComponent<DropToPanelScript>().AddDropHandler(OnDropToExtraPanel);
@@ -73,7 +75,7 @@ public class CardGroupEditScript : MonoBehaviour
         UserData userData = gameManager.GetUserData();
 
         bool ownedCard = false;
-        foreach (var item in gameManager.allCardInfoList)
+        foreach (var item in gameManager.GetAllCardInfoList())
         {
             ownedCard = userData.IsOwnCard(item.Value.GetCardNo());
             if(!onlyShowOwnedCard || ownedCard)
@@ -102,7 +104,7 @@ public class CardGroupEditScript : MonoBehaviour
             for (int i = 0; i < item.number; i++)
             {
                 GameObject gameObject = Instantiate(cardPre, mainPanelTransform);
-                CardBase card = gameManager.allCardInfoList[item.cardNo];
+                CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
                 CardScript cardScript = gameObject.GetComponent<CardScript>();
                 cardScript.SetRootScript(this);
                 cardScript.SetCard(card);
@@ -131,7 +133,7 @@ public class CardGroupEditScript : MonoBehaviour
             for (int i = 0; i < item.number; i++)
             {
                 GameObject gameObject = Instantiate(cardPre, extraPanelTransform);
-                CardBase card = gameManager.allCardInfoList[item.cardNo];
+                CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
                 CardScript cardScript = gameObject.GetComponent<CardScript>();
                 cardScript.SetRootScript(this);
                 cardScript.SetCard(card);
@@ -160,7 +162,7 @@ public class CardGroupEditScript : MonoBehaviour
             for (int i = 0; i < item.number; i++)
             {
                 GameObject gameObject = Instantiate(cardPre, deputyPanelTransform);
-                CardBase card = gameManager.allCardInfoList[item.cardNo];
+                CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
                 CardScript cardScript = gameObject.GetComponent<CardScript>();
                 cardScript.SetRootScript(this);
                 cardScript.SetCard(card);
@@ -180,6 +182,8 @@ public class CardGroupEditScript : MonoBehaviour
     public void ShowCardDetailInfo(CardBase card)
     {
         cardImage.sprite = card.GetImage();
+        cardNoText.text = "No:" + card.GetCardNo();
+
         GameManager.CleanPanelContent(infoContentTransform);
 
         GameObject gameObject = null;

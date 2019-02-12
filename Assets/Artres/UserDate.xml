@@ -9,7 +9,9 @@
     <UserCardData cardNo="45121025" number="3" />
     <UserCardData cardNo="45159319" number="3" />
     <UserCardData cardNo="45221020" number="3" />
+    <UserCardData cardNo="46130346" number="3" />
     <UserCardData cardNo="52589809" number="3" />
+    <UserCardData cardNo="5318639" number="3" />
     <UserCardData cardNo="56649609" number="3" />
     <UserCardData cardNo="58518520" number="3" />
     <UserCardData cardNo="58984738" number="3" />
@@ -69,13 +71,12 @@
     </UserCardGroup>
     <UserCardGroup cardGroupName="magictest">
       <Main>
-        <UserCardData cardNo="2370081" number="1" />
+        <UserCardData cardNo="2370081" number="3" />
         <UserCardData cardNo="58984738" number="1" />
         <UserCardData cardNo="56649609" number="1" />
-        <UserCardData cardNo="52589809" number="1" />
-        <UserCardData cardNo="58518520" number="1" />
-        <UserCardData cardNo="83764718" number="2" />
+        <UserCardData cardNo="83764718" number="1" />
         <UserCardData cardNo="81823360" number="3" />
+        <UserCardData cardNo="5318639" number="3" />
       </Main>
       <Extra />
       <Deputy />

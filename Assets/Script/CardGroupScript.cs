@@ -90,7 +90,7 @@ public class CardGroupScript : MonoBehaviour
                 for (int i = 0; i < item.number; i++)
                 {
                     GameObject gameObject = Instantiate(cardPrefab, mainPanelTransform);
-                    CardBase card = gameManager.allCardInfoList[item.cardNo];
+                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
                     gameObject.GetComponent<Image>().sprite = card.GetImage();
                     CardScript cardScript = gameObject.GetComponent<CardScript>();
                     cardScript.SetCard(card);
@@ -114,7 +114,7 @@ public class CardGroupScript : MonoBehaviour
                 for (int i = 0; i < item.number; i++)
                 {
                     GameObject gameObject = Instantiate(cardPrefab, extraPanelTransform);
-                    CardBase card = gameManager.allCardInfoList[item.cardNo];
+                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
                     gameObject.GetComponent<Image>().sprite = card.GetImage();
                     CardScript cardScript = gameObject.GetComponent<CardScript>();
                     cardScript.SetCard(card);
@@ -138,7 +138,7 @@ public class CardGroupScript : MonoBehaviour
                 for (int i = 0; i < item.number; i++)
                 {
                     GameObject gameObject = Instantiate(cardPrefab, deputyPanelTransform);
-                    CardBase card = gameManager.allCardInfoList[item.cardNo];
+                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
                     gameObject.GetComponent<Image>().sprite = card.GetImage();
                     CardScript cardScript = gameObject.GetComponent<CardScript>();
                     cardScript.SetCard(card);

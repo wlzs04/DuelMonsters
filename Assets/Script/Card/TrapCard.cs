@@ -48,7 +48,7 @@ namespace Assets.Script.Card
         /// <summary>
         /// 陷阱卡发动效果后的回调
         /// </summary>
-        public void TrapLaunchEffectCalback()
+        public void TrapLaunchEffectCallback()
         {
 
         }

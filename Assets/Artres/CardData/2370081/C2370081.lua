@@ -12,12 +12,12 @@ function C2370081.CanLaunchEffect(card)
 	local opponentMonsterCardArea = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();
 
 	for i=0,myMonsterCardArea.Length-1 do
-		if(myMonsterCardArea[i]~=nil and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
+		if(myMonsterCardArea[i]~=nil and (myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
 			return true;
 		end
 	end
 	for i=0,opponentMonsterCardArea.Length-1 do
-		if(opponentMonsterCardArea[i]~=nil and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
+		if(opponentMonsterCardArea[i]~=nil and (opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
 			return true;
 		end
 	end
@@ -33,12 +33,12 @@ function C2370081.LaunchEffect(card)
 	local opponentMonsterCardArea = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();
 
 	for i=0,myMonsterCardArea.Length-1 do
-		if(myMonsterCardArea[i]~=nil and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
+		if(myMonsterCardArea[i]~=nil and (myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
 			myMonsterCardArea[i]:GetDuelCardScript():SetClickCallback(card,C2370081.ChooseCardCallback);
 		end
 	end
 	for i=0,opponentMonsterCardArea.Length-1 do
-		if(opponentMonsterCardArea[i]~=nil and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
+		if(opponentMonsterCardArea[i]~=nil and (opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
 			opponentMonsterCardArea[i]:GetDuelCardScript():SetClickCallback(card,C2370081.ChooseCardCallback);
 		end
 	end
@@ -53,20 +53,32 @@ function C2370081.ChooseCardCallback(launchEffectCard,chooseCard)
 	local opponentMonsterCardArea = chooseCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();
 
 	for i=0,myMonsterCardArea.Length-1 do
-		if(myMonsterCardArea[i]~=nil and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
+		if(myMonsterCardArea[i]~=nil and (myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
 			myMonsterCardArea[i]:GetDuelCardScript():RemoveClickCallback();
 		end
 	end
 	for i=0,opponentMonsterCardArea.Length-1 do
-		if(opponentMonsterCardArea[i]~=nil and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
+		if(opponentMonsterCardArea[i]~=nil and (opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
 			opponentMonsterCardArea[i]:GetDuelCardScript():RemoveClickCallback();
 		end
 	end
+	launchEffectCard:SetEquidMonster(chooseCard);
 	chooseCard:AddEquip(launchEffectCard);
-	chooseCard:SetAttackNumber(chooseCard:GetAttackNumber()+400);
-	chooseCard:SetDefenseNumber(chooseCard:GetDefenseNumber()-200);
-	--local addEquipEffectProcess = CS.Assets.Script.Duel.EffectProcess.AddEquipEffectProcess(chooseCard,launchEffectCard, launchEffectCard:GetDuelCardScript():GetOwner());
-    --launchEffectCard:GetDuelCardScript():GetOwner():AddEffectProcess(addEquipEffectProcess);
+
+	chooseCard:AddCardEffect(launchEffectCard,CS.Assets.Script.Card.CardEffectType.Attack,400);
+	chooseCard:AddCardEffect(launchEffectCard,CS.Assets.Script.Card.CardEffectType.Defense,-200);
+end
+
+function C2370081.ChangeCardGameState(card,oldCardGameState)
+	if(oldCardGameState==CS.Assets.Script.Card.CardGameState.Front and card:GetCardGameState()~=CS.Assets.Script.Card.CardGameState.Front)then
+		local monsterCard = card:GetEquidMonster();
+		if(monsterCard==nil)then
+			return;
+		end
+		card:SetEquidMonster(nil);
+		monsterCard:RemoveEquip(card);
+		monsterCard:RemoveCardEffect(card);
+	end
 end
 
 return C2370081

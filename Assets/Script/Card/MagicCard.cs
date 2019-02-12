@@ -33,6 +33,8 @@ namespace Assets.Script.Card
     {
         MagicType magicType = MagicType.Normal;
 
+        CardBase equidMonster = null;//装备此卡的怪兽
+
         public void SetMagicType(MagicType magicType)
         {
             this.magicType = magicType;
@@ -56,7 +58,7 @@ namespace Assets.Script.Card
         /// <summary>
         /// 魔法卡发动效果后的回调
         /// </summary>
-        public void MagicLaunchEffectCalback()
+        public void MagicLaunchEffectCallback()
         {
             switch (magicType)
             {
@@ -72,11 +74,26 @@ namespace Assets.Script.Card
                 case MagicType.Ceremony:
                     break;
                 case MagicType.Quick:
+                    GetDuelCardScript().GetOwner().MoveCardToTomb(this);
                     break;
                 default:
                     Debug.LogError("未知MagicType：" + cardGameState);
                     break;
             }
+        }
+
+        public void SetEquidMonster(CardBase equidMonster)
+        {
+            if(this.equidMonster!=null && equidMonster!=null)
+            {
+                Debug.LogError("装备卡：" + GetName() + "已经装备到怪兽：" + this.equidMonster.GetName() + "上了！将重新装备到怪兽：" + equidMonster.GetName() + "上！");
+            }
+            this.equidMonster = equidMonster;
+        }
+
+        public CardBase GetEquidMonster()
+        {
+            return equidMonster;
         }
 
         /// <summary>

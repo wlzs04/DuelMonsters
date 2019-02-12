@@ -50,8 +50,46 @@ namespace Assets.Script.Card
         Exclusion,//被排除在游戏外
     }
 
+    /// <summary>
+    /// 对卡牌的作用效果类型
+    /// </summary>
+    public enum CardEffectType
+    {
+        Unknown,//未知
+        Attack,//攻击力
+        Defense,//守备力
+    }
+
+    /// <summary>
+    /// 对卡牌的作用效果
+    /// </summary>
+    public class CardEffect
+    {
+        CardEffectType cardEffectType;
+        int value;
+
+        public CardEffect(CardEffectType cardEffectType, int value)
+        {
+            this.cardEffectType = cardEffectType;
+            this.value = value;
+        }
+
+        public CardEffectType GetCardEffectType()
+        {
+            return cardEffectType;
+        }
+
+        public int GetValue()
+        {
+            return value;
+        }
+    }
+
     [CSharpCallLua]
-    public delegate bool ActionJudge(CardBase cardBase) ;
+    public delegate bool ActionJudge(CardBase cardBase);
+
+    [CSharpCallLua]
+    public delegate void ActionChangeCardGameState(CardBase cardBase, CardGameState oldCardGameState);
 
     /// <summary>
     /// 卡牌基础部分
@@ -80,11 +118,15 @@ namespace Assets.Script.Card
         //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
 
+        //效果map，表示当前卡牌受到其他卡牌的作用
+        Dictionary<CardBase, List<CardEffect>> cardEffectMap = new Dictionary<CardBase, List<CardEffect>>();
+
         //lua部分
         private LuaTable scriptEnv;
         private Action<CardBase> initInfoAction = null;
         private ActionJudge canLaunchEffectAction = null;
         private Action<CardBase> launchEffectAction = null;
+        private ActionChangeCardGameState changeCardGameState = null;
         private string luaPath;
 
         public CardBase(int cardNo)
@@ -116,7 +158,8 @@ namespace Assets.Script.Card
             initInfoAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".InitInfo");
             canLaunchEffectAction = scriptEnv.GetInPath<ActionJudge>("C" + cardNo + ".CanLaunchEffect");
             launchEffectAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".LaunchEffect");
-
+            changeCardGameState = scriptEnv.GetInPath<ActionChangeCardGameState>("C" + cardNo + ".ChangeCardGameState");
+            
             if (initInfoAction != null)
             {
                 initInfoAction(this);
@@ -221,6 +264,7 @@ namespace Assets.Script.Card
 
         public void SetCardGameState(CardGameState cardGameState)
         {
+            CardGameState oldCardGameState = this.cardGameState;
             //卡牌刚进入场上开始计被放置到场上的第回合数
             if (!IsInArea(this.cardGameState) && IsInArea(cardGameState))
             {
@@ -282,6 +326,10 @@ namespace Assets.Script.Card
                 default:
                     Debug.LogError("未知CardGameState：" + cardGameState);
                     break;
+            }
+            if(changeCardGameState!=null)
+            {
+                changeCardGameState(this,oldCardGameState);
             }
         }
 
@@ -421,16 +469,84 @@ namespace Assets.Script.Card
             switch (cardType)
             {
                 case CardType.Monster:
-                    MonsterLaunchEffectCalback();
+                    MonsterLaunchEffectCallback();
                     break;
                 case CardType.Magic:
-                    MagicLaunchEffectCalback();
+                    MagicLaunchEffectCallback();
                     break;
                 case CardType.Trap:
-                    TrapLaunchEffectCalback();
+                    TrapLaunchEffectCallback();
                     break;
                 default:
                     break;
+            }
+        }
+
+        /// <summary>
+        /// 添加卡牌效果
+        /// </summary>
+        public void AddCardEffect(CardBase cardBase, CardEffectType cardEffectType, int value)
+        {
+            CardEffect cardEffect = new CardEffect(cardEffectType, value);
+            if(!cardEffectMap.ContainsKey(cardBase))
+            {
+                cardEffectMap[cardBase] = new List<CardEffect>();
+            }
+            cardEffectMap[cardBase].Add(cardEffect);
+            RecalculationCardByCardEffect();
+        }
+
+        /// <summary>
+        /// 移除指定卡牌的效果
+        /// </summary>
+        public void RemoveCardEffect(CardBase cardBase)
+        {
+            if (cardEffectMap.ContainsKey(cardBase))
+            {
+                cardEffectMap.Remove(cardBase);
+            }
+            RecalculationCardByCardEffect();
+        }
+
+        /// <summary>
+        /// 移除所有卡牌效果
+        /// </summary>
+        public void RemoveAllCardEffect()
+        {
+            cardEffectMap.Clear();
+            RecalculationCardByCardEffect();
+        }
+
+        /// <summary>
+        /// 根据卡牌效果重新计算卡牌
+        /// </summary>
+        public void RecalculationCardByCardEffect()
+        {
+            //计算攻击力和守备力
+            CardBase cardBase = GameManager.GetSingleInstance().GetAllCardInfoList()[cardNo];
+            if(GetCardType()==CardType.Monster)
+            {
+                SetAttackNumber(cardBase.GetAttackNumber());
+                SetDefenseNumber(cardBase.GetDefenseNumber());
+            }
+
+            foreach (var effectCard in cardEffectMap)
+            {
+                foreach (var cardEffect in effectCard.Value)
+                {
+                    switch (cardEffect.GetCardEffectType())
+                    {
+                        case CardEffectType.Attack:
+                            SetAttackNumber(GetAttackNumber() + cardEffect.GetValue());
+                            break;
+                        case CardEffectType.Defense:
+                            SetDefenseNumber(GetDefenseNumber() + cardEffect.GetValue());
+                            break;
+                        default:
+                            Debug.LogError("未知卡牌效果类型：" + cardEffect.GetCardEffectType());
+                            break;
+                    }
+                }
             }
         }
     }

@@ -242,7 +242,7 @@ namespace Assets.Script.Card
         /// <summary>
         /// 怪兽卡发动效果后的回调
         /// </summary>
-        public void MonsterLaunchEffectCalback()
+        public void MonsterLaunchEffectCallback()
         {
 
         }
@@ -254,10 +254,23 @@ namespace Assets.Script.Card
         {
             if(equipCards.Contains(equipCard))
             {
-                Debug.LogError("当前怪兽已经装备此卡牌！");
+                Debug.LogError("当前怪兽:" + GetName() + "已经装备卡牌:" + equipCard.GetName() + "！");
                 return;
             }
             equipCards.Add(equipCard);
+        }
+
+        /// <summary>
+        /// 移除怪兽的装备卡
+        /// </summary>
+        public void RemoveEquip(CardBase equipCard)
+        {
+            if (!equipCards.Contains(equipCard))
+            {
+                Debug.LogError("当前怪兽:" + GetName() + "没有装备卡牌:" + equipCard.GetName() + "！");
+                return;
+            }
+            equipCards.Remove(equipCard);
         }
 
         /// <summary>
