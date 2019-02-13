@@ -24,7 +24,7 @@ namespace Assets.Script.Duel
         Single,//单人
         Net//网络
     }
-
+    
     /// <summary>
     /// 决斗场
     /// </summary>
@@ -162,6 +162,10 @@ namespace Assets.Script.Duel
             {
                 //如果攻击防御选择面板正在显示，则不做处理。
             }
+            else if (duelSceneScript.EffectSelectPanelIsShowing())
+            {
+                //如果效果选择面板正在显示，则不做处理。
+            }
             else if (duelSceneScript.CardListPanelIsShowing())
             {
                 //如果卡牌列表正在显示，则隐藏。
@@ -192,7 +196,17 @@ namespace Assets.Script.Duel
         {
             duelSceneScript.ShowAttackOrDefensePanel(monsterCard, finishAction);
         }
-        
+
+        /// <summary>
+        /// 显示效果选择面板
+        /// </summary>
+        /// <param name="effectList"></param>
+        /// <param name="finishAction"></param>
+        public void ShowEffectSelectPanel(CardBase card, List<string> effectList, ActionIndex finishAction)
+        {
+            duelSceneScript.ShowEffectSelectPanel(card,effectList, finishAction);
+        }
+
         /// <summary>
         /// 显示指定玩家当前指定类型的卡牌列表
         /// </summary>

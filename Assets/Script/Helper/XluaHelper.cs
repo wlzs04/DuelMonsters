@@ -21,5 +21,10 @@ namespace Assets.Script.Helper
         {
             return new List<CardBase>();
         }
+
+        public static List<string> CreateStringList()
+        {
+            return new List<string>();
+        }
     }
 }

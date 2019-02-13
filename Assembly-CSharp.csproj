@@ -174,6 +174,7 @@
     <None Include="Assets\Artres\CardData\81823360\C81823360.lua" />
     <None Include="Assets\Artres\CardData\83764718\C83764718.lua" />
     <None Include="Assets\Artres\CardData\87769556\C87769556.lua" />
+    <None Include="Assets\Artres\CardData\8842266\C8842266.lua" />
     <None Include="Assets\Artres\CardData\9852718\C9852718.lua" />
     <None Include="Assets\Artres\Config\DuelEndReason.xml" />
     <None Include="Assets\Artres\Config\Rule.xml" />
@@ -452,6 +453,7 @@
     <Content Include="Assets\Artres\CardData\81823360\image.jpg" />
     <Content Include="Assets\Artres\CardData\83764718\image.jpg" />
     <Content Include="Assets\Artres\CardData\87769556\image.jpg" />
+    <Content Include="Assets\Artres\CardData\8842266\image.jpg" />
     <Content Include="Assets\Artres\CardData\9852718\image.jpg" />
     <Content Include="Assets\Texture\attack.png" />
     <Content Include="Assets\Texture\bu.png" />

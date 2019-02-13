@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Assets.Script
@@ -17,11 +18,14 @@ namespace Assets.Script
         public GameObject monsterCardPre = null;
         public GameObject magicTrapCardPre = null;
 
+        public GameObject buttonPrefab = null;
+
         public Transform infoContentTransform = null;
 
         GameObject durlProcessPanel = null;
         GameObject attackOrDefensePanel = null;
         GameObject helpInfoPanel = null;
+        GameObject effectSelectPanel = null;
 
         GameObject cardListPanel = null;
         //此列表是否可以由玩家隐藏(点击右键)
@@ -62,11 +66,14 @@ namespace Assets.Script
             attackOrDefensePanel = GameObject.Find("AttackOrDefensePanel");
             attackOrDefensePanel.SetActive(false);
 
+            effectSelectPanel = GameObject.Find("EffectSelectPanel");
+            effectSelectPanel.SetActive(false);
+
             cardListPanel = GameObject.Find("CardListPanel");
             cardListContentTransform = cardListPanel.transform.GetChild(0).GetChild(0).GetChild(0);
             cardListPanel.SetActive(false);
 
-            duelResultPanel = GameObject.Find("DuelResultPanel");
+            duelResultPanel = GameObject.Find("Canvas").transform.Find("DuelResultPanel").gameObject;
             duelResultPanel.SetActive(false);
         }
 
@@ -174,7 +181,6 @@ namespace Assets.Script
             GameObject gameObject = null;
             if (card.GetCardType() == CardType.Monster)
             {
-                //MonsterCard monsterCard = (MonsterCard)card;
                 gameObject = Instantiate(monsterCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + card.GetName();
                 gameObject.transform.GetChild(1).GetComponent<Text>().text = "属性：" + card.GetPropertyTypeString() + "/" + card.GetMonsterTypeString() + "/" + card.GetLevel();
@@ -184,7 +190,6 @@ namespace Assets.Script
             }
             else if (card.GetCardType() == CardType.Magic)
             {
-                //MagicCard magicCard = (MagicCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + card.GetName();
                 gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + card.GetMagicTypeString() + card.GetCardTypeString();
@@ -192,7 +197,6 @@ namespace Assets.Script
             }
             else if (card.GetCardType() == CardType.Trap)
             {
-                //TrapCard trapCard = (TrapCard)card;
                 gameObject = Instantiate(magicTrapCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + card.GetName();
                 gameObject.transform.GetChild(1).GetComponent<Text>().text = "类型：" + card.GetTrapTypeString() + card.GetCardTypeString();
@@ -239,6 +243,53 @@ namespace Assets.Script
         {
             attackOrDefensePanel.SetActive(false);
             selectAttackOrDefenseFinishAction(CardGameState.FrontDefense);
+        }
+
+        /// <summary>
+        /// 效果选择面板是否显示
+        /// </summary>
+        /// <returns></returns>
+        public bool EffectSelectPanelIsShowing()
+        {
+            return attackOrDefensePanel.activeSelf;
+        }
+
+        /// <summary>
+        /// 显示效果选择面板
+        /// </summary>
+        public void ShowEffectSelectPanel(CardBase card,List<string> effectList, ActionIndex finishAction)
+        {
+            if(effectList.Count <1)
+            {
+                Debug.LogError("需要进行选择的效果数量不足!");
+                return;
+            }
+            effectSelectPanel.SetActive(true);
+            GameObject selectButtonPanel = effectSelectPanel.transform.Find("BackPanel").Find("SelectButtonPanel").gameObject;
+            Text effectInfoText = effectSelectPanel.transform.Find("BackPanel").Find("EffectInfoPanel").Find("EffectInfoText").GetComponent<Text>();
+
+            GameManager.CleanPanelContent(selectButtonPanel.transform);
+
+            for (int i = 0; i < effectList.Count; i++)
+            {
+                int selectIndex = i;
+                GameObject buttonObject = Instantiate(buttonPrefab, selectButtonPanel.transform);
+                buttonObject.GetComponent<Button>().onClick.AddListener(()=> 
+                {
+                    effectSelectPanel.SetActive(false);
+                    finishAction(card, selectIndex);
+                });
+                EventTrigger.Entry entry = new EventTrigger.Entry();
+                entry.eventID = EventTriggerType.PointerEnter;
+                entry.callback.AddListener( (baseEventData) =>
+                {
+                    effectInfoText.text = effectList[selectIndex];
+                });
+                buttonObject.GetComponent<EventTrigger>().triggers.Add(entry);
+                buttonObject.transform.Find("Text").GetComponent<Text>().text = "效果"+(i+1);
+            }
+
+            effectSelectPanel.transform.Find("BackPanel").Find("EffectInfoPanel").Find("EffectInfoText").GetComponent<Text>().text = effectList[0];
         }
 
         /// <summary>

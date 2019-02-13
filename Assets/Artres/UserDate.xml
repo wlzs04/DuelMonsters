@@ -1,5 +1,6 @@
 <UserData playerName="LL" audioValue="0" guessMustWin="true" showOpponentHandCard="true" ip="10.237.40.95" port="7777">
   <UserCardList>
+    <UserCardData cardNo="8842266" number="3" />
     <UserCardData cardNo="9852718" number="3" />
     <UserCardData cardNo="14558127" number="3" />
     <UserCardData cardNo="20155904" number="3" />
@@ -72,11 +73,9 @@
     <UserCardGroup cardGroupName="magictest">
       <Main>
         <UserCardData cardNo="2370081" number="3" />
-        <UserCardData cardNo="58984738" number="1" />
-        <UserCardData cardNo="56649609" number="1" />
-        <UserCardData cardNo="83764718" number="1" />
         <UserCardData cardNo="81823360" number="3" />
         <UserCardData cardNo="5318639" number="3" />
+        <UserCardData cardNo="8842266" number="3" />
       </Main>
       <Extra />
       <Deputy />

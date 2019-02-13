@@ -91,6 +91,9 @@ namespace Assets.Script.Card
     [CSharpCallLua]
     public delegate void ActionChangeCardGameState(CardBase cardBase, CardGameState oldCardGameState);
 
+    [CSharpCallLua]
+    public delegate void ActionIndex(CardBase cardBase,int index);
+
     /// <summary>
     /// 卡牌基础部分
     /// </summary>
