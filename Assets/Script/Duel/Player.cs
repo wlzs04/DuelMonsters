@@ -489,18 +489,6 @@ namespace Assets.Script.Duel
             CardBase card = GetDuelCardGroup().GetCards()[0];
             AddCardToHand(card);
             GetDuelCardGroup().GetCards().Remove(card);
-            if (this == duelScene.myPlayer)
-            {
-                card.GetDuelCardScript().ShowFront();
-                card.GetDuelCardScript().SetCanShowInfo(true);
-            }
-            else if (this == duelScene.opponentPlayer)
-            {
-                if (this is ComputerPlayer && GameManager.GetSingleInstance().GetUserData().showOpponentHandCard)
-                {
-                    card.GetDuelCardScript().SetCanShowInfo(true);
-                }
-            }
 
             duelScene.ShowHelpInfoPanel();
 
@@ -608,7 +596,7 @@ namespace Assets.Script.Duel
             {
                 if (item != null)
                 {
-                    item.GetDuelCardScript().SetChangeAttackOrDefenseNumber();
+                    item.SetChangeAttackOrDefenseNumber();
                 }
             }
         }
@@ -666,30 +654,42 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 判断当前玩家是否可以进入战斗流程
+        /// </summary>
+        public bool CanEnterBattleDuelProcess()
+        {
+            //不是当前玩家的回合
+            if (!IsMyTurn())
+            {
+                return false;
+            }
+            //第一回合先攻者不能攻击
+            if (duelScene.GetCurrentTurnNumber() == 1 && duelScene.startPlayer == this)
+            {
+                return false;
+            }
+            //只有主要流程才可以进入战斗
+            if (duelScene.currentDuelProcess != DuelProcess.Main)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 进入战斗
         /// </summary>
         public void Battle()
         {
-            if (!IsMyTurn())
+            if(!CanEnterBattleDuelProcess())
             {
-                GameManager.ShowMessage("不是你的回合！");
-                return;
-            }
-            if (duelScene.GetCurrentTurnNumber()==1&&duelScene.startPlayer==this)
-            {
-                GameManager.ShowMessage("第一回合先攻者不能攻击！");
-                return;
-            }
-            if(duelScene.currentDuelProcess != DuelProcess.Main)
-            {
-                GameManager.ShowMessage("只有主要流程才可以进入战斗！当前流程为："+ duelScene.currentDuelProcess.ToString());
                 return;
             }
             foreach (var item in monsterCardArea)
             {
                 if(item!=null)
                 {
-                    item.GetDuelCardScript().SetAttackNumber();
+                    item.SetAttackNumber();
                 }
             }
             duelScene.Battle();

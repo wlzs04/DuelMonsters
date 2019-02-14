@@ -7,8 +7,8 @@ function C14558127.InitInfo(card)
 	card:SetMonsterTypeByString("不死");
 
 	card:SetLevel(3);
-	card:SetAttackNumber(0);
-	card:SetDefenseNumber(1800);
+	card:SetAttackValue(0);
+	card:SetDefenseValue(1800);
 	card:SetEffectInfo("「灰流丽」的效果1回合只能使用1次。①：包含以下其中任意种效果的魔法·陷阱·怪兽的效果发动时，把这张卡从手卡丢弃才能发动。那个效果无效。这个效果在对方回合也能发动。●从卡组把卡加入手卡的效果●从卡组把怪兽特殊召唤的效果●从卡组把卡送去墓地的效果。");
 end
 

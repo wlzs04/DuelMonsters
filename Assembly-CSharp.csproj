@@ -107,7 +107,6 @@
     <Compile Include="Assets\Script\Duel\Player.cs" />
     <Compile Include="Assets\Script\Duel\Rule\DuelRuleManager.cs" />
     <Compile Include="Assets\Script\DuelSceneScript.cs" />
-    <Compile Include="Assets\Script\Editor\EditorManager.cs" />
     <Compile Include="Assets\Script\GameManager.cs" />
     <Compile Include="Assets\Script\GameState.cs" />
     <Compile Include="Assets\Script\GuessFirstSceneScript.cs" />
@@ -157,25 +156,6 @@
     <Compile Include="Assets\XLua\Src\TemplateEngine\TemplateEngine.cs" />
     <Compile Include="Assets\XLua\Src\TypeExtensions.cs" />
     <Compile Include="Assets\XLua\Src\Utils.cs" />
-    <None Include="Assets\Artres\CardData\14558127\C14558127.lua" />
-    <None Include="Assets\Artres\CardData\20155904\C20155904.lua" />
-    <None Include="Assets\Artres\CardData\2130625\C2130625.lua" />
-    <None Include="Assets\Artres\CardData\2370081\C2370081.lua" />
-    <None Include="Assets\Artres\CardData\35618217\C35618217.lua" />
-    <None Include="Assets\Artres\CardData\45121025\C45121025.lua" />
-    <None Include="Assets\Artres\CardData\45159319\C45159319.lua" />
-    <None Include="Assets\Artres\CardData\45221020\C45221020.lua" />
-    <None Include="Assets\Artres\CardData\46130346\C46130346.lua" />
-    <None Include="Assets\Artres\CardData\52589809\C52589809.lua" />
-    <None Include="Assets\Artres\CardData\5318639\C5318639.lua" />
-    <None Include="Assets\Artres\CardData\56649609\C56649609.lua" />
-    <None Include="Assets\Artres\CardData\58518520\C58518520.lua" />
-    <None Include="Assets\Artres\CardData\58984738\C58984738.lua" />
-    <None Include="Assets\Artres\CardData\81823360\C81823360.lua" />
-    <None Include="Assets\Artres\CardData\83764718\C83764718.lua" />
-    <None Include="Assets\Artres\CardData\87769556\C87769556.lua" />
-    <None Include="Assets\Artres\CardData\8842266\C8842266.lua" />
-    <None Include="Assets\Artres\CardData\9852718\C9852718.lua" />
     <None Include="Assets\Artres\Config\DuelEndReason.xml" />
     <None Include="Assets\Artres\Config\Rule.xml" />
     <None Include="Assets\Artres\Config\MagicType.xml" />
@@ -435,43 +415,6 @@
       <HintPath>D:/Unity/Editor/Data/MonoBleedingEdge/lib/mono/unity/Boo.Lang.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\Artres\CardData\14558127\image.jpg" />
-    <Content Include="Assets\Artres\CardData\20155904\image.jpg" />
-    <Content Include="Assets\Artres\CardData\2130625\image.jpg" />
-    <Content Include="Assets\Artres\CardData\2370081\image.jpg" />
-    <Content Include="Assets\Artres\CardData\35618217\image.jpg" />
-    <Content Include="Assets\Artres\CardData\45121025\image.jpg" />
-    <Content Include="Assets\Artres\CardData\45159319\image.jpg" />
-    <Content Include="Assets\Artres\CardData\45221020\image.jpg" />
-    <Content Include="Assets\Artres\CardData\46130346\image.jpg" />
-    <Content Include="Assets\Artres\CardData\52589809\image.jpg" />
-    <Content Include="Assets\Artres\CardData\5318639\image.jpg" />
-    <Content Include="Assets\Artres\CardData\56649609\image.jpg" />
-    <Content Include="Assets\Artres\CardData\58518520\image.jpg" />
-    <Content Include="Assets\Artres\CardData\58984738\image.jpg" />
-    <Content Include="Assets\Artres\CardData\81823360\image.jpg" />
-    <Content Include="Assets\Artres\CardData\83764718\image.jpg" />
-    <Content Include="Assets\Artres\CardData\87769556\image.jpg" />
-    <Content Include="Assets\Artres\CardData\8842266\image.jpg" />
-    <Content Include="Assets\Artres\CardData\9852718\image.jpg" />
-    <Content Include="Assets\Texture\attack.png" />
-    <Content Include="Assets\Texture\bu.png" />
-    <Content Include="Assets\Texture\button_over_card.png" />
-    <Content Include="Assets\Texture\CardBack.jpg" />
-    <Content Include="Assets\Texture\desk.jpg" />
-    <Content Include="Assets\Texture\edit.png" />
-    <Content Include="Assets\Texture\field.png" />
-    <Content Include="Assets\Texture\jiandao.png" />
-    <Content Include="Assets\Texture\L.png" />
-    <Content Include="Assets\Texture\MessageTip.png" />
-    <Content Include="Assets\Texture\MessageTipImage.png" />
-    <Content Include="Assets\Texture\no.png" />
-    <Content Include="Assets\Texture\phase.png" />
-    <Content Include="Assets\Texture\shitou.png" />
-    <Content Include="Assets\Texture\unknown.jpg" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -31,19 +31,21 @@ namespace Assets.Script.Duel.EffectProcess
 
         public override bool CheckCanTrigger()
         {
-            return true;
+            return !haveProcess;
         }
 
         protected override void ProcessFunction()
         {
+            haveProcess = true;
             if (directAttack)
             {
-                attackCard.GetDuelCardScript().Attack();
+                attackCard.GetDuelCardScript().SetAttackState(false);
                 duelScene.SetAttackAnimationFinishEvent(() =>
                 {
                     ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(attackCard.GetID());
 
-                    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(attackCard.GetAttackNumber(), ReduceLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
+                    attackCard.Attack();
+                    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(attackCard.GetAttackValue(), ReduceLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
                     attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
 
                     AfterFinishProcessFunction();
@@ -83,6 +85,7 @@ namespace Assets.Script.Duel.EffectProcess
                 monsterCard.CanBeAttacked)
             {
                 beAttackedCard = monsterCard;
+                attackCard.GetDuelCardScript().SetAttackState(false);
                 duelScene.SetAttackAnimationFinishEvent(() =>
                 {
                     beAttackedCard.GetDuelCardScript().GetOwner().BeAttackedMonsterNotify(attackCard.GetID(), beAttackedCard.GetID());
@@ -98,20 +101,20 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         public void Attack()
         {
-            attackCard.GetDuelCardScript().Attack();
+            attackCard.Attack();
             int card2Value = 0;
             bool card2Defense = false;
             if (beAttackedCard.GetCardGameState() == CardGameState.FrontAttack)
             {
-                card2Value = beAttackedCard.GetAttackNumber();
+                card2Value = beAttackedCard.GetAttackValue();
             }
             else if (beAttackedCard.GetCardGameState() == CardGameState.FrontDefense ||
                 beAttackedCard.GetCardGameState() == CardGameState.Back)
             {
-                card2Value = beAttackedCard.GetDefenseNumber();
+                card2Value = beAttackedCard.GetDefenseValue();
                 card2Defense = true;
             }
-            int differenceValue = attackCard.GetAttackNumber() - card2Value;
+            int differenceValue = attackCard.GetAttackValue() - card2Value;
             if (differenceValue == 0)
             {
                 if (!card2Defense)

@@ -56,6 +56,7 @@ GameObject:
   - component: {fileID: 224133691989812292}
   - component: {fileID: 222619338639482934}
   - component: {fileID: 114992744754093166}
+  - component: {fileID: 225237599206880330}
   m_Layer: 5
   m_Name: AttackAndDefenseText
   m_TagString: Untagged
@@ -485,6 +486,17 @@ RectTransform:
   m_AnchoredPosition: {x: 285, y: 111}
   m_SizeDelta: {x: 60, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &225237599206880330
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1247829394070580}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!225 &225561037746125344
 CanvasGroup:
   m_ObjectHideFlags: 1

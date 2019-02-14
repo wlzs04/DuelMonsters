@@ -7,8 +7,8 @@ function C45221020.InitInfo(card)
 	card:SetMonsterTypeByString("兽");
 
 	card:SetLevel(4);
-	card:SetAttackNumber(1100);
-	card:SetDefenseNumber(2000);
+	card:SetAttackValue(1100);
+	card:SetDefenseValue(2000);
 	card:SetEffectInfo("从自己墓地把最多3张魔法·陷阱卡里侧表示除外才能发动。和除外的卡数量相同等级的1只通常怪兽从卡组特殊召唤。");
 end
 

@@ -77,9 +77,12 @@ namespace Assets.Script.Card
         PropertyType propertyType = PropertyType.Unknown;//属性
         MonsterType monsterType = MonsterType.Unknown;//种族
 
-        int attackNumber = 1500;//攻击力
-        int defenseNumber = 500;//防御力
+        int attackValue = 1500;//攻击力
+        int defenseValue = 500;//防御力
         int canBeSacrificedNumber = 1;//可被当成祭品的个数
+
+        int attackNumber = 0; //攻击次数
+        int changeAttackOrDefenseNumber = 0;//攻守转换次数
 
         bool canDirectAttack = true;//是否可以直接攻击
         bool canBeAttacked = true;//是否可以被攻击
@@ -118,7 +121,22 @@ namespace Assets.Script.Card
         /// </summary>
         public bool CanAttack()
         {
-            return  GetCardGameState() == CardGameState.FrontAttack;
+            return  GetCardGameState() == CardGameState.FrontAttack && attackNumber > 0;
+        }
+
+        /// <summary>
+        /// 进行攻击
+        /// </summary>
+        public void Attack()
+        {
+            attackNumber--;
+            //攻击过后无法进行攻守转换
+            changeAttackOrDefenseNumber--;
+            duelCardScript.ClearPrepareAttackState();
+            if (attackNumber <= 0)
+            {
+                duelCardScript.SetAttackState(false);
+            }
         }
 
         public bool GetCanPenetrateDefense()
@@ -161,14 +179,44 @@ namespace Assets.Script.Card
             return level;
         }
 
-        public void SetAttackNumber(int attackNumber)
+        public void SetAttackValue(int attackValue)
         {
-            attackNumber = attackNumber > 0 ? attackNumber : 0;
-            this.attackNumber = attackNumber;
+            attackValue = attackValue > 0 ? attackValue : 0;
+            this.attackValue = attackValue;
             if(GetDuelCardScript()!=null)
             {
                 GetDuelCardScript().ResetAttackAndDefenseText();
             }
+        }
+
+        public int GetAttackValue()
+        {
+            return attackValue;
+        }
+
+        public void SetDefenseValue(int defenseValue)
+        {
+            defenseValue = defenseValue > 0 ? defenseValue : 0;
+            this.defenseValue = defenseValue;
+            if (GetDuelCardScript()!= null)
+            {
+                GetDuelCardScript().ResetAttackAndDefenseText();
+            }
+        }
+
+        public int GetDefenseValue()
+        {
+            return defenseValue;
+        }
+
+        public void SetAttackNumber(int number)
+        {
+            attackNumber = number;
+        }
+
+        public void SetAttackNumber()
+        {
+            SetAttackNumber(DuelRuleManager.GetMonsterAttackNumberEveryTurn());
         }
 
         public int GetAttackNumber()
@@ -176,19 +224,57 @@ namespace Assets.Script.Card
             return attackNumber;
         }
 
-        public void SetDefenseNumber(int defenseNumber)
+        public void SetChangeAttackOrDefenseNumber(int number)
         {
-            defenseNumber = defenseNumber > 0 ? defenseNumber : 0;
-            this.defenseNumber = defenseNumber;
-            if (GetDuelCardScript()!= null)
-            {
-                GetDuelCardScript().ResetAttackAndDefenseText();
-            }
+            changeAttackOrDefenseNumber = number;
         }
 
-        public int GetDefenseNumber()
+        public void SetChangeAttackOrDefenseNumber()
         {
-            return defenseNumber;
+            SetChangeAttackOrDefenseNumber(DuelRuleManager.GetMonsterChangeAttackOrDefenseNumberEveryTurn());
+        }
+
+        public int GetChangeAttackOrDefenseNumber()
+        {
+            return changeAttackOrDefenseNumber;
+        }
+
+        /// <summary>
+        /// 判断是否可以转换成攻击表示
+        /// </summary>
+        /// <returns></returns>
+        public bool CanChangeToFrontAttack()
+        {
+            if (GetCardType() == CardType.Monster &&
+                (GetCardGameState() == CardGameState.FrontDefense) &&
+                GetChangeAttackOrDefenseNumber() > 0 &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null
+                )
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断是否可以转换成防守表示
+        /// </summary>
+        /// <returns></returns>
+        public bool CanChangeToFrontDefense()
+        {
+            if (GetCardType() == CardType.Monster &&
+                (GetCardGameState() == CardGameState.FrontAttack) &&
+                GetChangeAttackOrDefenseNumber() > 0 &&
+                (duelScene.currentDuelProcess == DuelProcess.Main ||
+                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null
+                )
+            {
+                return true;
+            }
+            return false;
         }
 
         public void SetPropertyType(PropertyType propertyType)

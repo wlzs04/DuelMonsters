@@ -7,8 +7,8 @@ function C58984738.InitInfo(card)
 	card:SetMonsterTypeByString("幻龙");
 
 	card:SetLevel(6);
-	card:SetAttackNumber(2500);
-	card:SetDefenseNumber(1200);
+	card:SetAttackValue(2500);
+	card:SetDefenseValue(1200);
 	card:SetEffectInfo("这张卡表侧表示上级召唤的场合，可以作为怪兽的代替而把自己场上的永续魔法·永续陷阱卡解放。①：1回合1次，上级召唤的这张卡存在，对方把魔法·陷阱·怪兽的效果发动时才能发动。从卡组选1张「真龙」永续陷阱卡加入手卡或在自己场上发动。");
 end
 

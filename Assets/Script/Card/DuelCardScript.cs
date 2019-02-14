@@ -38,8 +38,6 @@ namespace Assets.Script.Card
         Player ownerPlayer;
         DuelScene duelScene = null;
         
-        int attackNumber = 0; //攻击次数
-        int changeAttackOrDefenseNumber = 0;//攻守转换次数
         bool canShowInfo = false;
         bool isPrepareAttack = false;
         bool showAttackImage = false;
@@ -96,6 +94,80 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 设置当前卡牌状态，由CardBase类调用，仅做卡牌位置，方向，正反等显示处理
+        /// </summary>
+        /// <param name="cardGameState"></param>
+        public void SetCardGameState(CardGameState cardGameState)
+        {
+            switch (cardGameState)
+            {
+                case CardGameState.Group:
+                    break;
+                case CardGameState.Hand:
+                    if (GetOwner() == duelScene.myPlayer)
+                    {
+                        ShowFront();
+                        SetCanShowInfo(true);
+                    }
+                    else if (GetOwner() == duelScene.opponentPlayer)
+                    {
+                        if (GetOwner() is ComputerPlayer && GameManager.GetSingleInstance().GetUserData().showOpponentHandCard)
+                        {
+                           SetCanShowInfo(true);
+                        }
+                    }
+                    break;
+                case CardGameState.FrontAttack:
+                    {
+                        ShowFront();
+                        SetCardAngle(0);
+                        break;
+                    }
+                case CardGameState.FrontDefense:
+                    {
+                        ShowFront();
+                        SetCardAngle(90);
+                        break;
+                    }
+                case CardGameState.Front:
+                    ShowFront();
+                    SetCardAngle(0);
+                    break;
+                case CardGameState.Back:
+                    ShowBack();
+                    if (card.GetCardType() == CardType.Monster)
+                    {
+                        SetCardAngle(90);
+                    }
+                    else if (card.GetCardType() == CardType.Magic || card.GetCardType() == CardType.Trap)
+                    {
+                        SetCardAngle(0);
+                    }
+                    break;
+                case CardGameState.Tomb:
+                    ShowFront();
+                    SetCardAngle(0);
+                    transform.SetParent(GameManager.GetSingleInstance().GetDuelScene().duelBackImage.transform);
+                    if (GetOwner().IsMyPlayer())
+                    {
+                        transform.localPosition = new Vector3(DuelCommonValue.myTombPositionX, DuelCommonValue.myTombPositionY, 0);
+                    }
+                    else
+                    {
+                        transform.localPosition = new Vector3(DuelCommonValue.opponentTombPositionX, DuelCommonValue.opponentTombPositionY, 0);
+                    }
+                    SetCardAngle(0);
+                    break;
+                case CardGameState.Exclusion:
+                    break;
+                default:
+                    Debug.LogError("未知CardGameState：" + cardGameState);
+                    break;
+            }
+            ResetAttackAndDefenseText();
+        }
+
+        /// <summary>
         /// 显示背面
         /// </summary>
         public void ShowBack()
@@ -119,10 +191,15 @@ namespace Assets.Script.Card
         public void SetCardAngle(float angle)
         {
             cardImage.transform.localEulerAngles = new Vector3(0, 0, angle);
+            //根据卡牌拥有者是否为己方玩家，旋转卡牌方向
+            if (GetOwner() != GetDuelScene().myPlayer)
+            {
+                cardImage.transform.localEulerAngles += new Vector3(0, 0, 180);
+            }
         }
 
         /// <summary>
-        /// 设置是否显示攻击状态，仅显示攻击图标，并不代表即将进行攻击
+        /// 设置是否显示攻击状态，仅显示攻击图标，并不代表即将进行攻击，或攻击结束
         /// </summary>
         public void SetAttackState(bool showAttackImage)
         {
@@ -218,7 +295,8 @@ namespace Assets.Script.Card
                 card.GetCardGameState() == CardGameState.FrontDefense ||
                 card.GetCardGameState() == CardGameState.Back)
             {
-                if(card.GetCardType() == CardType.Monster && 
+                //选择祭品
+                if (card.GetCardType() == CardType.Monster && 
                     !haveBeChosen&&
                     ownerPlayer.GetCurrentEffectProcess() is CallMonsterEffectProcess)
                 {
@@ -235,6 +313,7 @@ namespace Assets.Script.Card
                         }
                     }
                 }
+                //选择我方主动攻击的怪兽
                 if (ownerPlayer.CanBattle() && !(ownerPlayer.GetCurrentEffectProcess() is AttackEffectProcess))
                 {
                     if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
@@ -242,7 +321,7 @@ namespace Assets.Script.Card
                         Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
                         if (opponentPlayer.CanBeDirectAttacked() &&
                             !opponentPlayer.HaveBeAttackedMonster() &&
-                            ownerPlayer.GetCanDirectAttack() && (card).CanDirectAttack)
+                            ownerPlayer.GetCanDirectAttack() && card.CanDirectAttack)
                         {
                             AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card, null, ownerPlayer);
                             ownerPlayer.AddEffectProcess(attackEffectProcess);
@@ -259,8 +338,8 @@ namespace Assets.Script.Card
                         }
                     }
                 }
-
-                if(ownerPlayer.GetOpponentPlayer().GetCurrentEffectProcess() is AttackEffectProcess)
+                //选择对方被攻击的怪兽
+                if (ownerPlayer.GetOpponentPlayer().GetCurrentEffectProcess() is AttackEffectProcess)
                 {
                     AttackEffectProcess attackEffectProcess = ownerPlayer.GetOpponentPlayer().GetCurrentEffectProcess() as AttackEffectProcess;
                     if(attackEffectProcess.WaitChooseBeAttackedMonster() && card.GetCardType() == CardType.Monster)
@@ -312,11 +391,6 @@ namespace Assets.Script.Card
             GameManager.CleanPanelContent(operationPanelTransform);
         }
 
-        public void SetAttackNumber(int number)
-        {
-            attackNumber = number;
-        }
-
         /// <summary>
         /// 重新设置攻击力和防御力数值
         /// </summary>
@@ -325,40 +399,20 @@ namespace Assets.Script.Card
         {
             if (card.GetCardGameState() == CardGameState.FrontAttack)
             {
-                string text = "<color=#FF0000FF>" + card.GetAttackNumber() + "</color>/";
-                text += "<color=#000000FF>" + card.GetDefenseNumber() + "</color>";
+                string text = "<color=#FF0000FF>" + card.GetAttackValue() + "</color>/";
+                text += "<color=#000000FF>" + card.GetDefenseValue() + "</color>";
                 attackAndDefenseText.GetComponent<Text>().text = text;
             }
             else if(card.GetCardGameState() == CardGameState.FrontDefense)
             {
-                string text = "<color=#000000FF>" + card.GetAttackNumber() + "</color>/";
-                text += "<color=#00FF00FF>" + card.GetDefenseNumber() + "</color>";
+                string text = "<color=#000000FF>" + card.GetAttackValue() + "</color>/";
+                text += "<color=#00FF00FF>" + card.GetDefenseValue() + "</color>";
                 attackAndDefenseText.GetComponent<Text>().text = text;
             }
             else
             {
                 attackAndDefenseText.GetComponent<Text>().text = "";
             }
-        }
-
-        public void SetAttackNumber()
-        {
-            SetAttackNumber(DuelRuleManager.GetMonsterAttackNumberEveryTurn());
-        }
-
-        public int GetAttackNumber()
-        {
-            return attackNumber;
-        }
-        
-        public void SetChangeAttackOrDefenseNumber(int number)
-        {
-            changeAttackOrDefenseNumber = number;
-        }
-
-        public void SetChangeAttackOrDefenseNumber()
-        {
-            SetChangeAttackOrDefenseNumber(DuelRuleManager.GetMonsterChangeAttackOrDefenseNumberEveryTurn());
         }
 
         /// <summary>
@@ -384,26 +438,6 @@ namespace Assets.Script.Card
             clickCallback = null;
         }
 
-        public int GetChangeAttackOrDefenseNumber()
-        {
-            return changeAttackOrDefenseNumber;
-        }
-        
-        /// <summary>
-        /// 进行攻击
-        /// </summary>
-        public void Attack()
-        {
-            attackNumber--;
-            //攻击过后无法进行攻守转换
-            changeAttackOrDefenseNumber--;
-            ClearPrepareAttackState();
-            if(attackNumber <= 0)
-            {
-                SetAttackState(false);
-            }
-        }
-
         /// <summary>
         /// 判断当前卡牌是否可以攻击
         /// </summary>
@@ -415,33 +449,9 @@ namespace Assets.Script.Card
                 card.GetCardType() == CardType.Monster &&
                 ownerPlayer.GetCurrentEffectProcess() == null)
             {
-                return card.CanAttack() && attackNumber > 0;
+                return card.CanAttack() ;
             }
             return false;
-        }
-
-        /// <summary>
-        /// 转换成攻击表示
-        /// </summary>
-        public void ChangeToFrontAttack()
-        {
-            if(changeAttackOrDefenseNumber>0)
-            {
-                changeAttackOrDefenseNumber--;
-                card.SetCardGameState(CardGameState.FrontAttack);
-            }
-        }
-
-        /// <summary>
-        /// 转换成守备表示
-        /// </summary>
-        public void ChangeToFrontDefense()
-        {
-            if (changeAttackOrDefenseNumber > 0)
-            {
-                changeAttackOrDefenseNumber--;
-                card.SetCardGameState(CardGameState.FrontDefense);
-            }
         }
 
         /// <summary>
@@ -547,42 +557,14 @@ namespace Assets.Script.Card
             return false;
         }
 
-        /// <summary>
-        /// 判断是否可以转换成攻击表示
-        /// </summary>
-        /// <returns></returns>
         public bool CanChangeToFrontAttack()
         {
-            if (card.GetCardType() == CardType.Monster &&
-                (card.GetCardGameState() == CardGameState.FrontDefense) &&
-                GetChangeAttackOrDefenseNumber() > 0 &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
-                ownerPlayer.GetCurrentEffectProcess() == null
-                )
-            {
-                return true;
-            }
-            return false;
+            return card.CanChangeToFrontAttack();
         }
 
-        /// <summary>
-        /// 判断是否可以转换成防守表示
-        /// </summary>
-        /// <returns></returns>
         public bool CanChangeToFrontDefense()
         {
-            if (card.GetCardType() == CardType.Monster &&
-                (card.GetCardGameState() == CardGameState.FrontAttack) &&
-                GetChangeAttackOrDefenseNumber() > 0 &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
-                ownerPlayer.GetCurrentEffectProcess() == null 
-                )
-            {
-                return true;
-            }
-            return false;
+            return card.CanChangeToFrontDefense();
         }
 
         /// <summary>
@@ -713,7 +695,6 @@ namespace Assets.Script.Card
                     if(CanChangeToFrontAttack())
                     {
                         ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card, CardGameState.FrontAttack,ownerPlayer);
-                        changeAttackOrDefenseNumber--;
                         ownerPlayer.AddEffectProcess(changeAttackDefenseEffectProcess);
                     }
                     break;
@@ -721,7 +702,6 @@ namespace Assets.Script.Card
                     if (CanChangeToFrontDefense())
                     {
                         ChangeAttackDefenseEffectProcess changeAttackDefenseEffectProcess = new ChangeAttackDefenseEffectProcess(card, CardGameState.FrontDefense, ownerPlayer);
-                        changeAttackOrDefenseNumber--;
                         ownerPlayer.AddEffectProcess(changeAttackDefenseEffectProcess);
                     }
                     break;

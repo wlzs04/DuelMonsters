@@ -115,7 +115,7 @@ namespace Assets.Script.Duel
                             else
                             {
                                 CardGameState nextCardGameState;
-                                if (item.GetAttackNumber() >= item.GetDefenseNumber())
+                                if (item.GetAttackValue() >= item.GetDefenseValue())
                                 {
                                     nextCardGameState = CardGameState.FrontAttack;
                                 }
@@ -136,15 +136,16 @@ namespace Assets.Script.Duel
                         }
                     }
                 }
-                if (CanBattle())
+                if (CanEnterBattleDuelProcess())
                 {
-                    //duelScene.EnterDuelProcess(DuelProcess.Battle);
-                    //return;
+                    Battle();
+                    return;
                 }
             }
             else if(duelScene.currentDuelProcess == DuelProcess.Battle)
             {
 
+                return;
             }
             else if(duelScene.currentDuelProcess == DuelProcess.End)
             {

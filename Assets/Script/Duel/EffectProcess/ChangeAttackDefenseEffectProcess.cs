@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Assets.Script.Duel.EffectProcess
 {
@@ -28,6 +29,17 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
+            switch (cardGameState)
+            {
+                case CardGameState.FrontAttack:
+                case CardGameState.FrontDefense:
+                    monsterCard.SetChangeAttackOrDefenseNumber(monsterCard.GetChangeAttackOrDefenseNumber()-1);
+                    monsterCard.SetCardGameState(cardGameState);
+                    break;
+                default:
+                    Debug.LogError("转换攻防时状态不对：" + cardGameState);
+                    break;
+            }
             monsterCard.SetCardGameState(cardGameState);
             AfterFinishProcessFunction();
         }

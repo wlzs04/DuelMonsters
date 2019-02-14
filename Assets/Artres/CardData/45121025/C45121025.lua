@@ -7,8 +7,8 @@ function C45121025.InitInfo(card)
 	card:SetMonsterTypeByString("兽战士");
 
 	card:SetLevel(4);
-	card:SetAttackNumber(1200);
-	card:SetDefenseNumber(1400);
+	card:SetAttackValue(1200);
+	card:SetDefenseValue(1400);
 	card:SetEffectInfo("被黑影附体的恶鬼。用惊人的速度突击。");
 end
 

@@ -69,7 +69,7 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 callMonsterType = CallMonsterType.Flip;
                 callMonster.SetCardGameState(cardGameState);
-                callMonster.GetDuelCardScript().SetChangeAttackOrDefenseNumber(0);
+                callMonster.SetChangeAttackOrDefenseNumber(0);
                 callMonster.GetDuelCardScript().SetOwner(ownerPlayer);
                 AfterFinishProcessFunction();
                 return;

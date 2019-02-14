@@ -99,24 +99,23 @@ namespace Assets.Script.Card
     /// </summary>
     public partial class CardBase
     {
-        protected CardType cardType = CardType.Unknown;//卡片类型
+        CardType cardType = CardType.Unknown;//卡片类型
         CardGameState cardGameState = CardGameState.Group;
         Sprite image;
-        protected string name = "未命名";//名称
-        protected int cardNo = 0;//唯一编号，0代表为假卡。
-        protected string effectInfo = "没有效果。";
+        string name = "未命名";//名称
+        int cardNo = 0;//唯一编号，0代表为假卡。
+        string effectInfo = "没有效果。";
 
-        protected int cardID = 0;//代表在决斗过程中的唯一标志
+        int cardID = 0;//代表在决斗过程中的唯一标志
 
-        protected string info ="";//卡片信息
-        protected int limitNumber = 3;//数量限制
+        string info ="";//卡片信息
+        int limitNumber = 3;//数量限制
 
-        protected int bePlacedAreaTurnNumber = 0;//被放置到场上的第回合数
-
-        protected GameObject cardObject=null;
-
+        int bePlacedAreaTurnNumber = 0;//被放置到场上的第回合数
+        
+        GameObject cardObject=null;
         DuelCardScript duelCardScript = null;
-        protected DuelScene duelScene = null;
+        DuelScene duelScene = null;
 
         //标记map，用来放置一些受效果而产生的标记物
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
@@ -265,6 +264,19 @@ namespace Assets.Script.Card
             return duelCardScript;
         }
 
+        /// <summary>
+        /// 获得拥有此卡的玩家
+        /// </summary>
+        /// <returns></returns>
+        public Player GetOwner()
+        {
+            return GetDuelCardScript().GetOwner();
+        }
+
+        /// <summary>
+        /// 设置当前卡牌状态
+        /// </summary>
+        /// <param name="cardGameState"></param>
         public void SetCardGameState(CardGameState cardGameState)
         {
             CardGameState oldCardGameState = this.cardGameState;
@@ -275,62 +287,10 @@ namespace Assets.Script.Card
             }
 
             this.cardGameState = cardGameState;
-            duelCardScript.ResetAttackAndDefenseText();
 
-            switch (cardGameState)
-            {
-                case CardGameState.Group:
-                    break;
-                case CardGameState.Hand:
-                    break;
-                case CardGameState.FrontAttack:
-                { 
-                    duelCardScript.ShowFront();
-                    duelCardScript.SetCardAngle(0);
-                    break;
-                }
-                case CardGameState.FrontDefense:
-                {
-                    duelCardScript.ShowFront();
-                    duelCardScript.SetCardAngle(90);
-                    break;
-                }
-                case CardGameState.Front:
-                    duelCardScript.ShowFront();
-                    duelCardScript.SetCardAngle(0);
-                    break;
-                case CardGameState.Back:
-                    duelCardScript.ShowBack();
-                    if(cardType==CardType.Monster)
-                    {
-                        duelCardScript.SetCardAngle(90);
-                    }
-                    else if(cardType == CardType.Magic || cardType == CardType.Trap)
-                    {
-                        duelCardScript.SetCardAngle(0);
-                    }
-                    break;
-                case CardGameState.Tomb:
-                    duelCardScript.ShowFront();
-                    duelCardScript.SetCardAngle(0);
-                    cardObject.transform.SetParent(GameManager.GetSingleInstance().GetDuelScene().duelBackImage.transform);
-                    if (duelCardScript.GetOwner().IsMyPlayer())
-                    {
-                        cardObject.transform.localPosition = new Vector3(DuelCommonValue.myTombPositionX, DuelCommonValue.myTombPositionY, 0);
-                    }
-                    else
-                    {
-                       cardObject.transform.localPosition = new Vector3(DuelCommonValue.opponentTombPositionX, DuelCommonValue.opponentTombPositionY, 0);
-                    }
-                    duelCardScript.SetCardAngle(0);
-                    break;
-                case CardGameState.Exclusion:
-                    break;
-                default:
-                    Debug.LogError("未知CardGameState：" + cardGameState);
-                    break;
-            }
-            if(changeCardGameState!=null)
+            GetDuelCardScript().SetCardGameState(cardGameState);
+
+            if (changeCardGameState !=null)
             {
                 changeCardGameState(this,oldCardGameState);
             }
@@ -445,8 +405,8 @@ namespace Assets.Script.Card
             if ((GetCardType() == CardType.Magic) &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
-                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null &&
-                !GetDuelCardScript().GetOwner().MagicTrapAreaIsFull())
+                GetOwner().GetCurrentEffectProcess() == null &&
+                !GetOwner().MagicTrapAreaIsFull())
             {
                 if(GetCardGameState() == CardGameState.Hand)
                 {
@@ -529,8 +489,8 @@ namespace Assets.Script.Card
             CardBase cardBase = GameManager.GetSingleInstance().GetAllCardInfoList()[cardNo];
             if(GetCardType()==CardType.Monster)
             {
-                SetAttackNumber(cardBase.GetAttackNumber());
-                SetDefenseNumber(cardBase.GetDefenseNumber());
+                SetAttackValue(cardBase.GetAttackValue());
+                SetDefenseValue(cardBase.GetDefenseValue());
             }
             foreach (var effectCard in cardEffectMap)
             {
@@ -539,10 +499,10 @@ namespace Assets.Script.Card
                     switch (cardEffect.GetCardEffectType())
                     {
                         case CardEffectType.Attack:
-                            SetAttackNumber(GetAttackNumber() + cardEffect.GetValue());
+                            SetAttackValue(GetAttackValue() + cardEffect.GetValue());
                             break;
                         case CardEffectType.Defense:
-                            SetDefenseNumber(GetDefenseNumber() + cardEffect.GetValue());
+                            SetDefenseValue(GetDefenseValue() + cardEffect.GetValue());
                             break;
                         default:
                             Debug.LogError("未知卡牌效果类型：" + cardEffect.GetCardEffectType());

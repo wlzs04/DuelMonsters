@@ -53,7 +53,9 @@ namespace Assets.Script
             duelScene.Init();
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
 
-            durlProcessPanel = GameObject.Find("DuelProcessPanel");
+            Transform canvasTransform = GameObject.Find("Canvas").transform;
+
+            durlProcessPanel = canvasTransform.Find("rightPanel/DuelProcessPanel").gameObject;
             durlProcessPanel.SetActive(false);
 
             DuelProcessConfig duelProcessConfig = ConfigManager.GetConfigByName("DuelProcess") as DuelProcessConfig;
@@ -63,17 +65,17 @@ namespace Assets.Script
                 durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().text = duelProcessConfig.GetRecordById(i).value;
             }
 
-            attackOrDefensePanel = GameObject.Find("AttackOrDefensePanel");
+            attackOrDefensePanel = canvasTransform.Find("rightPanel/AttackOrDefensePanel").gameObject;
             attackOrDefensePanel.SetActive(false);
 
-            effectSelectPanel = GameObject.Find("EffectSelectPanel");
+            effectSelectPanel = canvasTransform.Find("rightPanel/EffectSelectPanel").gameObject;
             effectSelectPanel.SetActive(false);
 
-            cardListPanel = GameObject.Find("CardListPanel");
+            cardListPanel = canvasTransform.Find("rightPanel/CardListPanel").gameObject;
             cardListContentTransform = cardListPanel.transform.GetChild(0).GetChild(0).GetChild(0);
             cardListPanel.SetActive(false);
 
-            duelResultPanel = GameObject.Find("Canvas").transform.Find("DuelResultPanel").gameObject;
+            duelResultPanel = canvasTransform.Find("DuelResultPanel").gameObject;
             duelResultPanel.SetActive(false);
         }
 
@@ -184,8 +186,8 @@ namespace Assets.Script
                 gameObject = Instantiate(monsterCardPre, infoContentTransform);
                 gameObject.transform.GetChild(0).GetComponent<Text>().text = "名称：" + card.GetName();
                 gameObject.transform.GetChild(1).GetComponent<Text>().text = "属性：" + card.GetPropertyTypeString() + "/" + card.GetMonsterTypeString() + "/" + card.GetLevel();
-                gameObject.transform.GetChild(2).GetComponent<Text>().text = "攻击力：" + card.GetAttackNumber();
-                gameObject.transform.GetChild(3).GetComponent<Text>().text = "防御力：" + card.GetDefenseNumber();
+                gameObject.transform.GetChild(2).GetComponent<Text>().text = "攻击力：" + card.GetAttackValue();
+                gameObject.transform.GetChild(3).GetComponent<Text>().text = "防御力：" + card.GetDefenseValue();
                 gameObject.transform.GetChild(4).GetComponent<Text>().text = "效果：" + card.GetEffectInfo();
             }
             else if (card.GetCardType() == CardType.Magic)
