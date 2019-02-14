@@ -19,6 +19,7 @@ namespace Assets.Script.Duel.EffectProcess
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.launchEffectCard = launchEffectCard;
+            finishAction += () => { ownerPlayer.ThinkAction(); };
         }
 
         public override void Update()

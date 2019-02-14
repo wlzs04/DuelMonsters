@@ -121,7 +121,7 @@ namespace Assets.Script.Duel
                                 }
                                 else
                                 {
-                                    nextCardGameState = CardGameState.FrontAttack;
+                                    nextCardGameState = CardGameState.FrontDefense;
                                 }
                                 for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
                                 {
@@ -136,7 +136,28 @@ namespace Assets.Script.Duel
                         }
                     }
                 }
-                if (CanEnterBattleDuelProcess())
+                //然后使用魔法卡
+                else if(CanLanuchMagicCard())
+                {
+                    foreach (var item in magicTrapCardArea)
+                    {
+                        if (item != null && item.CanLaunchEffect())
+                        {
+                            LaunchEffect(item);
+                            return;
+                        }
+                    }
+                    foreach (var item in GetHandCards())
+                    {
+                        if (item.CanLaunchEffect())
+                        {
+                            LaunchEffect(item);
+                            return ;
+                        }
+                    }
+                }
+                //最后进入战斗流程
+                else if (CanEnterBattleDuelProcess())
                 {
                     Battle();
                     return;
@@ -144,8 +165,75 @@ namespace Assets.Script.Duel
             }
             else if(duelScene.currentDuelProcess == DuelProcess.Battle)
             {
+                //先判断是否存在可以进行攻击的怪兽，并选出攻击力最大的怪兽先进行攻击
+                int canAttackMonsterIndex = -1;
+                int maxAttackValue = 0;
+                for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
+                {
+                    if (monsterCardArea[i] != null && monsterCardArea[i].CanAttack() && monsterCardArea[i].GetAttackValue()> maxAttackValue)
+                    {
+                        canAttackMonsterIndex = i;
+                        maxAttackValue = monsterCardArea[i].GetAttackValue();
+                    }
+                }
 
-                return;
+                //没有的话进入第二主要回合或回合结束
+                if(canAttackMonsterIndex==-1)
+                {
+                    duelScene.EnterDuelProcess(DuelProcess.Second);
+                    return;
+                }
+                else
+                {
+                    CardBase canAttackMonster = monsterCardArea[canAttackMonsterIndex];
+                    //如果对方没有可以受攻击的怪兽时，进行直接攻击
+                    if (!GetOpponentPlayer().HaveBeAttackedMonster() &&
+                        GetCanDirectAttack() &&
+                        GetOpponentPlayer().CanBeDirectAttacked() &&
+                        canAttackMonster.CanDirectAttack())
+                    {
+                        AttackEffectProcess attackEffectProcess = new AttackEffectProcess(canAttackMonster, null, this);
+                        AddEffectProcess(attackEffectProcess);
+                        return;
+                    }
+                   
+                    //如果当前怪兽攻击力，比对方场上表侧表示的怪兽最小的攻击力或守备力大的话进行攻击
+                    //如果对方存在里侧表示的怪兽时进行攻击
+                    //以上皆不满足的话退出战斗流程
+                    foreach (var item in GetOpponentPlayer().GetMonsterCardArea())
+                    {
+                        bool attackThisMonster = false;
+                        if(item != null && item.CanBeAttacked())
+                        {
+                            if (item.GetCardGameState()==CardGameState.FrontAttack)
+                            {
+                                if(maxAttackValue>= item.GetAttackValue())
+                                {
+                                    attackThisMonster = true;
+                                }
+                            }
+                            else if (item.GetCardGameState() == CardGameState.FrontDefense)
+                            {
+                                if (maxAttackValue >= item.GetDefenseValue())
+                                {
+                                    attackThisMonster = true;
+                                }
+                            }
+                            else if (item.GetCardGameState() == CardGameState.Back)
+                            {
+                                attackThisMonster = true;
+                            }
+                        }
+                        
+                        if(attackThisMonster)
+                        {
+                            AttackEffectProcess attackEffectProcess = new AttackEffectProcess(canAttackMonster, item, this);
+                            AddEffectProcess(attackEffectProcess);
+                            return;
+                        }
+                    }
+                    return;
+                }
             }
             else if(duelScene.currentDuelProcess == DuelProcess.End)
             {

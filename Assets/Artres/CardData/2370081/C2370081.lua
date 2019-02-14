@@ -8,6 +8,10 @@ function C2370081.InitInfo(card)
 end
 
 function C2370081.CanLaunchEffect(card)
+	local monsterCard = card:GetEquidMonster();
+	if(monsterCard~=nil)then
+		return false;
+	end
 	local myMonsterCardArea = card:GetDuelCardScript():GetOwner():GetMonsterCardArea();
 	local opponentMonsterCardArea = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();
 

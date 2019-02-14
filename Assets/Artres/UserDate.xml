@@ -72,10 +72,9 @@
     </UserCardGroup>
     <UserCardGroup cardGroupName="magictest">
       <Main>
-        <UserCardData cardNo="2370081" number="3" />
         <UserCardData cardNo="81823360" number="3" />
         <UserCardData cardNo="5318639" number="3" />
-        <UserCardData cardNo="8842266" number="3" />
+        <UserCardData cardNo="46130346" number="3" />
       </Main>
       <Extra />
       <Deputy />

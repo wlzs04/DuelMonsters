@@ -85,35 +85,20 @@ namespace Assets.Script.Card
         int changeAttackOrDefenseNumber = 0;//攻守转换次数
 
         bool canDirectAttack = true;//是否可以直接攻击
+        bool canAttack = true;//是否进行攻击
         bool canBeAttacked = true;//是否可以被攻击
         bool canPenetrateDefense = false;//是否可以贯穿守备怪兽
 
         List<CardBase> equipCards = new List<CardBase>();//怪兽的装备卡列表
 
-        public bool CanDirectAttack
+        public bool CanDirectAttack()
         {
-            get
-            {
-                return canDirectAttack;
-            }
-
-            set
-            {
-                canDirectAttack = value;
-            }
+            return canDirectAttack;
         }
 
-        public bool CanBeAttacked
+        public bool CanBeAttacked()
         {
-            get
-            {
-                return canBeAttacked;
-            }
-
-            set
-            {
-                canBeAttacked = value;
-            }
+            return canBeAttacked;
         }
 
         /// <summary>
@@ -121,7 +106,7 @@ namespace Assets.Script.Card
         /// </summary>
         public bool CanAttack()
         {
-            return  GetCardGameState() == CardGameState.FrontAttack && attackNumber > 0;
+            return  GetCardGameState() == CardGameState.FrontAttack && attackNumber > 0 && canAttack;
         }
 
         /// <summary>

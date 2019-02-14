@@ -455,14 +455,6 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 进入战斗流程
-        /// </summary>
-        public void Battle()
-        {
-            EnterDuelProcess(DuelProcess.Battle);
-        }
-
-        /// <summary>
         /// 设置环境
         /// </summary>
         public void SetEnvironment()

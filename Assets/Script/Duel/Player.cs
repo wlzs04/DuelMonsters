@@ -344,7 +344,7 @@ namespace Assets.Script.Duel
         {
             foreach (var item in monsterCardArea)
             {
-                if(item!=null&& item.CanBeAttacked)
+                if(item!=null&& item.CanBeAttacked())
                 {
                     return true;
                 }
@@ -437,6 +437,29 @@ namespace Assets.Script.Duel
             }
 
             return duelProcessCheck&& callNumberCheck&&(canCall);
+        }
+
+        /// <summary>
+        /// 判断可以发动魔法卡
+        /// </summary>
+        /// <returns></returns>
+        public bool CanLanuchMagicCard()
+        {
+            foreach (var item in magicTrapCardArea)
+            {
+                if(item!=null && item.CanLaunchEffect())
+                {
+                    return true;
+                }
+            }
+            foreach (var item in GetHandCards())
+            {
+                if (item.CanLaunchEffect())
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -692,7 +715,7 @@ namespace Assets.Script.Duel
                     item.SetAttackNumber();
                 }
             }
-            duelScene.Battle();
+            duelScene.EnterDuelProcess(DuelProcess.Battle);
         }
 
         /// <summary>

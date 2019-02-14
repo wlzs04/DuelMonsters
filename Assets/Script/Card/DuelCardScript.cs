@@ -321,7 +321,7 @@ namespace Assets.Script.Card
                         Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
                         if (opponentPlayer.CanBeDirectAttacked() &&
                             !opponentPlayer.HaveBeAttackedMonster() &&
-                            ownerPlayer.GetCanDirectAttack() && card.CanDirectAttack)
+                            ownerPlayer.GetCanDirectAttack() && card.CanDirectAttack())
                         {
                             AttackEffectProcess attackEffectProcess = new AttackEffectProcess(card, null, ownerPlayer);
                             ownerPlayer.AddEffectProcess(attackEffectProcess);

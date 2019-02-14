@@ -26,7 +26,7 @@ namespace Assets.Script.Duel.EffectProcess
             this.attackCard = attackCard;
             this.beAttackedCard = beAttackedCard;
 
-            finishAction = () => { attackCard.GetDuelCardScript().ClearPrepareAttackState();};
+            finishAction = () => { attackCard.GetDuelCardScript().ClearPrepareAttackState(); ownerPlayer.ThinkAction(); };
         }
 
         public override bool CheckCanTrigger()
@@ -58,7 +58,7 @@ namespace Assets.Script.Duel.EffectProcess
             }
             else
             {
-                
+                ChooseBeAttackedMonster(beAttackedCard);
             }
         }
 
@@ -82,7 +82,7 @@ namespace Assets.Script.Duel.EffectProcess
                 (monsterCard.GetCardGameState() == CardGameState.FrontAttack ||
                 monsterCard.GetCardGameState() == CardGameState.FrontDefense ||
                 monsterCard.GetCardGameState() == CardGameState.Back) &&
-                monsterCard.CanBeAttacked)
+                monsterCard.CanBeAttacked())
             {
                 beAttackedCard = monsterCard;
                 attackCard.GetDuelCardScript().SetAttackState(false);

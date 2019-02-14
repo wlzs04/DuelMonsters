@@ -104,15 +104,12 @@ namespace Assets.Script.Card
         Sprite image;
         string name = "未命名";//名称
         int cardNo = 0;//唯一编号，0代表为假卡。
-        string effectInfo = "没有效果。";
+        string effectInfo = "没有效果。";//卡片效果信息
 
         int cardID = 0;//代表在决斗过程中的唯一标志
 
-        string info ="";//卡片信息
-        int limitNumber = 3;//数量限制
-
         int bePlacedAreaTurnNumber = 0;//被放置到场上的第回合数
-        
+
         GameObject cardObject=null;
         DuelCardScript duelCardScript = null;
         DuelScene duelScene = null;
@@ -349,6 +346,7 @@ namespace Assets.Script.Card
         {
             return cardGameState==CardGameState.FrontAttack ||
                 cardGameState == CardGameState.FrontDefense ||
+                cardGameState == CardGameState.Front ||
                 cardGameState == CardGameState.Back;
         }
 
@@ -405,12 +403,12 @@ namespace Assets.Script.Card
             if ((GetCardType() == CardType.Magic) &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
-                GetOwner().GetCurrentEffectProcess() == null &&
-                !GetOwner().MagicTrapAreaIsFull())
+                GetOwner().GetCurrentEffectProcess() == null
+                )
             {
                 if(GetCardGameState() == CardGameState.Hand)
                 {
-                    return canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
+                    return !GetOwner().MagicTrapAreaIsFull() && canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
                 }
                 else if(IsInArea(cardGameState) && duelScene.GetCurrentTurnNumber()> GetBePlacedAreaTurnNumber())
                 {

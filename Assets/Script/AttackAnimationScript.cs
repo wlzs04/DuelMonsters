@@ -42,14 +42,15 @@ public class AttackAnimationScript : MonoBehaviour {
     /// </summary>
     public void StopPlay()
     {
-        if(AnimationFinishEvent!=null)
-        {
-            AnimationFinishEvent.Invoke();
-            AnimationFinishEvent = null;
-        }
         startPlay = false;
         gameObject.SetActive(false);
         residueTime = 0;
+        if (AnimationFinishEvent!=null)
+        {
+            FinishEvent tempAnimationFinishEvent = AnimationFinishEvent;
+            AnimationFinishEvent = null;
+            tempAnimationFinishEvent.Invoke();
+        }
     }
 
     /// <summary>
