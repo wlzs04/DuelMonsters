@@ -118,9 +118,7 @@ namespace Assets.Script.Duel.EffectProcess
                 callMonster.GetDuelCardScript().GetOwner().GetHandCards().Remove(callMonster);
             }
 
-            callMonster.SetCardGameState(cardGameState);
-            callMonster.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
-            callMonster.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMonsterCardPositionY, 1));
+            callMonster.SetCardGameState(cardGameState, index);
             
             ownerPlayer.SetNormalCallNumber(ownerPlayer.GetNormalCallNumber() - 1);
             return index;

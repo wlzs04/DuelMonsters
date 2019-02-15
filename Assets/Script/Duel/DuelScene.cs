@@ -58,6 +58,11 @@ namespace Assets.Script.Duel
         bool inChain = false;//是否在连锁中
         Stack<UnityAction> chainStack=new Stack<UnityAction>();
 
+        List<Vector2> myMonsterCardPositionAnchorList = new List<Vector2>();
+        List<Vector2> myMagicTrapCardPositionAnchorList = new List<Vector2>();
+        List<Vector2> opponentMonsterCardPositionAnchorList = new List<Vector2>();
+        List<Vector2> opponentMagicTrapCardPositionAnchorList = new List<Vector2>();
+
         public DuelScene(DuelMode duelMode)
         {
             myPlayer = new Player("玩家", this);
@@ -80,6 +85,31 @@ namespace Assets.Script.Duel
             opponentPlayer.SetOpponentPlayer(myPlayer);
 
             cardPre = Resources.Load<GameObject>(cardPrefabPath);
+
+            myMonsterCardPositionAnchorList.Add(DuelCommonValue.myMonsterCardPosition0Anchor);
+            myMonsterCardPositionAnchorList.Add(DuelCommonValue.myMonsterCardPosition1Anchor);
+            myMonsterCardPositionAnchorList.Add(DuelCommonValue.myMonsterCardPosition2Anchor);
+            myMonsterCardPositionAnchorList.Add(DuelCommonValue.myMonsterCardPosition3Anchor);
+            myMonsterCardPositionAnchorList.Add(DuelCommonValue.myMonsterCardPosition4Anchor);
+
+            myMagicTrapCardPositionAnchorList.Add(DuelCommonValue.myMagicTrapCardPosition0Anchor);
+            myMagicTrapCardPositionAnchorList.Add(DuelCommonValue.myMagicTrapCardPosition1Anchor);
+            myMagicTrapCardPositionAnchorList.Add(DuelCommonValue.myMagicTrapCardPosition2Anchor);
+            myMagicTrapCardPositionAnchorList.Add(DuelCommonValue.myMagicTrapCardPosition3Anchor);
+            myMagicTrapCardPositionAnchorList.Add(DuelCommonValue.myMagicTrapCardPosition4Anchor);
+
+            opponentMonsterCardPositionAnchorList.Add(DuelCommonValue.opponentMonsterCardPosition0Anchor);
+            opponentMonsterCardPositionAnchorList.Add(DuelCommonValue.opponentMonsterCardPosition1Anchor);
+            opponentMonsterCardPositionAnchorList.Add(DuelCommonValue.opponentMonsterCardPosition2Anchor);
+            opponentMonsterCardPositionAnchorList.Add(DuelCommonValue.opponentMonsterCardPosition3Anchor);
+            opponentMonsterCardPositionAnchorList.Add(DuelCommonValue.opponentMonsterCardPosition4Anchor);
+
+            opponentMagicTrapCardPositionAnchorList.Add(DuelCommonValue.opponentMagicTrapCardPosition0Anchor);
+            opponentMagicTrapCardPositionAnchorList.Add(DuelCommonValue.opponentMagicTrapCardPosition1Anchor);
+            opponentMagicTrapCardPositionAnchorList.Add(DuelCommonValue.opponentMagicTrapCardPosition2Anchor);
+            opponentMagicTrapCardPositionAnchorList.Add(DuelCommonValue.opponentMagicTrapCardPosition3Anchor);
+            opponentMagicTrapCardPositionAnchorList.Add(DuelCommonValue.opponentMagicTrapCardPosition4Anchor);
+
         }
 
         /// <summary>
@@ -94,6 +124,58 @@ namespace Assets.Script.Duel
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
             myHandCardPanel = GameObject.Find("MyHandCardPanel");
             opponentHandCardPanel = GameObject.Find("OpponentHandCardPanel");
+        }
+
+        /// <summary>
+        /// 获得决斗场景的宽度
+        /// </summary>
+        public float GetDuelWidth()
+        {
+            return duelBackImage.rectTransform.rect.width;
+        }
+
+        /// <summary>
+        /// 获得决斗场景的高度
+        /// </summary>
+        public float GetDuelHeight()
+        {
+            return duelBackImage.rectTransform.rect.height;
+        }
+
+        /// <summary>
+        /// 获得指定玩家怪兽区指定位置的锚点
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Vector2 GetMonsterPositionAnchorByIndex(Player player,int index)
+        {
+            if(player==myPlayer)
+            {
+                return myMonsterCardPositionAnchorList[index];
+            }
+            else if(player == opponentPlayer)
+            {
+                return opponentMonsterCardPositionAnchorList[index];
+            }
+            return Vector2.zero;
+        }
+
+        /// <summary>
+        /// 获得指定玩家魔法陷阱区指定位置的锚点
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Vector2 GetMagicTrapPositionAnchorByIndex(Player player, int index)
+        {
+            if (player == myPlayer)
+            {
+                return myMagicTrapCardPositionAnchorList[index];
+            }
+            else if (player == opponentPlayer)
+            {
+                return opponentMagicTrapCardPositionAnchorList[index];
+            }
+            return Vector2.zero;
         }
 
         public int GetCurrentTurnNumber()

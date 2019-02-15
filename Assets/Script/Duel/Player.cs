@@ -40,7 +40,6 @@ namespace Assets.Script.Duel
         GameObject handPanel = null;
         protected Scrollbar lifeScrollBar = null;
         protected Text lifeNumberText = null;
-        protected Vector3 heartPosition;
         protected int life = 4000;
         
         bool canBeDirectAttacked = true;
@@ -134,8 +133,6 @@ namespace Assets.Script.Duel
         /// </summary>
         public virtual void InitBeforDuel()
         {
-            heartPosition = new Vector3(DuelCommonValue.myHeartPositionX, DuelCommonValue.myHeartPositionY);
-
             lifeScrollBar = GameObject.Find("myLifeScrollbar").GetComponent<Scrollbar>();
             lifeNumberText = GameObject.Find("myLifeNumberText").GetComponent<Text>();
 
@@ -148,8 +145,7 @@ namespace Assets.Script.Duel
                 go.GetComponent<DuelCardScript>().SetCard(myCards[i]);
                 go.GetComponent<DuelCardScript>().SetOwner(this);
                 myCards[i].SetCardObject(go);
-                go.transform.SetParent(duelScene.duelBackImage.transform);
-                go.transform.localPosition = new Vector3(DuelCommonValue.myCardGroupPositionX, DuelCommonValue.myCardGroupPositionY, 0);
+                myCards[i].SetCardGameState(CardGameState.Group);
             }
         }
 
@@ -251,9 +247,9 @@ namespace Assets.Script.Duel
             
         }
 
-        public Vector3 GetHeartPosition()
+        public virtual Vector3 GetHeartPosition()
         {
-            return heartPosition;
+            return new Vector3(0, -duelScene.GetDuelHeight());
         }
 
         public void SetOpponentPlayer(Player opponentPlayer)
@@ -521,9 +517,13 @@ namespace Assets.Script.Duel
 
         public void AddCardToHand(CardBase card)
         {
-            card.GetDuelCardScript().SetParent(handPanel.transform);
             GetHandCards().Add(card);
             card.SetCardGameState(CardGameState.Hand);
+        }
+
+        public GameObject GetHandPanel()
+        {
+            return handPanel;
         }
 
         /// <summary>
@@ -777,11 +777,8 @@ namespace Assets.Script.Duel
             if (IsMyPlayer())
             {
                 //检测召唤条件是否满足
-                if (normalCallNumber > 0)
-                {
-                    CallMonsterEffectProcess callMonsterEffectProcess = new CallMonsterEffectProcess(monsterCard, cardGameState, this);
-                    AddEffectProcess(callMonsterEffectProcess);
-                }
+                CallMonsterEffectProcess callMonsterEffectProcess = new CallMonsterEffectProcess(monsterCard, cardGameState, this);
+                AddEffectProcess(callMonsterEffectProcess);
             }
         }
 
@@ -880,13 +877,11 @@ namespace Assets.Script.Duel
                 }
             }
 
-            int index = DuelRuleManager.GetMonsterAreaNumber() - flag - 1;
+            int index = flag;
 
             monsterCardArea[flag] = monsterCard;
             monsterCard.AddContent("monsterCardAreaIndex", flag);
-            monsterCard.SetCardGameState(toCardGameState);
-            monsterCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
-            monsterCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.opponentMonsterCardPositionY, 1));
+            monsterCard.SetCardGameState(toCardGameState, index);
             
             handCards.Remove(monsterCard);
             normalCallNumber--;

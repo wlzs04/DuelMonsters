@@ -55,14 +55,14 @@ namespace Assets.Script.Card
         CardBase launchEffectCard=null;
         Action<CardBase, CardBase> clickCallback = null;
 
-        void Start()
+        void Awake()
         {
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
             cardImage = gameObject.transform.GetChild(0).gameObject;
             attackImage = gameObject.transform.GetChild(1).gameObject;
-            operationPanelTransform = gameObject.transform.GetChild(2);
-            borderImage = gameObject.transform.GetChild(3).gameObject;
-            attackAndDefenseText = gameObject.transform.GetChild(4).gameObject;
+            borderImage = cardImage.transform.GetChild(0).gameObject;
+            operationPanelTransform = cardImage.transform.GetChild(1);
+            attackAndDefenseText = cardImage.transform.GetChild(2).gameObject;
             attackAndDefenseText.GetComponent<Text>().text = "";
         }
 
@@ -97,13 +97,27 @@ namespace Assets.Script.Card
         /// 设置当前卡牌状态，由CardBase类调用，仅做卡牌位置，方向，正反等显示处理
         /// </summary>
         /// <param name="cardGameState"></param>
-        public void SetCardGameState(CardGameState cardGameState)
+        public void SetCardGameState(CardGameState cardGameState,int index = 0)
         {
             switch (cardGameState)
             {
                 case CardGameState.Group:
-                    break;
+                    {
+                        transform.SetParent(duelScene.duelBackImage.transform);
+                        ShowBack();
+                        if (GetOwner().IsMyPlayer())
+                        {
+                            SetAnchorPosition(DuelCommonValue.myCardGroupPositionAnchor);
+                        }
+                        else
+                        {
+                            SetAnchorPosition(DuelCommonValue.opponentCardGroupPositionAnchor);
+                        }
+                        SetCardAngle(0);
+                        break;
+                    }
                 case CardGameState.Hand:
+                    SetParent(GetOwner().GetHandPanel().transform);
                     if (GetOwner() == duelScene.myPlayer)
                     {
                         ShowFront();
@@ -119,52 +133,75 @@ namespace Assets.Script.Card
                     break;
                 case CardGameState.FrontAttack:
                     {
+                        SetParent(duelScene.duelBackImage.transform);
+                        SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
                         ShowFront();
                         SetCardAngle(0);
                         break;
                     }
                 case CardGameState.FrontDefense:
                     {
+                        SetParent(duelScene.duelBackImage.transform);
+                        SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
                         ShowFront();
                         SetCardAngle(90);
                         break;
                     }
                 case CardGameState.Front:
-                    ShowFront();
-                    SetCardAngle(0);
-                    break;
-                case CardGameState.Back:
-                    ShowBack();
-                    if (card.GetCardType() == CardType.Monster)
                     {
-                        SetCardAngle(90);
-                    }
-                    else if (card.GetCardType() == CardType.Magic || card.GetCardType() == CardType.Trap)
-                    {
+                        SetParent(duelScene.duelBackImage.transform);
+                        SetAnchorPosition(duelScene.GetMagicTrapPositionAnchorByIndex(ownerPlayer, index));
+                        ShowFront();
                         SetCardAngle(0);
+                        break;
                     }
-                    break;
+                case CardGameState.Back:
+                    {
+                        ShowBack();
+                        SetParent(duelScene.duelBackImage.transform);
+                        if (card.GetCardType() == CardType.Monster)
+                        {
+                            SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
+                            SetCardAngle(90);
+                        }
+                        else if (card.GetCardType() == CardType.Magic || card.GetCardType() == CardType.Trap)
+                        {
+                            SetAnchorPosition(duelScene.GetMagicTrapPositionAnchorByIndex(ownerPlayer, index));
+                            SetCardAngle(0);
+                        }
+                        break;
+                    }
                 case CardGameState.Tomb:
                     ShowFront();
+                    SetParent(duelScene.duelBackImage.transform);
                     SetCardAngle(0);
-                    transform.SetParent(GameManager.GetSingleInstance().GetDuelScene().duelBackImage.transform);
+                    transform.SetParent(duelScene.duelBackImage.transform);
                     if (GetOwner().IsMyPlayer())
                     {
-                        transform.localPosition = new Vector3(DuelCommonValue.myTombPositionX, DuelCommonValue.myTombPositionY, 0);
+                        SetAnchorPosition(DuelCommonValue.myTombPositionAnchor);
                     }
                     else
                     {
-                        transform.localPosition = new Vector3(DuelCommonValue.opponentTombPositionX, DuelCommonValue.opponentTombPositionY, 0);
+                        SetAnchorPosition(DuelCommonValue.opponentTombPositionAnchor);
                     }
                     SetCardAngle(0);
-                    break;
-                case CardGameState.Exclusion:
                     break;
                 default:
                     Debug.LogError("未知CardGameState：" + cardGameState);
                     break;
             }
             ResetAttackAndDefenseText();
+        }
+
+        /// <summary>
+        /// 设置卡牌锚点
+        /// </summary>
+        public void SetAnchorPosition(Vector2 vector2)
+        {
+            ((RectTransform)transform).anchorMin = vector2;
+            ((RectTransform)transform).anchorMax = vector2;
+            ((RectTransform)transform).offsetMin = Vector2.zero;
+            ((RectTransform)transform).offsetMax = Vector2.zero;
         }
 
         /// <summary>

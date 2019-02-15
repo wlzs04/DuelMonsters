@@ -19,23 +19,25 @@ namespace Assets.Script.Duel
 
         public override void InitBeforDuel()
         {
-            heartPosition = new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY);
-
             lifeScrollBar = GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>();
             lifeNumberText = GameObject.Find("opponentLifeNumberText").GetComponent<Text>();
 
             life = DuelRuleManager.GetPlayerStartLife();
 
-            List<CardBase> opponentCards = duelCardGroup.GetCards();
-            for (int i = 0; i < opponentCards.Count; i++)
+            List<CardBase> myCards = duelCardGroup.GetCards();
+            for (int i = 0; i < myCards.Count; i++)
             {
                 GameObject go = UnityEngine.Object.Instantiate(duelScene.cardPre, duelScene.duelBackImage.transform);
-                go.GetComponent<DuelCardScript>().SetCard(opponentCards[i]);
+                go.GetComponent<DuelCardScript>().SetCard(myCards[i]);
                 go.GetComponent<DuelCardScript>().SetOwner(this);
-                opponentCards[i].SetCardObject(go);
-                go.transform.SetParent(duelScene.duelBackImage.transform);
-                go.transform.localPosition = new Vector3(DuelCommonValue.opponentCardGroupPositionX, DuelCommonValue.opponentCardGroupPositionY, 0);
+                myCards[i].SetCardObject(go);
+                myCards[i].SetCardGameState(CardGameState.Group);
             }
+        }
+
+        public override Vector3 GetHeartPosition()
+        {
+            return new Vector3(0, duelScene.GetDuelHeight());
         }
 
         public override void DrawNotify()
@@ -89,7 +91,7 @@ namespace Assets.Script.Duel
                         if (duelCardScript.CanCall())
                         {
                             int sacrificeMonsterNumer = item.NeedSacrificeMonsterNumer();
-                            if(sacrificeMonsterNumer>0)
+                            if (sacrificeMonsterNumer > 0)
                             {
                                 string sacrificeInfo = "";
                                 int index = 0;
@@ -97,20 +99,20 @@ namespace Assets.Script.Duel
                                 {
                                     if (monsterCardArea[i] != null)
                                     {
-                                        sacrificeInfo += monsterCardArea[i].GetID()+":";
+                                        sacrificeInfo += monsterCardArea[i].GetID() + ":";
                                         sacrificeMonsterNumer--;
                                         index = i;
-                                        if (sacrificeMonsterNumer<=0)
+                                        if (sacrificeMonsterNumer <= 0)
                                         {
                                             break;
                                         }
                                     }
                                 }
-                                if(sacrificeInfo.EndsWith(":"))
+                                if (sacrificeInfo.EndsWith(":"))
                                 {
                                     sacrificeInfo = sacrificeInfo.Substring(0, sacrificeInfo.Length - 1);
                                 }
-                                CallMonsterByProtocol(item.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, index,sacrificeInfo);
+                                CallMonsterByProtocol(item.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, index, sacrificeInfo);
                             }
                             else
                             {
@@ -136,32 +138,32 @@ namespace Assets.Script.Duel
                         }
                     }
                 }
-                //然后使用魔法卡
-                else if(CanLanuchMagicCard())
-                {
-                    foreach (var item in magicTrapCardArea)
-                    {
-                        if (item != null && item.CanLaunchEffect())
-                        {
-                            LaunchEffect(item);
-                            return;
-                        }
-                    }
-                    foreach (var item in GetHandCards())
-                    {
-                        if (item.CanLaunchEffect())
-                        {
-                            LaunchEffect(item);
-                            return ;
-                        }
-                    }
-                }
-                //最后进入战斗流程
-                else if (CanEnterBattleDuelProcess())
-                {
-                    Battle();
-                    return;
-                }
+                ////然后使用魔法卡
+                //else if (CanLanuchMagicCard())
+                //{
+                //    foreach (var item in magicTrapCardArea)
+                //    {
+                //        if (item != null && item.CanLaunchEffect())
+                //        {
+                //            LaunchEffect(item);
+                //            return;
+                //        }
+                //    }
+                //    foreach (var item in GetHandCards())
+                //    {
+                //        if (item.CanLaunchEffect())
+                //        {
+                //            LaunchEffect(item);
+                //            return;
+                //        }
+                //    }
+                //}
+                ////最后进入战斗流程
+                //else if (CanEnterBattleDuelProcess())
+                //{
+                //    Battle();
+                //    return;
+                //}
             }
             else if(duelScene.currentDuelProcess == DuelProcess.Battle)
             {

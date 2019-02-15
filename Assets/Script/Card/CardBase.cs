@@ -271,10 +271,10 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
-        /// 设置当前卡牌状态
+        /// 设置当前卡牌状态，如果是在怪魔法陷阱区时，根据设置index位置
         /// </summary>
         /// <param name="cardGameState"></param>
-        public void SetCardGameState(CardGameState cardGameState)
+        public void SetCardGameState(CardGameState cardGameState,int index = 0)
         {
             CardGameState oldCardGameState = this.cardGameState;
             //卡牌刚进入场上开始计被放置到场上的第回合数
@@ -285,7 +285,7 @@ namespace Assets.Script.Card
 
             this.cardGameState = cardGameState;
 
-            GetDuelCardScript().SetCardGameState(cardGameState);
+            GetDuelCardScript().SetCardGameState(cardGameState,index);
 
             if (changeCardGameState !=null)
             {

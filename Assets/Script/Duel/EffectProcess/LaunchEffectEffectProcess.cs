@@ -48,9 +48,7 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 ownerPlayer.GetHandCards().Remove(launchEffectCard);
             }
-            launchEffectCard.SetCardGameState(CardGameState.Front);
-            launchEffectCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
-            launchEffectCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMagicTrapCardFarLeftPositionY, 1));
+            launchEffectCard.SetCardGameState(CardGameState.Front,index);
             
             launchEffectCard.LaunchEffect();
 

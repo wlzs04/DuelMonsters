@@ -20,23 +20,25 @@ namespace Assets.Script.Duel
 
         public override void InitBeforDuel()
         {
-            heartPosition = new Vector3(DuelCommonValue.opponentHeartPositionX, DuelCommonValue.opponentHeartPositionY);
-
             lifeScrollBar = GameObject.Find("opponentLifeScrollbar").GetComponent<Scrollbar>();
             lifeNumberText = GameObject.Find("opponentLifeNumberText").GetComponent<Text>();
 
             life = DuelRuleManager.GetPlayerStartLife();
 
-            List<CardBase> opponentCards = duelCardGroup.GetCards();
-            for (int i = 0; i < opponentCards.Count; i++)
+            List<CardBase> myCards = duelCardGroup.GetCards();
+            for (int i = 0; i < myCards.Count; i++)
             {
                 GameObject go = GameObject.Instantiate(duelScene.cardPre, duelScene.duelBackImage.transform);
-                go.GetComponent<DuelCardScript>().SetCard(opponentCards[i]);
+                go.GetComponent<DuelCardScript>().SetCard(myCards[i]);
                 go.GetComponent<DuelCardScript>().SetOwner(this);
-                opponentCards[i].SetCardObject(go);
-                go.transform.SetParent(duelScene.duelBackImage.transform);
-                go.transform.localPosition = new Vector3(DuelCommonValue.opponentCardGroupPositionX, DuelCommonValue.opponentCardGroupPositionY, 0);
+                myCards[i].SetCardObject(go);
+                myCards[i].SetCardGameState(CardGameState.Group);
             }
+        }
+
+        public override Vector3 GetHeartPosition()
+        {
+            return new Vector3(0, duelScene.GetDuelHeight());
         }
 
         public override void DrawNotify()

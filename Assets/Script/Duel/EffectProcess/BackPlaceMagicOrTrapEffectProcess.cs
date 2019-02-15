@@ -39,8 +39,6 @@ namespace Assets.Script.Duel.EffectProcess
             }
             backPlaceCard.AddContent("magicTrapCardAreaIndex", index);
             backPlaceCard.SetCardGameState(CardGameState.Back);
-            backPlaceCard.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
-            backPlaceCard.GetDuelCardScript().SetLocalPosition(new Vector3(DuelCommonValue.cardOnBackFarLeftPositionX + index * DuelCommonValue.cardGap, DuelCommonValue.myMagicTrapCardFarLeftPositionY, 1));
             ownerPlayer.GetHandCards().Remove(backPlaceCard);
 
             AfterFinishProcessFunction();
