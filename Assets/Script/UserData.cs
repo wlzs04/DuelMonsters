@@ -56,6 +56,15 @@ namespace Assets.Script
         public bool showOpponentHandCard = false;
 
         [XmlAttribute]
+        public bool opponentCanCallMonster = false;
+
+        [XmlAttribute]
+        public bool opponentCanLaunchEffect = false;
+
+        [XmlAttribute]
+        public bool opponentCanAttack = false;
+
+        [XmlAttribute]
         public string ip ="127.0.0.1";
 
         [XmlAttribute]

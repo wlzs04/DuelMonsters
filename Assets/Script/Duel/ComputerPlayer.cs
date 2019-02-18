@@ -83,7 +83,7 @@ namespace Assets.Script.Duel
             else if (duelScene.currentDuelProcess == DuelProcess.Main)
             {
                 //先召唤怪兽
-                if (CanCallMonster())
+                if (GameManager.GetSingleInstance().GetUserData().opponentCanCallMonster && CanCallMonster())
                 {
                     foreach (var item in handCards)
                     {
@@ -138,32 +138,32 @@ namespace Assets.Script.Duel
                         }
                     }
                 }
-                ////然后使用魔法卡
-                //else if (CanLanuchMagicCard())
-                //{
-                //    foreach (var item in magicTrapCardArea)
-                //    {
-                //        if (item != null && item.CanLaunchEffect())
-                //        {
-                //            LaunchEffect(item);
-                //            return;
-                //        }
-                //    }
-                //    foreach (var item in GetHandCards())
-                //    {
-                //        if (item.CanLaunchEffect())
-                //        {
-                //            LaunchEffect(item);
-                //            return;
-                //        }
-                //    }
-                //}
-                ////最后进入战斗流程
-                //else if (CanEnterBattleDuelProcess())
-                //{
-                //    Battle();
-                //    return;
-                //}
+                //然后使用魔法卡
+                else if (GameManager.GetSingleInstance().GetUserData().opponentCanLaunchEffect && CanLanuchMagicCard())
+                {
+                    foreach (var item in magicTrapCardArea)
+                    {
+                        if (item != null && item.CanLaunchEffect())
+                        {
+                            LaunchEffect(item);
+                            return;
+                        }
+                    }
+                    foreach (var item in GetHandCards())
+                    {
+                        if (item.CanLaunchEffect())
+                        {
+                            LaunchEffect(item);
+                            return;
+                        }
+                    }
+                }
+                //最后进入战斗流程
+                else if (GameManager.GetSingleInstance().GetUserData().opponentCanAttack && CanEnterBattleDuelProcess())
+                {
+                    Battle();
+                    return;
+                }
             }
             else if(duelScene.currentDuelProcess == DuelProcess.Battle)
             {

@@ -22,6 +22,16 @@ public class GUIScript : MonoBehaviour {
 
             bool showOpponentHandCardValue = gameManager.GetUserData().showOpponentHandCard;
             GameObject.Find("ShowOpponentHandCardToggle").GetComponent<Toggle>().isOn = showOpponentHandCardValue;
+
+            bool opponentCanCallMonster = gameManager.GetUserData().opponentCanCallMonster;
+            GameObject.Find("OpponentCanCallMonsterToggle").GetComponent<Toggle>().isOn = opponentCanCallMonster;
+
+            bool opponentCanLaunchEffect = gameManager.GetUserData().opponentCanLaunchEffect;
+            GameObject.Find("OpponentCanLaunchEffectToggle").GetComponent<Toggle>().isOn = opponentCanLaunchEffect;
+
+
+            bool opponentCanAttack = gameManager.GetUserData().opponentCanAttack;
+            GameObject.Find("OpponentCanAttackToggle").GetComponent<Toggle>().isOn = opponentCanAttack;
         }
     }
 	
@@ -86,5 +96,20 @@ public class GUIScript : MonoBehaviour {
     public void ShowOpponentHandCardToggle(bool value)
     {
         gameManager.SetShowOpponentHandCard(value);
+    }
+
+    public void OpponentCanCallMonsterToggle(bool value)
+    {
+        gameManager.SetOpponentCanCallMonster(value);
+    }
+
+    public void OpponentCanLaunchEffectToggle(bool value)
+    {
+        gameManager.SetOpponentCanLaunchEffect(value);
+    }
+
+    public void OpponentCanAttackToggle(bool value)
+    {
+        gameManager.SetOpponenttCanAttack(value);
     }
 }

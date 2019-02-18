@@ -653,5 +653,35 @@ namespace Assets.Script
         {
             return allCardInfoList;
         }
+
+        /// <summary>
+        /// 设置对方是否可以召唤怪兽
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetOpponentCanCallMonster(bool value)
+        {
+            userData.opponentCanCallMonster = value;
+            SaveUserData();
+        }
+
+        /// <summary>
+        /// 设置对方是否可以使用魔法卡
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetOpponentCanLaunchEffect(bool value)
+        {
+            userData.opponentCanLaunchEffect = value;
+            SaveUserData();
+        }
+
+        /// <summary>
+        /// 设置对方是否可以进行攻击
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetOpponenttCanAttack(bool value)
+        {
+            userData.opponentCanAttack = value;
+            SaveUserData();
+        }
     }
 }
