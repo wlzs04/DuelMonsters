@@ -338,6 +338,14 @@ namespace Assets.Script.Card
             return GetStringByCardType(cardType);
         }
 
+        public bool IsInArea()
+        {
+            return cardGameState == CardGameState.FrontAttack ||
+                cardGameState == CardGameState.FrontDefense ||
+                cardGameState == CardGameState.Front ||
+                cardGameState == CardGameState.Back;
+        }
+
         /// <summary>
         /// 判断当前是否在场上
         /// </summary>
@@ -400,13 +408,13 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanLaunchEffect()
         {
-            if ((GetCardType() == CardType.Magic) &&
+            if ((GetCardType() == CardType.Magic || GetCardType() == CardType.Trap) &&
                 (duelScene.currentDuelProcess == DuelProcess.Main ||
                 duelScene.currentDuelProcess == DuelProcess.Second) &&
                 GetOwner().GetCurrentEffectProcess() == null
                 )
             {
-                if(GetCardGameState() == CardGameState.Hand)
+                if(GetCardGameState() == CardGameState.Hand && GetCardType() != CardType.Trap)
                 {
                     return !GetOwner().MagicTrapAreaIsFull() && canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
                 }

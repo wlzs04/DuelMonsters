@@ -27,6 +27,7 @@ namespace Assets.Script.Duel.EffectProcess
             this.chooseCardJudgeAction = chooseCardJudgeAction;
             this.chooseCardCallBack = chooseCardCallBack;
 
+            finishAction += launchEffectCard.GetDuelCardScript().GetDuelScene().UnlockScene;
             finishAction += RemoveChooseCardCallBackFromCardList;
         }
 
@@ -37,6 +38,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
+            launchEffectCard.GetDuelCardScript().GetDuelScene().LockScene();
             //从我方魔法陷阱区进行选择
             CardBase[] myMagicTrapCardArea = launchEffectCard.GetOwner().GetMagicTrapCardArea();
             AddCanChooseCardFromList(myMagicTrapCardArea);
@@ -94,6 +96,15 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 item.GetDuelCardScript().RemoveClickCallback();
             }
+        }
+
+        /// <summary>
+        /// 设置在选择卡牌时显示的标题
+        /// </summary>
+        /// <param name="titleText"></param>
+        public void SetTitle(string titleText)
+        {
+            GameManager.ShowMessage(titleText);
         }
     }
 }

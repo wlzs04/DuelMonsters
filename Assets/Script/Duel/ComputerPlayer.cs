@@ -65,7 +65,7 @@ namespace Assets.Script.Duel
             {
                 if(currentEffectProcess is DiscardHandCardEffectProcess)
                 {
-                    MoveCardToTomb(FindWorstCardInHand());
+                    (currentEffectProcess as DiscardHandCardEffectProcess).DiscardOneHandCard(null,FindWorstCardInHand());
                 }
                 return;
             }

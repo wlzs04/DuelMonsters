@@ -77,7 +77,7 @@ namespace Assets.Script.Card
                     GetDuelCardScript().GetOwner().MoveCardToTomb(this);
                     break;
                 default:
-                    Debug.LogError("未知MagicType：" + cardGameState);
+                    Debug.LogError("未知MagicType：" + magicType);
                     break;
             }
         }

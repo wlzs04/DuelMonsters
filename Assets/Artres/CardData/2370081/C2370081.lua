@@ -30,12 +30,9 @@ function C2370081.CanLaunchEffect(card)
 end
 
 function C2370081.LaunchEffect(card)
-	
-	CS.Assets.Script.GameManager.ShowMessage("请选择被装备的怪兽！")
-	card:GetDuelCardScript():GetDuelScene():LockScene();
-
 	local chooseCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChooseCardEffectProcess(card,C2370081.ChooseCardJudgeAction,C2370081.ChooseCardCallback, card:GetOwner());
-    card:GetDuelCardScript():GetOwner():AddEffectProcess(chooseCardEffectProcess);
+    chooseCardEffectProcess:SetTitle("请选择被装备的怪兽！");
+	card:GetDuelCardScript():GetOwner():AddEffectProcess(chooseCardEffectProcess);
 end
 
 function C2370081.ChooseCardJudgeAction(launchEffectCard,chooseCard)
@@ -48,8 +45,6 @@ function C2370081.ChooseCardCallback(launchEffectCard,chooseCard)
 	if(not C2370081.ChooseCardJudgeAction(launchEffectCard,chooseCard))then
 		return
 	end
-
-	launchEffectCard:GetDuelCardScript():GetDuelScene():UnlockScene();
 
 	launchEffectCard:GetOwner():GetCurrentEffectProcess():AfterFinishProcessFunction();
 	

@@ -33,11 +33,10 @@ namespace Assets.Script.Duel.EffectProcess
         protected DuelScene duelScene;
         protected bool haveProcess = false;//是否已经执行
 
-        public EffectProcessBase(Player ownerPlayer, UnityAction finishAction=null)
+        public EffectProcessBase(Player ownerPlayer)
         {
             this.ownerPlayer = ownerPlayer;
             duelScene = GameManager.GetSingleInstance().GetDuelScene();
-            this.finishAction = finishAction;
         }
 
         public virtual void Update()

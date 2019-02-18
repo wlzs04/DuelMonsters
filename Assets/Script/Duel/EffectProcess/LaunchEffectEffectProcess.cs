@@ -34,21 +34,28 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
-            int index = 0;
-            for (; index < DuelRuleManager.GetMagicTrapAreaNumber(); index++)
+            if(!launchEffectCard.IsInArea())
             {
-                if (ownerPlayer.GetMagicTrapCardArea()[index] == null)
+                int index = 0;
+                for (; index < DuelRuleManager.GetMagicTrapAreaNumber(); index++)
                 {
-                    ownerPlayer.GetMagicTrapCardArea()[index] = launchEffectCard;
-                    break;
+                    if (ownerPlayer.GetMagicTrapCardArea()[index] == null)
+                    {
+                        ownerPlayer.GetMagicTrapCardArea()[index] = launchEffectCard;
+                        break;
+                    }
                 }
+                launchEffectCard.AddContent("magicTrapCardAreaIndex", index);
+                if (launchEffectCard.GetCardGameState() == CardGameState.Hand)
+                {
+                    ownerPlayer.GetHandCards().Remove(launchEffectCard);
+                }
+                launchEffectCard.SetCardGameState(CardGameState.Front, index);
             }
-            launchEffectCard.AddContent("magicTrapCardAreaIndex", index);
-            if(launchEffectCard.GetCardGameState()==CardGameState.Hand)
+            else
             {
-                ownerPlayer.GetHandCards().Remove(launchEffectCard);
+                launchEffectCard.SetCardGameState(CardGameState.Front);
             }
-            launchEffectCard.SetCardGameState(CardGameState.Front,index);
             
             launchEffectCard.LaunchEffect();
 

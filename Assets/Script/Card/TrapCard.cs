@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Assets.Script.Card
 {
@@ -50,7 +51,19 @@ namespace Assets.Script.Card
         /// </summary>
         public void TrapLaunchEffectCallback()
         {
-
+            switch (trapType)
+            {
+                case TrapType.Normal:
+                    GetDuelCardScript().GetOwner().MoveCardToTomb(this);
+                    break;
+                case TrapType.Forever:
+                    break;
+                case TrapType.BeatBack:
+                    break;
+                default:
+                    Debug.LogError("未知TrapType：" + trapType);
+                    break;
+            }
         }
 
         /// <summary>

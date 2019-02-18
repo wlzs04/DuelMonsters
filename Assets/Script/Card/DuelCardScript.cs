@@ -390,13 +390,6 @@ namespace Assets.Script.Card
             {
                 duelScene.ShowCardList(ownerPlayer, card.GetCardGameState(), true, null, null);
             }
-            else if(card.GetCardGameState() == CardGameState.Hand)
-            {
-                if(ownerPlayer==duelScene.myPlayer && ownerPlayer.GetCurrentEffectProcess() is DiscardHandCardEffectProcess)
-                {
-                    ownerPlayer.MoveCardToTomb(card);
-                }
-            }
         }
 
         public void OnPointerEnter(PointerEventData eventData)

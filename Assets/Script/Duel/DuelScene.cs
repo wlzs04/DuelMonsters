@@ -730,5 +730,15 @@ namespace Assets.Script.Duel
             GameManager.AddTimerFunction(timeFunction);
             guessFirstSceneScript.HideSelectFirstPanel();
         }
+
+        /// <summary>
+        /// 获得场上的卡牌数量
+        /// </summary>
+        /// <returns></returns>
+        public int GetCardNumberInArea()
+        {
+            
+            return myPlayer.GetCardNumberInArea() + opponentPlayer.GetCardNumberInArea();
+        }
     }
 }

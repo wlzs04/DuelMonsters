@@ -972,10 +972,6 @@ namespace Assets.Script.Duel
                 case CardGameState.Hand:
                     handCards.Remove(card);
                     tombCards.Add(card);
-                    if(GetCurrentEffectProcess() is DiscardHandCardEffectProcess)
-                    {
-                        (GetCurrentEffectProcess() as DiscardHandCardEffectProcess).DiscardOneHandCard();
-                    }
                     break;
                 case CardGameState.FrontAttack:
                 case CardGameState.FrontDefense:
@@ -1002,6 +998,30 @@ namespace Assets.Script.Duel
                     break;
             }
             card.SetCardGameState(CardGameState.Tomb);
+        }
+
+        /// <summary>
+        /// 获得我方场上的卡牌数量
+        /// </summary>
+        /// <returns></returns>
+        public int GetCardNumberInArea()
+        {
+            int number = 0;
+            foreach (var item in monsterCardArea)
+            {
+                if(item!=null)
+                {
+                    number++;
+                }
+            }
+            foreach (var item in magicTrapCardArea)
+            {
+                if (item != null)
+                {
+                    number++;
+                }
+            }
+            return number;
         }
 
         /// <summary>

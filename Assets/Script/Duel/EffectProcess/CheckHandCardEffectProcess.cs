@@ -35,7 +35,7 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 GameManager.ShowMessage("当前手牌数量大于规定数量！");
                 int number = ownerPlayer.GetHandCards().Count - DuelRuleManager.GetHandCardNumberUpperLimit();
-                DiscardHandCardEffectProcess discardHandCardEffectProcess = new DiscardHandCardEffectProcess(number, ownerPlayer, ProcessFunction);
+                DiscardHandCardEffectProcess discardHandCardEffectProcess = new DiscardHandCardEffectProcess(null,number, (launchCard,discardCard)=> { ProcessFunction(); } , ownerPlayer);
                 ownerPlayer.AddEffectProcess(discardHandCardEffectProcess);
             }
             else
