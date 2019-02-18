@@ -460,7 +460,7 @@ namespace Assets.Script.Card
         {
             if(this.clickCallback!=null)
             {
-                Debug.LogError("当前卡牌：" + name + "已存在点击回调事件，将被替换。");
+                Debug.LogError("当前卡牌：" + card.GetName() + "已存在点击回调事件，将被替换。");
             }
             this.launchEffectCard = launchEffectCard;
             this.clickCallback = clickCallback;

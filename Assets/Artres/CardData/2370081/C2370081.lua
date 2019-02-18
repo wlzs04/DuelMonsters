@@ -34,41 +34,25 @@ function C2370081.LaunchEffect(card)
 	CS.Assets.Script.GameManager.ShowMessage("请选择被装备的怪兽！")
 	card:GetDuelCardScript():GetDuelScene():LockScene();
 
-	local myMonsterCardArea = card:GetDuelCardScript():GetOwner():GetMonsterCardArea();
-	local opponentMonsterCardArea = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();
+	local chooseCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChooseCardEffectProcess(card,C2370081.ChooseCardJudgeAction,C2370081.ChooseCardCallback, card:GetOwner());
+    card:GetDuelCardScript():GetOwner():AddEffectProcess(chooseCardEffectProcess);
+end
 
-	for i=0,myMonsterCardArea.Length-1 do
-		if(myMonsterCardArea[i]~=nil and (myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
-			myMonsterCardArea[i]:GetDuelCardScript():SetClickCallback(card,C2370081.ChooseCardCallback);
-		end
-	end
-	for i=0,opponentMonsterCardArea.Length-1 do
-		if(opponentMonsterCardArea[i]~=nil and (opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
-			opponentMonsterCardArea[i]:GetDuelCardScript():SetClickCallback(card,C2370081.ChooseCardCallback);
-		end
-	end
+function C2370081.ChooseCardJudgeAction(launchEffectCard,chooseCard)
+	return chooseCard~=nil 
+	and (chooseCard :GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or chooseCard :GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense)
+	and chooseCard:GetPropertyTypeString()=="水"
 end
 
 function C2370081.ChooseCardCallback(launchEffectCard,chooseCard)
-	if(chooseCard:GetCardType()~=CS.Assets.Script.Card.CardType.Monster or chooseCard:GetPropertyTypeString()~="水")then
+	if(not C2370081.ChooseCardJudgeAction(launchEffectCard,chooseCard))then
 		return
 	end
 
 	launchEffectCard:GetDuelCardScript():GetDuelScene():UnlockScene();
 
-	local myMonsterCardArea = chooseCard:GetDuelCardScript():GetOwner():GetMonsterCardArea();
-	local opponentMonsterCardArea = chooseCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMonsterCardArea();
-
-	for i=0,myMonsterCardArea.Length-1 do
-		if(myMonsterCardArea[i]~=nil and (myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or myMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and myMonsterCardArea[i]:GetPropertyTypeString()=="水")then
-			myMonsterCardArea[i]:GetDuelCardScript():RemoveClickCallback();
-		end
-	end
-	for i=0,opponentMonsterCardArea.Length-1 do
-		if(opponentMonsterCardArea[i]~=nil and (opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or opponentMonsterCardArea[i]:GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense) and opponentMonsterCardArea[i]:GetPropertyTypeString()=="水")then
-			opponentMonsterCardArea[i]:GetDuelCardScript():RemoveClickCallback();
-		end
-	end
+	launchEffectCard:GetOwner():GetCurrentEffectProcess():AfterFinishProcessFunction();
+	
 	launchEffectCard:SetEquidMonster(chooseCard);
 	chooseCard:AddEquip(launchEffectCard);
 

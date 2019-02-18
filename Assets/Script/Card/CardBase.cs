@@ -509,5 +509,34 @@ namespace Assets.Script.Card
                 }
             }
         }
+
+        /// <summary>
+        /// 判断是否在怪兽区
+        /// </summary>
+        /// <returns></returns>
+        public bool InMonsterArea()
+        {
+            if(cardGameState==CardGameState.FrontAttack ||
+                cardGameState == CardGameState.FrontDefense ||
+                (cardGameState == CardGameState.Back && cardType==CardType.Monster))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 判断是否在魔法陷阱区
+        /// </summary>
+        /// <returns></returns>
+        public bool InMagicTrapArea()
+        {
+            if (cardGameState == CardGameState.Front ||
+                (cardGameState == CardGameState.Back && (cardType == CardType.Magic || cardType == CardType.Trap)))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

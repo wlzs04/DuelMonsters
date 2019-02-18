@@ -12,9 +12,8 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     public enum EffectProcessType
     {
-        Unknown,//未知
-        Forever,//永远
         RemoveAfterFinish,//在完成后进行删除
+        Forever,//永远
     }
 
     /// <summary>
@@ -29,7 +28,7 @@ namespace Assets.Script.Duel.EffectProcess
     public abstract class EffectProcessBase
     {
         protected UnityAction finishAction;
-        protected EffectProcessType effectProcessType;
+        protected EffectProcessType effectProcessType=EffectProcessType.RemoveAfterFinish;
         protected Player ownerPlayer;
         protected DuelScene duelScene;
         protected bool haveProcess = false;//是否已经执行
@@ -72,7 +71,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// <summary>
         /// 在完成执行方法后的处理
         /// </summary>
-        protected void AfterFinishProcessFunction()
+        public void AfterFinishProcessFunction()
         {
             haveProcess = false;
             if (effectProcessType== EffectProcessType.RemoveAfterFinish)

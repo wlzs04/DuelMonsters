@@ -26,45 +26,25 @@ function C5318639.CanLaunchEffect(card)
 end
 
 function C5318639.LaunchEffect(card)
-	
 	CS.Assets.Script.GameManager.ShowMessage("请选择被破坏的魔法陷阱卡！");
 	card:GetDuelCardScript():GetDuelScene():LockScene();
+	
+	local chooseCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChooseCardEffectProcess(card,C5318639.ChooseCardJudgeAction,C5318639.ChooseCardCallback, card:GetOwner());
+    card:GetDuelCardScript():GetOwner():AddEffectProcess(chooseCardEffectProcess);
+end
 
-	local myMagicTrapCardArea = card:GetDuelCardScript():GetOwner():GetMagicTrapCardArea();
-	local opponentMagicTrapCardArea = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMagicTrapCardArea();
-
-	for i=0,myMagicTrapCardArea.Length-1 do
-		if(myMagicTrapCardArea[i]~=nil and myMagicTrapCardArea[i]~=card)then
-			myMagicTrapCardArea[i]:GetDuelCardScript():SetClickCallback(card,C5318639.ChooseCardCallback);
-		end
-	end
-	for i=0,opponentMagicTrapCardArea.Length-1 do
-		if(opponentMagicTrapCardArea[i]~=nil and opponentMagicTrapCardArea[i]~=card)then
-			opponentMagicTrapCardArea[i]:GetDuelCardScript():SetClickCallback(card,C5318639.ChooseCardCallback);
-		end
-	end
+function C5318639.ChooseCardJudgeAction(launchEffectCard,chooseCard)
+	return chooseCard~=nil and chooseCard~=launchEffectCard and chooseCard:InMagicTrapArea();
 end
 
 function C5318639.ChooseCardCallback(launchEffectCard,chooseCard)
-	if((chooseCard:GetCardType()~=CS.Assets.Script.Card.CardType.Magic and chooseCard:GetCardType()~=CS.Assets.Script.Card.CardType.Trap) or launchEffectCard==chooseCard)then
+	if(not C5318639.ChooseCardJudgeAction(launchEffectCard,chooseCard))then
 		return
 	end
+
+	launchEffectCard:GetOwner():GetCurrentEffectProcess():AfterFinishProcessFunction();
 	
 	launchEffectCard:GetDuelCardScript():GetDuelScene():UnlockScene();
-
-	local myMagicTrapCardArea = launchEffectCard:GetDuelCardScript():GetOwner():GetMagicTrapCardArea();
-	local opponentMagicTrapCardArea = launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetMagicTrapCardArea();
-
-	for i=0,myMagicTrapCardArea.Length-1 do
-		if(myMagicTrapCardArea[i]~=nil and myMagicTrapCardArea[i]~=launchEffectCard)then
-			myMagicTrapCardArea[i]:GetDuelCardScript():RemoveClickCallback();
-		end
-	end
-	for i=0,opponentMagicTrapCardArea.Length-1 do
-		if(opponentMagicTrapCardArea[i]~=nil and opponentMagicTrapCardArea[i]~=launchEffectCard)then
-			opponentMagicTrapCardArea[i]:GetDuelCardScript():RemoveClickCallback();
-		end
-	end
 
 	local moveCardToTombEffectProcess = CS.Assets.Script.Duel.EffectProcess.MoveCardToTombEffectProcess(chooseCard,CS.Assets.Script.Duel.EffectProcess.MoveCardToTombType.Effect, launchEffectCard:GetDuelCardScript():GetOwner());
     launchEffectCard:GetDuelCardScript():GetOwner():AddEffectProcess(moveCardToTombEffectProcess);
