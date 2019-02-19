@@ -8,7 +8,7 @@ function C4178474.InitInfo(card)
 end
 
 function C4178474.CanLaunchEffect(card)
-	return card:GetOwner():GetHandCards().Count>0 and card:GetDuelCardScript():GetDuelScene():GetCardNumberInArea()>0
+	return card:GetOwner():GetHandCards().Count>0 and card:GetDuelCardScript():GetDuelScene():GetCardNumberInArea()>1;
 end
 
 function C4178474.LaunchEffect(card)
@@ -23,7 +23,7 @@ function C4178474.AfterDiscardHandCard(launchEffectCard,discardCard)
 end
 
 function C4178474.ChooseCardJudgeAction(launchEffectCard,chooseCard)
-	return chooseCard:IsInArea();
+	return chooseCard:IsInArea() and chooseCard ~=launchEffectCard;
 end
 
 function C4178474.ChooseCardCallback(launchEffectCard,chooseCard)

@@ -319,6 +319,17 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 怪兽卡离场后的回调
+        /// </summary>
+        public void MonsterExitAreaCallBack()
+        {
+            for (int i = equipCards.Count - 1; i >= 0; i--)
+            {
+                equipCards[i].GetOwner().MoveCardToTomb(equipCards[i]);
+            }
+        }
+
+        /// <summary>
         /// 为怪兽添加装备卡
         /// </summary>
         public void AddEquip(CardBase equipCard)
@@ -342,6 +353,7 @@ namespace Assets.Script.Card
                 return;
             }
             equipCards.Remove(equipCard);
+            RemoveCardEffect(equipCard);
         }
 
         /// <summary>

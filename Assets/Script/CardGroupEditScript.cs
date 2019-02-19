@@ -36,6 +36,8 @@ public class CardGroupEditScript : MonoBehaviour
     //是否只显示已拥有的卡牌
     bool onlyShowOwnedCard = false;
 
+    CardBase currentCardBase = null;
+
     void Start ()
     {
         gameManager = GameManager.GetSingleInstance();
@@ -181,6 +183,7 @@ public class CardGroupEditScript : MonoBehaviour
     /// <param name="card"></param>
     public void ShowCardDetailInfo(CardBase card)
     {
+        currentCardBase = card;
         cardImage.sprite = card.GetImage();
         cardNoText.text = "No:" + card.GetCardNo();
 
@@ -491,5 +494,14 @@ public class CardGroupEditScript : MonoBehaviour
     {
         onlyShowOwnedCard = !onlyShowOwnedCard;
         ResetAllCard();
+    }
+
+    /// <summary>
+    /// 添加当前卡牌到用户卡池中，未获得时一次添加三张,获得后一次添加一张
+    /// </summary>
+    public void AddCardToUserCardListButtonClick()
+    {
+        gameManager.GetUserData().AddNewCard(currentCardBase.GetCardNo());
+        currentCardBase.GetCardScript().SetCardOwned(true);
     }
 }

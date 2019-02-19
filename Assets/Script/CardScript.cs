@@ -30,11 +30,24 @@ public class CardScript : MonoBehaviour,IPointerClickHandler, IBeginDragHandler,
     public void SetCard(CardBase card,bool ownedCard = true)
     {
         this.card = card;
-        this.ownedCard = ownedCard;
         GetComponent<Image>().sprite = card.GetImage();
+        SetCardOwned(ownedCard);
+    }
+
+    /// <summary>
+    /// 设置当前卡牌是否已获得
+    /// </summary>
+    /// <param name="ownedCard"></param>
+    public void SetCardOwned(bool ownedCard)
+    {
+        this.ownedCard = ownedCard;
         if (!ownedCard)
         {
             GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
+        }
+        else
+        {
+            GetComponent<Image>().color = new Color(1, 1, 1, 1f);
         }
     }
 

@@ -142,5 +142,24 @@ namespace Assets.Script
             
             return userCardData!=null;
         }
+
+        /// <summary>
+        /// 添加新卡片
+        /// </summary>
+        public void AddNewCard(int cardNo)
+        {
+            if(!IsOwnCard(cardNo))
+            {
+                UserCardData userCardData = new UserCardData();
+                userCardData.cardNo = cardNo;
+                userCardData.number = 3;
+                userCardList.Add(userCardData);
+            }
+            else
+            {
+                UserCardData userCardData = userCardList.Find(card => card.cardNo == cardNo);
+                userCardData.number += 1;
+            }
+        }
     }
 }

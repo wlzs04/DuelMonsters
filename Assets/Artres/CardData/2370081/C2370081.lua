@@ -55,16 +55,4 @@ function C2370081.ChooseCardCallback(launchEffectCard,chooseCard)
 	chooseCard:AddCardEffect(launchEffectCard,CS.Assets.Script.Card.CardEffectType.Defense,-200);
 end
 
-function C2370081.ChangeCardGameState(card,oldCardGameState)
-	if(oldCardGameState==CS.Assets.Script.Card.CardGameState.Front and card:GetCardGameState()~=CS.Assets.Script.Card.CardGameState.Front)then
-		local monsterCard = card:GetEquidMonster();
-		if(monsterCard==nil)then
-			return;
-		end
-		card:SetEquidMonster(nil);
-		monsterCard:RemoveEquip(card);
-		monsterCard:RemoveCardEffect(card);
-	end
-end
-
 return C2370081

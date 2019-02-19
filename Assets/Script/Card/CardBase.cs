@@ -111,6 +111,7 @@ namespace Assets.Script.Card
         int bePlacedAreaTurnNumber = 0;//被放置到场上的第回合数
 
         GameObject cardObject=null;
+        CardScript cardScript = null;
         DuelCardScript duelCardScript = null;
         DuelScene duelScene = null;
 
@@ -191,8 +192,9 @@ namespace Assets.Script.Card
         public void SetCardObject(GameObject gameObject)
         {
             cardObject = gameObject;
+            cardScript = cardObject.GetComponent<CardScript>();
             duelCardScript = cardObject.GetComponent<DuelCardScript>();
-            if(duelCardScript!=null)
+            if (duelCardScript!=null)
             {
                 duelScene = GameManager.GetSingleInstance().GetDuelScene();
             }
@@ -261,6 +263,11 @@ namespace Assets.Script.Card
             return duelCardScript;
         }
 
+        public CardScript GetCardScript()
+        {
+            return cardScript;
+        }
+
         /// <summary>
         /// 获得拥有此卡的玩家
         /// </summary>
@@ -271,7 +278,7 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
-        /// 设置当前卡牌状态，如果是在怪魔法陷阱区时，根据设置index位置
+        /// 设置当前卡牌状态，如果是在怪兽魔法陷阱区时，根据设置index位置
         /// </summary>
         /// <param name="cardGameState"></param>
         public void SetCardGameState(CardGameState cardGameState,int index = 0)
@@ -281,6 +288,11 @@ namespace Assets.Script.Card
             if (!IsInArea(this.cardGameState) && IsInArea(cardGameState))
             {
                 bePlacedAreaTurnNumber = duelScene.GetCurrentTurnNumber();
+            }
+            //离场
+            else if(IsInArea(this.cardGameState) && !IsInArea(cardGameState))
+            {
+                ExitAreaCallBack();
             }
 
             this.cardGameState = cardGameState;
@@ -296,6 +308,27 @@ namespace Assets.Script.Card
         public CardGameState GetCardGameState()
         {
             return cardGameState;
+        }
+        
+        /// <summary>
+        /// 离场时的回调
+        /// </summary>
+        public void ExitAreaCallBack()
+        {
+            switch (cardType)
+            {
+                case CardType.Monster:
+                    MonsterExitAreaCallBack();
+                    break;
+                case CardType.Magic:
+                    MagicExitAreaCallBack();
+                    break;
+                case CardType.Trap:
+                    TrapExitAreaCallBack();
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void SetEffectInfo(string effectInfo)

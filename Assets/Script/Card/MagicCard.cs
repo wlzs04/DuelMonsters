@@ -82,6 +82,20 @@ namespace Assets.Script.Card
             }
         }
 
+        /// <summary>
+        /// 魔法卡离场后的回调
+        /// </summary>
+        public void MagicExitAreaCallBack()
+        {
+            if (GetEquidMonster()==null)
+            {
+                return;
+            }
+            GetEquidMonster().RemoveEquip(this);
+            SetEquidMonster(null);
+        }
+
+
         public void SetEquidMonster(CardBase equidMonster)
         {
             if(this.equidMonster!=null && equidMonster!=null)

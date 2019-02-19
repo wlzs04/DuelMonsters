@@ -61,8 +61,8 @@ namespace Assets.Script.Card
             cardImage = gameObject.transform.GetChild(0).gameObject;
             attackImage = gameObject.transform.GetChild(1).gameObject;
             borderImage = cardImage.transform.GetChild(0).gameObject;
-            operationPanelTransform = cardImage.transform.GetChild(1);
-            attackAndDefenseText = cardImage.transform.GetChild(2).gameObject;
+            operationPanelTransform = gameObject.transform.GetChild(2).transform.GetChild(0);
+            attackAndDefenseText = gameObject.transform.GetChild(2).transform.GetChild(1).gameObject;
             attackAndDefenseText.GetComponent<Text>().text = "";
         }
 

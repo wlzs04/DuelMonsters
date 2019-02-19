@@ -28,8 +28,7 @@ public class GUIScript : MonoBehaviour {
 
             bool opponentCanLaunchEffect = gameManager.GetUserData().opponentCanLaunchEffect;
             GameObject.Find("OpponentCanLaunchEffectToggle").GetComponent<Toggle>().isOn = opponentCanLaunchEffect;
-
-
+            
             bool opponentCanAttack = gameManager.GetUserData().opponentCanAttack;
             GameObject.Find("OpponentCanAttackToggle").GetComponent<Toggle>().isOn = opponentCanAttack;
         }

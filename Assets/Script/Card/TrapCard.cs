@@ -67,6 +67,14 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 陷阱卡离场后的回调
+        /// </summary>
+        public void TrapExitAreaCallBack()
+        {
+
+        }
+
+        /// <summary>
         /// 将汉字转换为陷阱种类
         /// </summary>
         /// <param name="value"></param>
