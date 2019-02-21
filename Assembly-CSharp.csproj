@@ -99,11 +99,13 @@
     <Compile Include="Assets\Script\Duel\EffectProcess\CheckHandCardEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\ChooseCardEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\DiscardHandCardEffectProcess.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess\DrawCardEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\DrawCardEveryTurnEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\EffectProcessBase.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\LaunchEffectEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\MoveCardToTombEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\ReduceLifeEffectProcess.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess\TossCoinEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\NetPlayer.cs" />
     <Compile Include="Assets\Script\Duel\Player.cs" />
     <Compile Include="Assets\Script\Duel\Rule\DuelRuleManager.cs" />

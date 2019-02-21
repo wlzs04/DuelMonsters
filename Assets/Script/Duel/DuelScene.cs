@@ -290,6 +290,14 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 显示抛硬币面板
+        /// </summary>
+        public void ShowTossCoinPanel(bool showSelectCoinPanel, Action<CoinType, CoinType> actionTossCoin, CoinType coinType = CoinType.Unknown)
+        {
+            duelSceneScript.ShowTossCoinPanel(showSelectCoinPanel, actionTossCoin,coinType);
+        }
+
+        /// <summary>
         /// 显示指定玩家当前指定类型的卡牌列表
         /// </summary>
         /// <param name="ownerPlayer"></param>
@@ -737,7 +745,6 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public int GetCardNumberInArea()
         {
-            
             return myPlayer.GetCardNumberInArea() + opponentPlayer.GetCardNumberInArea();
         }
     }

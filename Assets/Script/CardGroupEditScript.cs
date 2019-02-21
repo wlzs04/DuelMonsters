@@ -86,6 +86,7 @@ public class CardGroupEditScript : MonoBehaviour
                 GameObject go = Instantiate(cardPre, allCardScrollViewTransform);
                 go.GetComponent<CardScript>().SetRootScript(this);
                 go.GetComponent<CardScript>().SetCard(card, ownedCard);
+                card.SetCardObject(go);
             }
         }
     }

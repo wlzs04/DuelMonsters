@@ -1,6 +1,7 @@
 using Assets.Script.Card;
 using Assets.Script.Config;
 using Assets.Script.Duel;
+using Assets.Script.Duel.EffectProcess;
 using Assets.Script.Duel.Rule;
 using System;
 using System.Collections.Generic;
@@ -22,16 +23,17 @@ namespace Assets.Script
 
         public Transform infoContentTransform = null;
 
-        GameObject durlProcessPanel = null;
-        GameObject attackOrDefensePanel = null;
-        GameObject helpInfoPanel = null;
-        GameObject effectSelectPanel = null;
+        GameObject duelResultPanel = null;//决斗结果
+        GameObject durlProcessPanel = null;//决斗流程
+        GameObject attackOrDefensePanel = null;//攻守选择
+        GameObject helpInfoPanel = null;//帮助信息
+        GameObject effectSelectPanel = null;//效果选择
+        GameObject tossCoinPanel = null;//抛硬币
 
-        GameObject cardListPanel = null;
+        GameObject cardListPanel = null;//卡牌列表
         //此列表是否可以由玩家隐藏(点击右键)
         bool canHideByPlayerForCardListPanel;
 
-        GameObject duelResultPanel = null;
         Transform cardListContentTransform = null;
 
         UnityAction<CardGameState> selectAttackOrDefenseFinishAction = null;
@@ -40,6 +42,8 @@ namespace Assets.Script
 
         DuelScene duelScene = null;
         string duelBgmName = "光宗信吉-神々の戦い";
+
+        Action<CoinType, CoinType> actionTossCoin;
 
         private void Awake()
         {
@@ -54,6 +58,9 @@ namespace Assets.Script
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
 
             Transform canvasTransform = GameObject.Find("Canvas").transform;
+
+            duelResultPanel = canvasTransform.Find("DuelResultPanel").gameObject;
+            duelResultPanel.SetActive(false);
 
             durlProcessPanel = canvasTransform.Find("rightPanel/DuelProcessPanel").gameObject;
             durlProcessPanel.SetActive(false);
@@ -75,8 +82,8 @@ namespace Assets.Script
             cardListContentTransform = cardListPanel.transform.GetChild(0).GetChild(0).GetChild(0);
             cardListPanel.SetActive(false);
 
-            duelResultPanel = canvasTransform.Find("DuelResultPanel").gameObject;
-            duelResultPanel.SetActive(false);
+            tossCoinPanel = canvasTransform.Find("rightPanel/TossCoinPanel").gameObject;
+            tossCoinPanel.SetActive(false);
         }
 
         /// <summary>
@@ -294,6 +301,78 @@ namespace Assets.Script
             effectSelectPanel.transform.Find("BackPanel").Find("EffectInfoPanel").Find("EffectInfoText").GetComponent<Text>().text = effectList[0];
         }
 
+        /// <summary>
+        /// 抛硬币面板是否显示
+        /// </summary>
+        /// <returns></returns>
+        public bool TossCoinPanelIsShowing()
+        {
+            return tossCoinPanel.activeSelf;
+        }
+
+        /// <summary>
+        /// 显示抛硬币面板
+        /// </summary>
+        public void ShowTossCoinPanel(bool showSelectCoinPanel, Action<CoinType, CoinType> actionTossCoin, CoinType coinType=CoinType.Unknown)
+        {
+            tossCoinPanel.SetActive(true);
+            this.actionTossCoin = actionTossCoin;
+            if (showSelectCoinPanel)
+            {
+                tossCoinPanel.transform.GetChild(0).gameObject.SetActive(true);
+                tossCoinPanel.transform.GetChild(1).gameObject.SetActive(false);
+            }
+            else
+            {
+                tossCoinPanel.transform.GetChild(0).gameObject.SetActive(false);
+                tossCoinPanel.transform.GetChild(1).gameObject.SetActive(true);
+                StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
+                Text playInfoText = tossCoinPanel.transform.GetChild(1).GetChild(0).gameObject.GetComponent<Text>();
+                switch (coinType)
+                {
+                    case CoinType.Unknown:
+                        playInfoText.text = "";
+                        break;
+                    case CoinType.Front:
+                        playInfoText.text = stringResConfig.GetRecordById(19).value + "正面";
+                        break;
+                    case CoinType.Back:
+                        playInfoText.text = stringResConfig.GetRecordById(19).value + "反面";
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            CoinType resultCoinType = (CoinType)UnityEngine.Random.Range(1, 3);
+            Sprite coinSprite = tossCoinPanel.transform.GetChild(0).GetChild((int)resultCoinType).GetChild(0).gameObject.GetComponent<Image>().sprite;
+            tossCoinPanel.transform.GetChild(1).GetChild(1).gameObject.GetComponent<Image>().sprite = coinSprite;
+
+            TimerFunction timerFunction = new TimerFunction();
+            timerFunction.SetFunction(1, ()=>
+            {
+                tossCoinPanel.SetActive(false);
+                actionTossCoin(coinType, resultCoinType);
+            });
+
+            GameManager.AddTimerFunction(timerFunction);
+        }
+
+        /// <summary>
+        /// 选择正面
+        /// </summary>
+        public void SelectFrontCoin()
+        {
+            ShowTossCoinPanel(false, actionTossCoin,CoinType.Front);
+        }
+
+        /// <summary>
+        /// 选择反面
+        /// </summary>
+        public void SelectBackCoin()
+        {
+            ShowTossCoinPanel(false, actionTossCoin, CoinType.Back);
+        }
         /// <summary>
         /// 显示帮助信息面板
         /// </summary>
