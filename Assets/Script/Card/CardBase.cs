@@ -65,13 +65,31 @@ namespace Assets.Script.Card
     /// </summary>
     public class CardEffect
     {
+        CardBase effectCard;//发动效果的卡牌
+        CardBase effectedCard;//受效果影响的卡牌
         CardEffectType cardEffectType;
-        int value;
+        int value;//作用值
 
-        public CardEffect(CardEffectType cardEffectType, int value)
+        int effectActivityTurnNumber = int.MaxValue;//作用持续回合数
+        DuelProcess removeEffectDuelProcess = DuelProcess.End;//移除当前效果的流程
+        bool removeWhenExitArea = true;//离场是否移除
+
+        public CardEffect(CardBase effectCard,CardBase effectedCard,CardEffectType cardEffectType, int value)
         {
+            this.effectCard = effectCard;
+            this.effectedCard = effectedCard;
             this.cardEffectType = cardEffectType;
             this.value = value;
+        }
+
+        public CardBase GetEffectCard()
+        {
+            return effectCard;
+        }
+
+        public CardBase GetEffectedCard()
+        {
+            return effectedCard;
         }
 
         public CardEffectType GetCardEffectType()
@@ -82,6 +100,31 @@ namespace Assets.Script.Card
         public int GetValue()
         {
             return value;
+        }
+
+        public bool GetRemoveWhenExitArea()
+        {
+            return removeWhenExitArea;
+        }
+
+        /// <summary>
+        /// 设置效果限制，如持续时间等
+        /// </summary>
+        public void SetEffectLimit(int effectActivityTurnNumber, DuelProcess removeEffectDuelProcess)
+        {
+            this.effectActivityTurnNumber = effectActivityTurnNumber;
+            this.removeEffectDuelProcess = removeEffectDuelProcess;
+        }
+
+        /// <summary>
+        /// 检查当前效果，判断是否进行移除等操作
+        /// </summary>
+        public void CheckEffect()
+        {
+            if(effectActivityTurnNumber<=0 && effectedCard.GetDuelCardScript().GetDuelScene().GetCurrentDuelProcess() == removeEffectDuelProcess)
+            {
+                effectedCard.RemoveCardEffect(this);
+            }
         }
     }
 
@@ -119,7 +162,7 @@ namespace Assets.Script.Card
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
 
         //效果map，表示当前卡牌受到其他卡牌的作用
-        Dictionary<CardBase, List<CardEffect>> cardEffectMap = new Dictionary<CardBase, List<CardEffect>>();
+        List<CardEffect> cardEffectMap = new List<CardEffect>();
 
         //lua部分
         private LuaTable scriptEnv;
@@ -329,6 +372,13 @@ namespace Assets.Script.Card
                 default:
                     break;
             }
+            for (int i = cardEffectMap.Count - 1; i >= 0; i--)
+            {
+                if(cardEffectMap[i].GetRemoveWhenExitArea())
+                {
+                    RemoveCardEffect(cardEffectMap[i]);
+                }
+            }
         }
 
         public void SetEffectInfo(string effectInfo)
@@ -442,8 +492,8 @@ namespace Assets.Script.Card
         public bool CanLaunchEffect()
         {
             if ((GetCardType() == CardType.Magic || GetCardType() == CardType.Trap) &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 GetOwner().GetCurrentEffectProcess() == null
                 )
             {
@@ -487,25 +537,36 @@ namespace Assets.Script.Card
         /// <summary>
         /// 添加卡牌效果
         /// </summary>
-        public void AddCardEffect(CardBase cardBase, CardEffectType cardEffectType, int value)
+        public CardEffect AddCardEffect(CardBase cardBase, CardEffectType cardEffectType, int value)
         {
-            CardEffect cardEffect = new CardEffect(cardEffectType, value);
-            if(!cardEffectMap.ContainsKey(cardBase))
-            {
-                cardEffectMap[cardBase] = new List<CardEffect>();
-            }
-            cardEffectMap[cardBase].Add(cardEffect);
+            CardEffect cardEffect = new CardEffect(cardBase,this, cardEffectType, value);
+            cardEffectMap.Add(cardEffect);
+            RecalculationCardByCardEffect();
+            return cardEffect;
+        }
+
+        /// <summary>
+        /// 移除指定效果
+        /// </summary>
+        /// <param name="effectCard"></param>
+        /// <param name="cardEffect"></param>
+        public void RemoveCardEffect(CardEffect cardEffect)
+        {
+            cardEffectMap.Remove(cardEffect);
             RecalculationCardByCardEffect();
         }
 
         /// <summary>
         /// 移除指定卡牌的效果
         /// </summary>
-        public void RemoveCardEffect(CardBase cardBase)
+        public void RemoveCardEffect(CardBase effectCard)
         {
-            if (cardEffectMap.ContainsKey(cardBase))
+            for (int i = cardEffectMap.Count - 1; i >= 0; i--)
             {
-                cardEffectMap.Remove(cardBase);
+                if(cardEffectMap[i].GetEffectCard()== effectCard)
+                {
+                    cardEffectMap.RemoveAt(i);
+                }
             }
             RecalculationCardByCardEffect();
         }
@@ -517,6 +578,14 @@ namespace Assets.Script.Card
         {
             cardEffectMap.Clear();
             RecalculationCardByCardEffect();
+        }
+
+        public void CheckAllCardEffect()
+        {
+            for (int i = cardEffectMap.Count - 1; i >= 0; i--)
+            {
+                cardEffectMap[i].CheckEffect();
+            }
         }
 
         /// <summary>
@@ -531,22 +600,19 @@ namespace Assets.Script.Card
                 SetAttackValue(cardBase.GetAttackValue());
                 SetDefenseValue(cardBase.GetDefenseValue());
             }
-            foreach (var effectCard in cardEffectMap)
+            foreach (var cardEffect in cardEffectMap)
             {
-                foreach (var cardEffect in effectCard.Value)
+                switch (cardEffect.GetCardEffectType())
                 {
-                    switch (cardEffect.GetCardEffectType())
-                    {
-                        case CardEffectType.Attack:
-                            SetAttackValue(GetAttackValue() + cardEffect.GetValue());
-                            break;
-                        case CardEffectType.Defense:
-                            SetDefenseValue(GetDefenseValue() + cardEffect.GetValue());
-                            break;
-                        default:
-                            Debug.LogError("未知卡牌效果类型：" + cardEffect.GetCardEffectType());
-                            break;
-                    }
+                    case CardEffectType.Attack:
+                        SetAttackValue(GetAttackValue() + cardEffect.GetValue());
+                        break;
+                    case CardEffectType.Defense:
+                        SetDefenseValue(GetDefenseValue() + cardEffect.GetValue());
+                        break;
+                    default:
+                        Debug.LogError("未知卡牌效果类型：" + cardEffect.GetCardEffectType());
+                        break;
                 }
             }
         }

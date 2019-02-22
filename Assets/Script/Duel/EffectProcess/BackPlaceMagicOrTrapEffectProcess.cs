@@ -38,7 +38,7 @@ namespace Assets.Script.Duel.EffectProcess
                 }
             }
             backPlaceCard.AddContent("magicTrapCardAreaIndex", index);
-            backPlaceCard.SetCardGameState(CardGameState.Back);
+            backPlaceCard.SetCardGameState(CardGameState.Back, index);
             ownerPlayer.GetHandCards().Remove(backPlaceCard);
 
             AfterFinishProcessFunction();

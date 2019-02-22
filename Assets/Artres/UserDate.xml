@@ -1,4 +1,4 @@
-<UserData playerName="LL" audioValue="0" guessMustWin="true" showOpponentHandCard="true" opponentCanCallMonster="false" opponentCanLaunchEffect="false" opponentCanAttack="false" ip="10.237.40.95" port="7777">
+<UserData playerName="LL" audioValue="0" guessMustWin="true" showOpponentHandCard="true" opponentCanCallMonster="true" opponentCanLaunchEffect="false" opponentCanAttack="false" ip="10.237.40.95" port="7777">
   <UserCardList>
     <UserCardData cardNo="8842266" number="3" />
     <UserCardData cardNo="9852718" number="3" />
@@ -21,6 +21,7 @@
     <UserCardData cardNo="83764718" number="3" />
     <UserCardData cardNo="87769556" number="3" />
     <UserCardData cardNo="37812118" number="3" />
+    <UserCardData cardNo="126218" number="3" />
   </UserCardList>
   <UserCardGroupList>
     <UserCardGroup cardGroupName="test">
@@ -77,8 +78,7 @@
         <UserCardData cardNo="81823360" number="3" />
         <UserCardData cardNo="5318639" number="1" />
         <UserCardData cardNo="2370081" number="1" />
-        <UserCardData cardNo="4178474" number="1" />
-        <UserCardData cardNo="37812118" number="2" />
+        <UserCardData cardNo="126218" number="3" />
       </Main>
       <Extra />
       <Deputy />

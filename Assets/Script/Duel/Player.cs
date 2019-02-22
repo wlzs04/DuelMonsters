@@ -354,7 +354,7 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool CanBattle()
         {
-            if(duelScene.currentDuelProcess!=DuelProcess.Battle)
+            if(duelScene.GetCurrentDuelProcess() != DuelProcess.Battle)
             {
                 return false;
             }
@@ -417,8 +417,8 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool CanCallMonster()
         {
-            bool duelProcessCheck = IsMyTurn() && duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second;
+            bool duelProcessCheck = IsMyTurn() && duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second;
 
             bool callNumberCheck = normalCallNumber > 0;
 
@@ -604,7 +604,7 @@ namespace Assets.Script.Duel
 
         public void Update()
         {
-            if(duelScene.currentDuelProcess==DuelProcess.End)
+            if(duelScene.GetCurrentDuelProcess() == DuelProcess.End)
             {
 
             }
@@ -637,15 +637,15 @@ namespace Assets.Script.Duel
             {
                 return;
             }
-            if (duelScene.currentDuelProcess == DuelProcess.Draw)
+            if (duelScene.GetCurrentDuelProcess() == DuelProcess.Draw)
             {
                 duelScene.EnterDuelProcess(DuelProcess.Prepare);
             }
-            else if (duelScene.currentDuelProcess == DuelProcess.Prepare)
+            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.Prepare)
             {
                 duelScene.EnterDuelProcess(DuelProcess.Main);
             }
-            else if (duelScene.currentDuelProcess == DuelProcess.End)
+            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.End)
             {
             }
         }
@@ -692,7 +692,7 @@ namespace Assets.Script.Duel
                 return false;
             }
             //只有主要流程才可以进入战斗
-            if (duelScene.currentDuelProcess != DuelProcess.Main)
+            if (duelScene.GetCurrentDuelProcess() != DuelProcess.Main)
             {
                 return false;
             }
@@ -787,9 +787,43 @@ namespace Assets.Script.Duel
             return monsterCardArea;
         }
 
+        /// <summary>
+        /// 获得我方场上怪兽卡的数量
+        /// </summary>
+        /// <returns></returns>
+        public int GetMonsterCardNumberInArea()
+        {
+            int number = 0;
+            foreach (var item in monsterCardArea)
+            {
+                if(item!=null)
+                {
+                    number++;
+                }
+            }
+            return number;
+        }
+
         public CardBase[] GetMagicTrapCardArea()
         {
             return magicTrapCardArea;
+        }
+
+        /// <summary>
+        /// 获得我方场上魔法陷阱卡的数量
+        /// </summary>
+        /// <returns></returns>
+        public int GetMagicTrapCardNumberInArea()
+        {
+            int number = 0;
+            foreach (var item in magicTrapCardArea)
+            {
+                if (item != null)
+                {
+                    number++;
+                }
+            }
+            return number;
         }
 
         /// <summary>
@@ -1022,6 +1056,20 @@ namespace Assets.Script.Duel
                 }
             }
             return number;
+        }
+
+        /// <summary>
+        /// 检查玩家所有卡牌所受的效果
+        /// </summary>
+        public void CheckAllCardEffect()
+        {
+            foreach (var item in monsterCardArea)
+            {
+                if(item!=null)
+                {
+                    item.CheckAllCardEffect();
+                }
+            }
         }
 
         /// <summary>

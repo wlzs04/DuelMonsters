@@ -29,6 +29,7 @@ namespace Assets.Script
         GameObject helpInfoPanel = null;//帮助信息
         GameObject effectSelectPanel = null;//效果选择
         GameObject tossCoinPanel = null;//抛硬币
+        GameObject throwDicePanel = null;//掷骰子
 
         GameObject cardListPanel = null;//卡牌列表
         //此列表是否可以由玩家隐藏(点击右键)
@@ -84,6 +85,9 @@ namespace Assets.Script
 
             tossCoinPanel = canvasTransform.Find("rightPanel/TossCoinPanel").gameObject;
             tossCoinPanel.SetActive(false);
+
+            throwDicePanel = canvasTransform.Find("rightPanel/ThrowDicePanel").gameObject;
+            throwDicePanel.SetActive(false);
         }
 
         /// <summary>
@@ -145,7 +149,7 @@ namespace Assets.Script
             }
             bool isMyTurn = GameManager.GetSingleInstance().GetDuelScene().myPlayer.IsMyTurn();
             Color color = isMyTurn ? Color.green : Color.red;
-            int currentDuelProcess = (int)GameManager.GetSingleInstance().GetDuelScene().currentDuelProcess;
+            int currentDuelProcess = (int)GameManager.GetSingleInstance().GetDuelScene().GetCurrentDuelProcess();
             for (int i = 1; i < durlProcessPanel.transform.GetChild(0).childCount; i++)
             {
                 if(currentDuelProcess > i)
@@ -373,6 +377,38 @@ namespace Assets.Script
         {
             ShowTossCoinPanel(false, actionTossCoin, CoinType.Back);
         }
+
+        /// <summary>
+        /// 抛硬币面板是否显示
+        /// </summary>
+        /// <returns></returns>
+        public bool ThrowDiceIsShowing()
+        {
+            return throwDicePanel.activeSelf;
+        }
+
+        public void ShowThrowDicePanel(Action<int> actionIndex)
+        {
+            throwDicePanel.SetActive(true);
+            int resultNumber = UnityEngine.Random.Range(1, 7);
+            for (int i = 1; i < 7; i++)
+            {
+                throwDicePanel.transform.GetChild(0).GetChild(i).gameObject.SetActive(false);
+            }
+            throwDicePanel.transform.GetChild(0).GetChild(resultNumber).gameObject.SetActive(true);
+            StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
+            throwDicePanel.transform.GetChild(0).GetChild(0).gameObject.GetComponent<Text>().text= stringResConfig.GetRecordById(20).value+resultNumber;
+
+            TimerFunction timerFunction = new TimerFunction();
+            timerFunction.SetFunction(1, () =>
+            {
+                throwDicePanel.SetActive(false);
+                actionIndex(resultNumber);
+            });
+
+            GameManager.AddTimerFunction(timerFunction);
+        }
+
         /// <summary>
         /// 显示帮助信息面板
         /// </summary>

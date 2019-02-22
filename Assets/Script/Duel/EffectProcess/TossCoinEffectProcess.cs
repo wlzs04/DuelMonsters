@@ -47,7 +47,15 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
-            launchEffectCard.GetDuelCardScript().GetDuelScene().ShowTossCoinPanel(showSelectCoinPanel,(coinType, resultCoinType) => { tossCoinCallBack(launchEffectCard, coinType,resultCoinType); }, selectCoinType);
+            haveProcess=true;
+
+            launchEffectCard.GetDuelCardScript().GetDuelScene().ShowTossCoinPanel(showSelectCoinPanel, TossCoinCallBack, selectCoinType);
+        }
+
+        void TossCoinCallBack(CoinType coinType, CoinType resultCoinType)
+        {
+            AfterFinishProcessFunction();
+            tossCoinCallBack(launchEffectCard, coinType, resultCoinType);
         }
     }
 }

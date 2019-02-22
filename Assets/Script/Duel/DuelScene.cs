@@ -39,7 +39,7 @@ namespace Assets.Script.Duel
         public Player currentPlayer;//当前玩家
         public Player startPlayer;//开始玩家
         int currentTurnNumber = 1;//当前回合数
-        public DuelProcess currentDuelProcess = DuelProcess.Unknown;//当前流程
+        DuelProcess currentDuelProcess = DuelProcess.Unknown;//当前流程
 
         bool inSpecialState = false;//在特殊状态，例如进入流程选择界面
         bool lockScene = false;//锁定场景，例如选择卡牌做效果对象，防止右键点击或卡牌操作等进行干扰
@@ -298,6 +298,14 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 显示掷骰子面板
+        /// </summary>
+        public void ShowThrowDicePanel(Action<int> actionIndex)
+        {
+            duelSceneScript.ShowThrowDicePanel(actionIndex);
+        }
+
+        /// <summary>
         /// 显示指定玩家当前指定类型的卡牌列表
         /// </summary>
         /// <param name="ownerPlayer"></param>
@@ -398,7 +406,16 @@ namespace Assets.Script.Duel
             GameManager.AddTimerFunction(timerFunction);
             startDuel = false;
         }
-        
+
+        /// <summary>
+        /// 获得当前决斗流程
+        /// </summary>
+        /// <returns></returns>
+        public DuelProcess GetCurrentDuelProcess()
+        {
+            return currentDuelProcess;
+        }
+
         /// <summary>
         /// 初始化决斗场景
         /// </summary>
@@ -624,6 +641,8 @@ namespace Assets.Script.Duel
                     break;
             }
             currentPlayer.GetOpponentPlayer().EnterDuelNotify(currentDuelProcess);
+            startPlayer.CheckAllCardEffect();
+            startPlayer.GetOpponentPlayer().CheckAllCardEffect();
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>
             {
@@ -709,8 +728,8 @@ namespace Assets.Script.Duel
         /// <param name="anotherCardID"></param>
         public void OpponentAttack(int cardID, int anotherCardID)
         {
-            CardBase card1 = opponentPlayer.GetCardByID(cardID);
-            CardBase card2 = myPlayer.GetCardByID(anotherCardID);
+            //CardBase card1 = opponentPlayer.GetCardByID(cardID);
+            //CardBase card2 = myPlayer.GetCardByID(anotherCardID);
             //AttackMonster((MonsterCard)card1, (MonsterCard)card2);
         }
 
@@ -720,7 +739,7 @@ namespace Assets.Script.Duel
         /// <param name="cardID"></param>
         public void OpponentAttack(int cardID)
         {
-            CardBase card1 = opponentPlayer.GetCardByID(cardID);
+            //CardBase card1 = opponentPlayer.GetCardByID(cardID);
             //AttackDirect((MonsterCard)card1);
         }
 

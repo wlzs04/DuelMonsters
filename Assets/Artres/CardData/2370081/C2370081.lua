@@ -38,7 +38,7 @@ end
 function C2370081.ChooseCardJudgeAction(launchEffectCard,chooseCard)
 	return chooseCard~=nil 
 	and (chooseCard :GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontAttack or chooseCard :GetCardGameState()==CS.Assets.Script.Card.CardGameState.FrontDefense)
-	and chooseCard:GetPropertyTypeString()=="水"
+	and chooseCard:GetPropertyTypeString()=="水";
 end
 
 function C2370081.ChooseCardCallback(launchEffectCard,chooseCard)

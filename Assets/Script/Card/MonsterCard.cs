@@ -233,8 +233,8 @@ namespace Assets.Script.Card
             if (GetCardType() == CardType.Monster &&
                 (GetCardGameState() == CardGameState.FrontDefense) &&
                 GetChangeAttackOrDefenseNumber() > 0 &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null
                 )
             {
@@ -252,8 +252,8 @@ namespace Assets.Script.Card
             if (GetCardType() == CardType.Monster &&
                 (GetCardGameState() == CardGameState.FrontAttack) &&
                 GetChangeAttackOrDefenseNumber() > 0 &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null
                 )
             {

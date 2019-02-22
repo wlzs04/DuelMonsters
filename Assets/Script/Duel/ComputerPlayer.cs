@@ -69,18 +69,18 @@ namespace Assets.Script.Duel
                 }
                 return;
             }
-            if (duelScene.currentDuelProcess == DuelProcess.Draw)
+            if (duelScene.GetCurrentDuelProcess() == DuelProcess.Draw)
             {
                 duelScene.EnterDuelProcess(DuelProcess.Prepare);
                 return;
             }
-            else if (duelScene.currentDuelProcess == DuelProcess.Prepare)
+            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.Prepare)
             {
                 duelScene.EnterDuelProcess(DuelProcess.Main);
                 return;
             }
             //在主要流程中
-            else if (duelScene.currentDuelProcess == DuelProcess.Main)
+            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.Main)
             {
                 //先召唤怪兽
                 if (GameManager.GetSingleInstance().GetUserData().opponentCanCallMonster && CanCallMonster())
@@ -165,7 +165,7 @@ namespace Assets.Script.Duel
                     return;
                 }
             }
-            else if(duelScene.currentDuelProcess == DuelProcess.Battle)
+            else if(duelScene.GetCurrentDuelProcess() == DuelProcess.Battle)
             {
                 //先判断是否存在可以进行攻击的怪兽，并选出攻击力最大的怪兽先进行攻击
                 int canAttackMonsterIndex = -1;
@@ -237,12 +237,12 @@ namespace Assets.Script.Duel
                     return;
                 }
             }
-            else if(duelScene.currentDuelProcess == DuelProcess.End)
+            else if(duelScene.GetCurrentDuelProcess() == DuelProcess.End)
             {
             }
-            if(duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Battle ||
-                duelScene.currentDuelProcess == DuelProcess.Second)
+            if(duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Battle ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second)
             {
                 EndTurn();
             }

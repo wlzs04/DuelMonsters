@@ -20,7 +20,7 @@ namespace Assets.Script.Duel.EffectProcess
         public override bool CheckCanTrigger()
         {
             if (ownerPlayer == duelScene.currentPlayer &&
-                duelScene.currentDuelProcess==DuelProcess.End &&
+                duelScene.GetCurrentDuelProcess() == DuelProcess.End &&
                 !haveProcess)
             {
                 return true;

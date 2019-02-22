@@ -20,5 +20,6 @@
     <Record id="17" value="我赢了"/>
     <Record id="18" value="我输了"/>
     <Record id="19" value="您选择："/>
+    <Record id="20" value="骰子点数为："/>
   </RecordList>
 </StringRes>

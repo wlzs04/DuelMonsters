@@ -353,7 +353,7 @@ namespace Assets.Script.Card
                 //选择我方主动攻击的怪兽
                 if (ownerPlayer.CanBattle() && !(ownerPlayer.GetCurrentEffectProcess() is AttackEffectProcess))
                 {
-                    if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.currentDuelProcess == DuelProcess.Battle && CanAttack())
+                    if (ownerPlayer.IsMyPlayer() && !isPrepareAttack && duelScene.GetCurrentDuelProcess() == DuelProcess.Battle && CanAttack())
                     {
                         Player opponentPlayer = ownerPlayer.GetOpponentPlayer();
                         if (opponentPlayer.CanBeDirectAttacked() &&
@@ -475,7 +475,7 @@ namespace Assets.Script.Card
         public bool CanAttack()
         {
             if (ownerPlayer.IsMyTurn() &&
-                duelScene.currentDuelProcess ==DuelProcess.Battle &&
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Battle &&
                 card.GetCardType() == CardType.Monster &&
                 ownerPlayer.GetCurrentEffectProcess() == null)
             {
@@ -510,8 +510,8 @@ namespace Assets.Script.Card
         {
             if (card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
@@ -531,8 +531,8 @@ namespace Assets.Script.Card
         {
             if (card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second)&&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second)&&
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
@@ -552,8 +552,8 @@ namespace Assets.Script.Card
         {
             if (card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 ownerPlayer.GetCanCallNumber() > 0)
             {
@@ -577,8 +577,8 @@ namespace Assets.Script.Card
         {
             if (card.GetCardGameState() == CardGameState.Back &&
                 card.GetCardType() == CardType.Monster &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 duelScene.GetCurrentTurnNumber() > card.GetBePlacedAreaTurnNumber() &&
                 ownerPlayer.GetCurrentEffectProcess() == null)
             {
@@ -606,8 +606,8 @@ namespace Assets.Script.Card
             if ((card.GetCardType() == CardType.Magic || 
                 card.GetCardType() == CardType.Trap) &&
                 card.GetCardGameState() == CardGameState.Hand &&
-                (duelScene.currentDuelProcess == DuelProcess.Main ||
-                duelScene.currentDuelProcess == DuelProcess.Second) &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 ownerPlayer.GetCurrentEffectProcess() == null &&
                 !ownerPlayer.MagicTrapAreaIsFull())
             {

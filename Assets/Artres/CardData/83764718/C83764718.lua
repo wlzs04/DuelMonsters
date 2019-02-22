@@ -8,8 +8,8 @@ function C83764718.InitInfo(card)
 end
 
 function C83764718.CanLaunchEffect(card)
-	local myTombCardList = card:GetDuelCardScript():GetOwner():GetTombCards();
-	local opponentTombCardList = card:GetDuelCardScript():GetOwner():GetOpponentPlayer():GetTombCards();
+	local myTombCardList = card:GetOwner():GetTombCards();
+	local opponentTombCardList = card:GetOwner():GetOpponentPlayer():GetTombCards();
 	
 	for i=0,myTombCardList.Count-1 do
 		if(myTombCardList[i]:GetCardType()==CS.Assets.Script.Card.CardType.Monster)then
