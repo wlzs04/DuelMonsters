@@ -34,5 +34,10 @@ namespace Assets.Script.Config
         {
             return recordList[id];
         }
+
+        public override string GetRecordValueById(int id)
+        {
+            return recordList[id].value;
+        }
     }
 }

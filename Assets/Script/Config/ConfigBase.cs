@@ -15,6 +15,9 @@ namespace Assets.Script.Config
     /// </summary>
     public class ConfigBase
     {
-        
+        public virtual string GetRecordValueById(int id)
+        {
+            return "无(未重写GetRecordValueById方法！)";
+        }
     }
 }

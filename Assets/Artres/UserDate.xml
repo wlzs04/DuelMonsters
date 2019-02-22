@@ -22,6 +22,7 @@
     <UserCardData cardNo="87769556" number="3" />
     <UserCardData cardNo="37812118" number="3" />
     <UserCardData cardNo="126218" number="3" />
+    <UserCardData cardNo="50277973" number="3" />
   </UserCardList>
   <UserCardGroupList>
     <UserCardGroup cardGroupName="test">
@@ -78,7 +79,8 @@
         <UserCardData cardNo="81823360" number="3" />
         <UserCardData cardNo="5318639" number="1" />
         <UserCardData cardNo="2370081" number="1" />
-        <UserCardData cardNo="126218" number="3" />
+        <UserCardData cardNo="126218" number="1" />
+        <UserCardData cardNo="50277973" number="2" />
       </Main>
       <Extra />
       <Deputy />

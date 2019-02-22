@@ -306,6 +306,14 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 显示列表选择面板
+        /// </summary>
+        public void ShowItemSelectPanel(CardBase card,Type type, ActionIndex actionIndex)
+        {
+            duelSceneScript.ShowItemSelectPanel(card, type, actionIndex);
+        }
+
+        /// <summary>
         /// 显示指定玩家当前指定类型的卡牌列表
         /// </summary>
         /// <param name="ownerPlayer"></param>

@@ -20,6 +20,7 @@ namespace Assets.Script
         public GameObject magicTrapCardPre = null;
 
         public GameObject buttonPrefab = null;
+        public GameObject itemSelectPrefab = null;
 
         public Transform infoContentTransform = null;
 
@@ -30,6 +31,7 @@ namespace Assets.Script
         GameObject effectSelectPanel = null;//效果选择
         GameObject tossCoinPanel = null;//抛硬币
         GameObject throwDicePanel = null;//掷骰子
+        GameObject itemSelectPanel = null;//列表选择
 
         GameObject cardListPanel = null;//卡牌列表
         //此列表是否可以由玩家隐藏(点击右键)
@@ -88,6 +90,9 @@ namespace Assets.Script
 
             throwDicePanel = canvasTransform.Find("rightPanel/ThrowDicePanel").gameObject;
             throwDicePanel.SetActive(false);
+
+            itemSelectPanel = canvasTransform.Find("rightPanel/ItemSelectPanel").gameObject;
+            itemSelectPanel.SetActive(false);
         }
 
         /// <summary>
@@ -387,6 +392,10 @@ namespace Assets.Script
             return throwDicePanel.activeSelf;
         }
 
+        /// <summary>
+        /// 显示掷骰子面板
+        /// </summary>
+        /// <param name="actionIndex"></param>
         public void ShowThrowDicePanel(Action<int> actionIndex)
         {
             throwDicePanel.SetActive(true);
@@ -407,6 +416,49 @@ namespace Assets.Script
             });
 
             GameManager.AddTimerFunction(timerFunction);
+        }
+
+        /// <summary>
+        /// 显示列表选择面板
+        /// </summary>
+        /// <param name="actionIndex"></param>
+        public void ShowItemSelectPanel(CardBase card, Type type, ActionIndex actionIndex)
+        {
+            itemSelectPanel.SetActive(true);
+
+            GameObject content = itemSelectPanel.transform.Find("BackPanel").Find("Scroll View").Find("Viewport").Find("Content").gameObject;
+
+            GameManager.CleanPanelContent(content.transform);
+
+            ConfigBase config;
+
+            if (type== typeof(PropertyType))
+            {
+            }
+            else if(type == typeof(MonsterType))
+            {
+            }
+            else
+            {
+                Debug.LogError("显示列表选择面板中出现未知类型：" + type);
+                itemSelectPanel.SetActive(false);
+                return;
+            }
+
+            config = ConfigManager.GetConfigByName(type.Name);
+            Array itemList = Enum.GetValues(type);
+
+            for (int i = 1; i < itemList.Length; i++)
+            {
+                int selectIndex = i;
+                GameObject buttonObject = Instantiate(itemSelectPrefab, content.transform);
+                buttonObject.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    itemSelectPanel.SetActive(false);
+                    actionIndex(card, selectIndex);
+                });
+                buttonObject.transform.Find("Text").GetComponent<Text>().text = config.GetRecordValueById(i);
+            }
         }
 
         /// <summary>
