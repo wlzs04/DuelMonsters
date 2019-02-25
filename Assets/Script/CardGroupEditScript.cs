@@ -22,6 +22,8 @@ public class CardGroupEditScript : MonoBehaviour
 
     public InputField cardGroupNameInputField;
 
+    public GameObject clearErrorButton;
+
     public GameObject cardPre;
     public GameObject monsterCardPre;
     public GameObject magicTrapCardPre;
@@ -66,8 +68,35 @@ public class CardGroupEditScript : MonoBehaviour
         mainPanelTransform.gameObject.GetComponent<DropToPanelScript>().AddDropHandler(OnDropToMainPanel);
         extraPanelTransform.gameObject.GetComponent<DropToPanelScript>().AddDropHandler(OnDropToExtraPanel);
         deputyPanelTransform.gameObject.GetComponent<DropToPanelScript>().AddDropHandler(OnDropToDeputyPanel);
+
+        CheckCardGroupLegal();
     }
-	
+
+    /// <summary>
+    /// 检测卡组是否合法
+    /// </summary>
+    void CheckCardGroupLegal()
+    {
+        if (GameManager.CheckCardGroupLegal(currentCardGroupName))
+        {
+            clearErrorButton.SetActive(false);
+        }
+        else
+        {
+            clearErrorButton.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// 清除卡组错误按钮点击回调
+    /// </summary>
+    public void ClearCardGroupErrorCallBack()
+    {
+        GameManager.ClearCardGroupError(currentCardGroupName);
+        clearErrorButton.SetActive(false);
+        ResetMainCardGroup();
+    }
+
     /// <summary>
     /// 重新设置所有卡牌
     /// </summary>
@@ -92,31 +121,45 @@ public class CardGroupEditScript : MonoBehaviour
     }
 
     /// <summary>
+    /// 重新设置指定卡组
+    /// </summary>
+    void ResetCardGroup(List<UserCardData> cardList, Transform panelTransform,int maxCountOneRow,int maxRowCount)
+    {
+        GameManager.CleanPanelContent(panelTransform);
+        float panelWidth = ((RectTransform)panelTransform).rect.width / (maxCountOneRow + 1);
+        float panelHeight = ((RectTransform)panelTransform).rect.height / maxRowCount;
+
+        int cardIndex = 0;
+        foreach (var item in cardList)
+        {
+            for (int i = 0; i < item.number; i++)
+            {
+                if (gameManager.GetAllCardInfoList().ContainsKey(item.cardNo))
+                {
+                    GameObject gameObject = Instantiate(cardPre, panelTransform);
+                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
+                    CardScript cardScript = gameObject.GetComponent<CardScript>();
+                    cardScript.SetRootScript(this);
+                    cardScript.SetCard(card);
+                    float row = -(cardIndex / maxCountOneRow) - 0.5f;
+                    float col = cardIndex % maxCountOneRow + 1;
+                    gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
+                    cardIndex++;
+                }
+                else
+                {
+                    GameManager.ShowMessage($"当前卡组：{currentCardGroupName}中存在未知卡牌：{item.cardNo}");
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// 重新设置主卡组
     /// </summary>
     void ResetMainCardGroup()
     {
-        GameManager.CleanPanelContent(mainPanelTransform);
-        int maxCountOneRow = 15;//一排最大数量
-        float panelWidth = ((RectTransform)mainPanelTransform).rect.width / (maxCountOneRow + 1);
-        float panelHeight = ((RectTransform)mainPanelTransform).rect.height / 4;
-
-        int cardIndex = 0;
-        foreach (var item in cardGroup.mainCardList)
-        {
-            for (int i = 0; i < item.number; i++)
-            {
-                GameObject gameObject = Instantiate(cardPre, mainPanelTransform);
-                CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
-                CardScript cardScript = gameObject.GetComponent<CardScript>();
-                cardScript.SetRootScript(this);
-                cardScript.SetCard(card);
-                float row = -(cardIndex / maxCountOneRow) - 0.5f;
-                float col = cardIndex % maxCountOneRow + 1;
-                gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
-                cardIndex++;
-            }
-        }
+        ResetCardGroup(cardGroup.mainCardList, mainPanelTransform, 15, 4);
         mainTotalNumberText.GetComponent<Text>().text = "主卡组：" + mainPanelTransform.childCount;
     }
 
@@ -125,27 +168,7 @@ public class CardGroupEditScript : MonoBehaviour
     /// </summary>
     void ResetExtraCardGroup()
     {
-        GameManager.CleanPanelContent(extraPanelTransform);
-        int maxCountOneRow = 15;//一排最大数量
-        float panelWidth = ((RectTransform)extraPanelTransform).rect.width / (maxCountOneRow + 1);
-        float panelHeight = ((RectTransform)extraPanelTransform).rect.height;
-
-        int cardIndex = 0;
-        foreach (var item in cardGroup.extraCardList)
-        {
-            for (int i = 0; i < item.number; i++)
-            {
-                GameObject gameObject = Instantiate(cardPre, extraPanelTransform);
-                CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
-                CardScript cardScript = gameObject.GetComponent<CardScript>();
-                cardScript.SetRootScript(this);
-                cardScript.SetCard(card);
-                float row = -(cardIndex / maxCountOneRow) - 0.5f;
-                float col = cardIndex % maxCountOneRow + 1;
-                gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
-                cardIndex++;
-            }
-        }
+        ResetCardGroup(cardGroup.extraCardList, extraPanelTransform, 15, 1);
         extraTotalNumberText.GetComponent<Text>().text = "额外卡组：" + extraPanelTransform.childCount;
     }
     
@@ -154,27 +177,7 @@ public class CardGroupEditScript : MonoBehaviour
     /// </summary>
     void ResetDeputyCardGroup()
     {
-        GameManager.CleanPanelContent(deputyPanelTransform);
-        int maxCountOneRow = 15;//一排最大数量
-        float panelWidth = ((RectTransform)deputyPanelTransform).rect.width / (maxCountOneRow + 1);
-        float panelHeight = ((RectTransform)deputyPanelTransform).rect.height;
-
-        int cardIndex = 0;
-        foreach (var item in cardGroup.deputyCardList)
-        {
-            for (int i = 0; i < item.number; i++)
-            {
-                GameObject gameObject = Instantiate(cardPre, deputyPanelTransform);
-                CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
-                CardScript cardScript = gameObject.GetComponent<CardScript>();
-                cardScript.SetRootScript(this);
-                cardScript.SetCard(card);
-                float row = -(cardIndex / maxCountOneRow) - 0.5f;
-                float col = cardIndex % maxCountOneRow + 1;
-                gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
-                cardIndex++;
-            }
-        }
+        ResetCardGroup(cardGroup.deputyCardList, deputyPanelTransform, 15, 1);
         deputyTotalNumberText.GetComponent<Text>().text = "副卡组：" + deputyPanelTransform.childCount;
     }
 

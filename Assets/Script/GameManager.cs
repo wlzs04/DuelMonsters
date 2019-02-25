@@ -57,6 +57,7 @@ namespace Assets.Script
         ServerManager serverManager = null;
         ClientManager clientManager = null;
         Queue<ClientProtocol> protocolQueue = new Queue<ClientProtocol>();
+
         bool isServer = false;
         #endregion
 
@@ -514,7 +515,7 @@ namespace Assets.Script
                 gameManagerInstance.SaveUserData();
             }
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
 #else
             Application.Quit();
 #endif
@@ -614,12 +615,90 @@ namespace Assets.Script
         }
 
         /// <summary>
+        /// 检测卡组是否合法
+        /// </summary>
+        /// <param name="cardGroupName"></param>
+        /// <returns></returns>
+        public static bool CheckCardGroupLegal(string cardGroupName)
+        {
+            UserCardGroup userCardGroup = gameManagerInstance.GetUserData().GetCardGroupByName(cardGroupName);
+
+            //检测卡牌的数量
+            if(userCardGroup.mainCardList.Count > DuelRuleManager.GetMainCardGroupNumberUpperLimit())
+            {
+                ShowMessage($"卡组：{cardGroupName}不合法。原因：卡牌的数量超过限制！");
+                return false;
+            }
+            //检测是否存在未知卡牌
+            foreach (var item in userCardGroup.mainCardList)
+            {
+                if (!gameManagerInstance.GetAllCardInfoList().ContainsKey(item.cardNo))
+                {
+                    ShowMessage($"卡组：{cardGroupName}不合法。原因：存在未知卡牌{item.cardNo}！");
+                    return false;
+                }
+            }
+            //检测同名卡牌的数量
+
+            foreach (var item in userCardGroup.mainCardList)
+            {
+                if (item.number> DuelRuleManager.GetSameCardNumberUpperLimit())
+                {
+                    ShowMessage($"卡组：{cardGroupName}不合法。原因：同名卡牌{item.cardNo}超过上限！");
+                    return false;
+                }
+            }
+            //检测禁卡的限制
+
+            return true;
+        }
+
+        /// <summary>
+        /// 清除指定卡组错误
+        /// </summary>
+        /// <param name="cardGroupName"></param>
+        public static void ClearCardGroupError(string cardGroupName)
+        {
+            UserCardGroup userCardGroup = gameManagerInstance.GetUserData().GetCardGroupByName(cardGroupName);
+
+            //检测卡牌的数量
+            for (int i = userCardGroup.mainCardList.Count - 1; i >= 0; i--)
+            {
+                if (userCardGroup.GetMainCardCount() > DuelRuleManager.GetMainCardGroupNumberUpperLimit())
+                {
+                    userCardGroup.mainCardList.RemoveAt(i);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            //检测是否存在未知卡牌
+            for (int i = userCardGroup.mainCardList.Count - 1; i >= 0; i--)
+            {
+                if (!gameManagerInstance.GetAllCardInfoList().ContainsKey(userCardGroup.mainCardList[i].cardNo))
+                {
+                    userCardGroup.mainCardList.RemoveAt(i);
+                }
+            }
+            //检测同名卡牌的数量
+            foreach (var item in userCardGroup.mainCardList)
+            {
+                if (item.number > DuelRuleManager.GetSameCardNumberUpperLimit())
+                {
+                    item.number = DuelRuleManager.GetSameCardNumberUpperLimit();
+                }
+            }
+            //检测禁卡的限制
+        }
+
+        /// <summary>
         /// 获得卡片背面图片
         /// </summary>
         /// <returns></returns>
         public static Sprite GetCardBackImage()
         {
-            return GameManager.GetSingleInstance().cardBackImage;
+            return gameManagerInstance.cardBackImage;
         }
 
         /// <summary>
@@ -628,7 +707,7 @@ namespace Assets.Script
         /// <returns></returns>
         public static GameObject GetCardOperationButtonPrefab()
         {
-            return GameManager.GetSingleInstance().cardOperationButtonPrefab;
+            return gameManagerInstance.cardOperationButtonPrefab;
         }
 
         /// <summary>

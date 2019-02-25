@@ -36,6 +36,45 @@ namespace Assets.Script
 
         [XmlArray("Deputy")]
         public List<UserCardData> deputyCardList = new List<UserCardData>();
+
+        /// <summary>
+        /// 获得主卡组列表中卡牌数量
+        /// </summary>
+        public int GetMainCardCount()
+        {
+            int count = 0;
+            foreach (var item in mainCardList)
+            {
+                count += item.number;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// 获得副卡组列表中卡牌数量
+        /// </summary>
+        public int GetExtraCardCount()
+        {
+            int count = 0;
+            foreach (var item in extraCardList)
+            {
+                count += item.number;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// 获得额外卡组列表中卡牌数量
+        /// </summary>
+        public int GetDeputyCardCount()
+        {
+            int count = 0;
+            foreach (var item in deputyCardList)
+            {
+                count += item.number;
+            }
+            return count;
+        }
     }
 
     /// <summary>

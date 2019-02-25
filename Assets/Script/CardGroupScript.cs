@@ -79,80 +79,60 @@ public class CardGroupScript : MonoBehaviour
             CleanCardPanel();
 
             //主卡组
-
-            int maxCountOneRow = 15;//一排最大数量
-            float panelWidth = ((RectTransform)mainPanelTransform).rect.width / (maxCountOneRow+1);
-            float panelHeight = ((RectTransform)mainPanelTransform).rect.height / 4;
-            
-            int cardIndex = 0;
-            foreach (var item in userData.userCardGroupList[currentSelectCardCroupIndex].mainCardList)
-            {
-                for (int i = 0; i < item.number; i++)
-                {
-                    GameObject gameObject = Instantiate(cardPrefab, mainPanelTransform);
-                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
-                    gameObject.GetComponent<Image>().sprite = card.GetImage();
-                    CardScript cardScript = gameObject.GetComponent<CardScript>();
-                    cardScript.SetCard(card);
-                    float row = -(cardIndex / maxCountOneRow) - 0.5f;
-                    float col = cardIndex % maxCountOneRow + 1;
-                    gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
-                    cardIndex++;
-                }
-            }
+            AddCardItemToPanel(userData.userCardGroupList[currentSelectCardCroupIndex].mainCardList, 
+                mainPanelTransform, 15,4);
             mainTotalNumberText.GetComponent<Text>().text = "主卡组：" + mainPanelTransform.childCount;
 
             //额外卡组
-
-            maxCountOneRow = 15;//一排最大数量
-            panelWidth = ((RectTransform)extraPanelTransform).rect.width / (maxCountOneRow + 1);
-            panelHeight = ((RectTransform)extraPanelTransform).rect.height;
-
-            cardIndex = 0;
-            foreach (var item in userData.userCardGroupList[currentSelectCardCroupIndex].extraCardList)
-            {
-                for (int i = 0; i < item.number; i++)
-                {
-                    GameObject gameObject = Instantiate(cardPrefab, extraPanelTransform);
-                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
-                    gameObject.GetComponent<Image>().sprite = card.GetImage();
-                    CardScript cardScript = gameObject.GetComponent<CardScript>();
-                    cardScript.SetCard(card);
-                    float row = -(cardIndex / maxCountOneRow) - 0.5f;
-                    float col = cardIndex % maxCountOneRow + 1;
-                    gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
-                    cardIndex++;
-                }
-            }
+            AddCardItemToPanel(userData.userCardGroupList[currentSelectCardCroupIndex].extraCardList,
+                extraPanelTransform, 15, 1);
             extraTotalNumberText.GetComponent<Text>().text = "额外卡组：" + extraPanelTransform.childCount;
-
+            
             //副卡组
-
-            maxCountOneRow = 15;//一排最大数量
-            panelWidth = ((RectTransform)deputyPanelTransform).rect.width / (maxCountOneRow + 1);
-            panelHeight = ((RectTransform)deputyPanelTransform).rect.height;
-
-            cardIndex = 0;
-            foreach (var item in userData.userCardGroupList[currentSelectCardCroupIndex].deputyCardList)
-            {
-                for (int i = 0; i < item.number; i++)
-                {
-                    GameObject gameObject = Instantiate(cardPrefab, deputyPanelTransform);
-                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
-                    gameObject.GetComponent<Image>().sprite = card.GetImage();
-                    CardScript cardScript = gameObject.GetComponent<CardScript>();
-                    cardScript.SetCard(card);
-                    float row = -(cardIndex / maxCountOneRow) - 0.5f;
-                    float col = cardIndex % maxCountOneRow + 1;
-                    gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
-                    cardIndex++;
-                }
-            }
+            AddCardItemToPanel(userData.userCardGroupList[currentSelectCardCroupIndex].deputyCardList,
+                deputyPanelTransform, 15, 1);
             deputyTotalNumberText.GetComponent<Text>().text = "副卡组：" + deputyPanelTransform.childCount;
         }
         else
         {
             Debug.LogError("选中指定卡组错误：第"+ (index+1) + "套卡组不存在！");
+        }
+    }
+
+    /// <summary>
+    /// 添加卡牌item到指定面板
+    /// </summary>
+    /// <param name="cardList"></param>
+    /// <param name="panelTransform"></param>
+    /// <param name="maxCountOneRow"></param>
+    /// <param name="maxRowCount"></param>
+    void AddCardItemToPanel(List<UserCardData> cardList,Transform panelTransform,int maxCountOneRow,int maxRowCount)
+    {
+        float panelWidth = ((RectTransform)panelTransform).rect.width / (maxCountOneRow + 1);
+        float panelHeight = ((RectTransform)panelTransform).rect.height / maxRowCount;
+
+        int cardIndex = 0;
+        foreach (var item in cardList)
+        {
+            for (int i = 0; i < item.number; i++)
+            {
+                if (gameManager.GetAllCardInfoList().ContainsKey(item.cardNo))
+                {
+                    GameObject gameObject = Instantiate(cardPrefab, panelTransform);
+                    CardBase card = gameManager.GetAllCardInfoList()[item.cardNo];
+                    gameObject.GetComponent<Image>().sprite = card.GetImage();
+                    CardScript cardScript = gameObject.GetComponent<CardScript>();
+                    cardScript.SetCard(card);
+                    float row = -(cardIndex / maxCountOneRow) - 0.5f;
+                    float col = cardIndex % maxCountOneRow + 1;
+                    gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
+                    cardIndex++;
+                }
+                else
+                {
+                    GameManager.ShowMessage($"当前卡组：{cardCroupItemList[currentSelectCardCroupIndex].GetCardGroupName()}中存在未知卡牌：{item.cardNo}");
+                }
+            }
         }
     }
 

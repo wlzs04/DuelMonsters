@@ -50,12 +50,16 @@ public class GuessFirstSceneScript : MonoBehaviour {
     /// <param name="cardGroupName"></param>
     public void SelectCardGroupByName(string cardGroupName)
     {
-        //暂时将我方和对方卡组设为一样
-        GameManager.GetDuelScene().myPlayer.SetCardGroupName(cardGroupName);
-        GameManager.GetDuelScene().opponentPlayer.SetCardGroupName(cardGroupName);
-        selectCardGroupPanel.SetActive(false);
-        guessFirstPanel.SetActive(true);
-        selectFirstPanel.SetActive(false);
+        //先检测
+        if (GameManager.CheckCardGroupLegal(cardGroupName))
+        {
+            //暂时将我方和对方卡组设为一样
+            GameManager.GetDuelScene().myPlayer.SetCardGroupName(cardGroupName);
+            GameManager.GetDuelScene().opponentPlayer.SetCardGroupName(cardGroupName);
+            selectCardGroupPanel.SetActive(false);
+            guessFirstPanel.SetActive(true);
+            selectFirstPanel.SetActive(false);
+        }
     }
 
     public bool SetMyGuess(GuessEnum guessEnum)

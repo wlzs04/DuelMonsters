@@ -28,7 +28,6 @@
     <UserCardGroup cardGroupName="test">
       <Main>
         <UserCardData cardNo="14558127" number="3" />
-        <UserCardData cardNo="20155904" number="3" />
         <UserCardData cardNo="35618217" number="3" />
         <UserCardData cardNo="45121025" number="3" />
         <UserCardData cardNo="45159319" number="3" />
@@ -37,7 +36,7 @@
         <UserCardData cardNo="58984738" number="3" />
         <UserCardData cardNo="2370081" number="3" />
         <UserCardData cardNo="2130625" number="3" />
-        <UserCardData cardNo="56649609" number="3" />
+        <UserCardData cardNo="56649609" number="2" />
       </Main>
       <Extra>
         <UserCardData cardNo="45159319" number="1" />
@@ -53,7 +52,6 @@
     <UserCardGroup cardGroupName="卡组2">
       <Main>
         <UserCardData cardNo="9852718" number="3" />
-        <UserCardData cardNo="20155904" number="3" />
         <UserCardData cardNo="35618217" number="3" />
         <UserCardData cardNo="45121025" number="3" />
         <UserCardData cardNo="45159319" number="3" />
