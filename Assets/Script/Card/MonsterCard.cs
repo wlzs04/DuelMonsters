@@ -77,8 +77,12 @@ namespace Assets.Script.Card
         PropertyType propertyType = PropertyType.Unknown;//属性
         MonsterType monsterType = MonsterType.Unknown;//种族
 
-        int attackValue = 1500;//攻击力
-        int defenseValue = 500;//防御力
+        int attackValue = 0;//攻击力
+        int defenseValue = 0;//防御力
+
+        int originalAttackValue = 0;//原本攻击力
+        int originalDefenseValue = 0;//原本防御力
+
         int canBeSacrificedNumber = 1;//可被当成祭品的个数
 
         int attackNumber = 0; //攻击次数
@@ -164,31 +168,71 @@ namespace Assets.Script.Card
             return level;
         }
 
+        public void SetOriginalAttackValue(int originalAttackValue)
+        {
+            this.originalAttackValue = originalAttackValue;
+            RecalculationCardByCardEffect();
+        }
+
+        public int GetOriginalAttackValue()
+        {
+            return originalAttackValue;
+        }
+
+        /// <summary>
+        /// 设置攻击力
+        /// </summary>
+        /// <param name="attackValue"></param>
         public void SetAttackValue(int attackValue)
         {
             attackValue = attackValue > 0 ? attackValue : 0;
             this.attackValue = attackValue;
-            if(GetDuelCardScript()!=null)
+            infoDirty = true;
+            if (GetDuelCardScript()!=null)
             {
                 GetDuelCardScript().ResetAttackAndDefenseText();
             }
         }
 
+        /// <summary>
+        /// 获得攻击力
+        /// </summary>
+        /// <returns></returns>
         public int GetAttackValue()
         {
             return attackValue;
         }
 
+        public void SetOriginalDefenseValue(int originalDefenseValue)
+        {
+            this.originalDefenseValue = originalDefenseValue;
+            RecalculationCardByCardEffect();
+        }
+
+        public int GetOriginalDefenseValue()
+        {
+            return originalDefenseValue;
+        }
+
+        /// <summary>
+        /// 设置防御力
+        /// </summary>
+        /// <param name="defenseValue"></param>
         public void SetDefenseValue(int defenseValue)
         {
             defenseValue = defenseValue > 0 ? defenseValue : 0;
             this.defenseValue = defenseValue;
+            infoDirty = true;
             if (GetDuelCardScript()!= null)
             {
                 GetDuelCardScript().ResetAttackAndDefenseText();
             }
         }
 
+        /// <summary>
+        /// 获得防御力
+        /// </summary>
+        /// <returns></returns>
         public int GetDefenseValue()
         {
             return defenseValue;
@@ -230,12 +274,13 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanChangeToFrontAttack()
         {
-            if (GetCardType() == CardType.Monster &&
+            if (GetOwner().IsMyTurn() && 
+                GetCardType() == CardType.Monster &&
                 (GetCardGameState() == CardGameState.FrontDefense) &&
                 GetChangeAttackOrDefenseNumber() > 0 &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
                 duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
-                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null
+                GetOwner().GetCurrentEffectProcess() == null
                 )
             {
                 return true;
@@ -249,12 +294,13 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanChangeToFrontDefense()
         {
-            if (GetCardType() == CardType.Monster &&
+            if (GetOwner().IsMyTurn() && 
+                GetCardType() == CardType.Monster &&
                 (GetCardGameState() == CardGameState.FrontAttack) &&
                 GetChangeAttackOrDefenseNumber() > 0 &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
                 duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
-                GetDuelCardScript().GetOwner().GetCurrentEffectProcess() == null
+                GetOwner().GetCurrentEffectProcess() == null
                 )
             {
                 return true;
@@ -265,11 +311,12 @@ namespace Assets.Script.Card
         public void SetPropertyType(PropertyType propertyType)
         {
             this.propertyType = propertyType;
+            infoDirty = true;
         }
 
         public void SetPropertyTypeByString(string value)
         {
-            propertyType = GetPropertyTypeByString(value);
+            SetPropertyType(GetPropertyTypeByString(value));
         }
 
         public PropertyType GetPropertyType()
@@ -289,11 +336,12 @@ namespace Assets.Script.Card
         public void SetMonsterType(MonsterType monsterType)
         {
             this.monsterType = monsterType;
+            infoDirty = true;
         }
 
         public void SetMonsterTypeByString(string value)
         {
-            monsterType = GetMonsterTypeByString(value);
+            SetMonsterType(GetMonsterTypeByString(value));
         }
 
         public MonsterType GetMonsterType()

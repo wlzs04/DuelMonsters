@@ -14,7 +14,7 @@ namespace Assets.Script.Protocol
         public override void Process()
         {
             bool opponentSelectFrist = Convert.ToBoolean( GetContent("opponentSelectFrist"));
-            GameManager.GetSingleInstance().GetDuelScene().OpponentSelectFirstOrBack(opponentSelectFrist);
+            GameManager.GetDuelScene().OpponentSelectFirstOrBack(opponentSelectFrist);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Assets.Script.Protocol
             CardGameState toCardGameState = (CardGameState)Enum.Parse(typeof(CardGameState), GetContent("toCardGameState"));
             int flag = int.Parse(GetContent("flag"));
 
-            GameManager.GetSingleInstance().GetDuelScene().OpponentCallMonster(cardID, callType, fromCardGameState, toCardGameState, flag);
+            GameManager.GetDuelScene().OpponentCallMonster(cardID, callType, fromCardGameState, toCardGameState, flag);
         }
     }
 }

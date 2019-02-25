@@ -27,8 +27,8 @@ function C50277973.SelectMonsterTypeCallback(card,index)
 	card:SetPropertyType(C50277973.propertyTypeIndex);
 	card:SetMonsterType(index);
 	card:SetLevel(4);
-	card:SetAttackValue(1800);
-	card:SetDefenseValue(1000);
+	card:SetOriginalAttackValue(1800);
+	card:SetOriginalDefenseValue(1000);
 	
 	local callMonsterEffectProcess = CS.Assets.Script.Duel.EffectProcess.CallMonsterEffectProcess(card,CS.Assets.Script.Card.CardGameState.Unknown, card:GetDuelCardScript():GetOwner());
     card:GetDuelCardScript():GetOwner():AddEffectProcess(callMonsterEffectProcess);

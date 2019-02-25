@@ -26,7 +26,12 @@ namespace Assets.Script.Duel.EffectProcess
             this.attackCard = attackCard;
             this.beAttackedCard = beAttackedCard;
 
-            finishAction = () => { attackCard.GetDuelCardScript().ClearPrepareAttackState(); ownerPlayer.ThinkAction(); };
+            finishAction = () => 
+            {
+                duelScene.SetTitle("");
+                attackCard.GetDuelCardScript().ClearPrepareAttackState();
+                ownerPlayer.ThinkAction();
+            };
         }
 
         public override bool CheckCanTrigger()
@@ -54,7 +59,7 @@ namespace Assets.Script.Duel.EffectProcess
             }
             else if (beAttackedCard == null)
             {
-                GameManager.ShowMessage("请选择将被攻击的怪兽");
+                duelScene.SetTitle(ConfigManager.GetConfigByName("StringRes").GetRecordValueById(22));
             }
             else
             {

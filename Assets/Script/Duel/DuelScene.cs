@@ -63,6 +63,9 @@ namespace Assets.Script.Duel
         List<Vector2> opponentMonsterCardPositionAnchorList = new List<Vector2>();
         List<Vector2> opponentMagicTrapCardPositionAnchorList = new List<Vector2>();
 
+        CardBase currentPointCard = null;//当前鼠标所在位置的卡牌
+        CardBase currentInfoCard = null;//当前信息面板显示的卡牌
+
         public DuelScene(DuelMode duelMode)
         {
             myPlayer = new Player("玩家", this);
@@ -457,6 +460,10 @@ namespace Assets.Script.Duel
                 }
                 startPlayer.Update();
                 startPlayer.GetOpponentPlayer().Update();
+                if(currentInfoCard!=null)
+                {
+                    currentInfoCard.Update();
+                }
             }
         }
 
@@ -529,6 +536,21 @@ namespace Assets.Script.Duel
             duelSceneScript.ShowHelpInfoPanel(myPlayer.GetDuelCardGroup().GetCards().Count, opponentPlayer.GetDuelCardGroup().GetCards().Count);
         }
 
+        public void SetTitle(string titleText)
+        {
+            duelSceneScript.ShowTitle(titleText);
+        }
+
+        public void SetCurrentPointCard(CardBase currentPointCard)
+        {
+            this.currentPointCard = currentPointCard;
+        }
+
+        public CardBase GetCurrentPointCard()
+        {
+            return currentPointCard;
+        }
+
         void EndDuel()
         {
 
@@ -581,9 +603,15 @@ namespace Assets.Script.Duel
         /// 显示指定卡牌的详细信息
         /// </summary>
         /// <param name="card"></param>
-        public void ShowCardInfo(CardBase card)
+        public void SetCurrentInfoCard(CardBase currentInfoCard)
         {
-            duelSceneScript.SetInfoContent(card);
+            this.currentInfoCard = currentInfoCard;
+            duelSceneScript.SetInfoContent(currentInfoCard);
+        }
+
+        public CardBase GetCurrentInfoCard()
+        {
+            return currentInfoCard;
         }
         
         /// <summary>
@@ -654,6 +682,10 @@ namespace Assets.Script.Duel
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>
             {
+                if(currentPointCard!=null)
+                {
+                    currentPointCard.GetDuelCardScript().RecheckAllowedOperation();
+                }
                 CheckAllEffectProcess(currentPlayer.ThinkAction);
             });
             GameManager.AddTimerFunction(timerFunction);

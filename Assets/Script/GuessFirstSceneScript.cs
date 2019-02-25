@@ -26,7 +26,7 @@ public class GuessFirstSceneScript : MonoBehaviour {
         selectCardGroupPanel.SetActive(true);
         guessFirstPanel.SetActive(false);
         selectFirstPanel.SetActive(false);
-        duelScene = GameManager.GetSingleInstance().GetDuelScene();
+        duelScene = GameManager.GetDuelScene();
 
         GameManager.CleanPanelContent(cardGroupScrollViewTransform);
         UserData userData = GameManager.GetSingleInstance().GetUserData();
@@ -51,8 +51,8 @@ public class GuessFirstSceneScript : MonoBehaviour {
     public void SelectCardGroupByName(string cardGroupName)
     {
         //暂时将我方和对方卡组设为一样
-        GameManager.GetSingleInstance().GetDuelScene().myPlayer.SetCardGroupName(cardGroupName);
-        GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.SetCardGroupName(cardGroupName);
+        GameManager.GetDuelScene().myPlayer.SetCardGroupName(cardGroupName);
+        GameManager.GetDuelScene().opponentPlayer.SetCardGroupName(cardGroupName);
         selectCardGroupPanel.SetActive(false);
         guessFirstPanel.SetActive(true);
         selectFirstPanel.SetActive(false);

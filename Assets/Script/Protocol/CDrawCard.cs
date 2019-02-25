@@ -11,7 +11,7 @@ namespace Assets.Script.Protocol
     {
         public override void Process()
         {
-            DuelScene duelScene = GameManager.GetSingleInstance().GetDuelScene();
+            DuelScene duelScene = GameManager.GetDuelScene();
             duelScene.OpponentDraw();
         }
     }

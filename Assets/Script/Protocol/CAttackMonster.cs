@@ -17,7 +17,7 @@ namespace Assets.Script.Protocol
         {
             int cardID = int.Parse(GetContent("cardID"));
             int anotherCardID = int.Parse(GetContent("anotherCardID"));
-            GameManager.GetSingleInstance().GetDuelScene().OpponentAttack(cardID, anotherCardID);
+            GameManager.GetDuelScene().OpponentAttack(cardID, anotherCardID);
         }
     }
 }

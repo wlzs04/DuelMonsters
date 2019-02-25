@@ -56,7 +56,7 @@ namespace Assets.Script
         void Start()
         {
             GameManager.GetSingleInstance().SetAudioByName(duelBgmName);
-            duelScene = GameManager.GetSingleInstance().GetDuelScene();
+            duelScene = GameManager.GetDuelScene();
             duelScene.Init();
             cardImage = GameObject.Find("cardImage").GetComponent<Image>();
 
@@ -100,7 +100,7 @@ namespace Assets.Script
         /// </summary>
         public void EnterBattleProcessEvent()
         {
-            GameManager.GetSingleInstance().GetDuelScene().myPlayer.Battle();
+            GameManager.GetDuelScene().myPlayer.Battle();
             durlProcessPanel.SetActive(false);
         }
 
@@ -109,7 +109,7 @@ namespace Assets.Script
         /// </summary>
         public void EnterSecondProcessEvent()
         {
-            GameManager.GetSingleInstance().GetDuelScene().myPlayer.Second();
+            GameManager.GetDuelScene().myPlayer.Second();
             durlProcessPanel.SetActive(false);
         }
 
@@ -118,7 +118,7 @@ namespace Assets.Script
         /// </summary>
         public void EndProcessEvent()
         {
-            GameManager.GetSingleInstance().GetDuelScene().myPlayer.EndTurn();
+            GameManager.GetDuelScene().myPlayer.EndTurn();
             durlProcessPanel.SetActive(false);
         }
 
@@ -127,7 +127,7 @@ namespace Assets.Script
         /// </summary>
         public void SurrenderEvent()
         {
-            GameManager.GetSingleInstance().GetDuelScene().myPlayer.Surrender();
+            GameManager.GetDuelScene().myPlayer.Surrender();
         }
 
         /// <summary>
@@ -152,9 +152,9 @@ namespace Assets.Script
             {
                 return;
             }
-            bool isMyTurn = GameManager.GetSingleInstance().GetDuelScene().myPlayer.IsMyTurn();
+            bool isMyTurn = GameManager.GetDuelScene().myPlayer.IsMyTurn();
             Color color = isMyTurn ? Color.green : Color.red;
-            int currentDuelProcess = (int)GameManager.GetSingleInstance().GetDuelScene().GetCurrentDuelProcess();
+            int currentDuelProcess = (int)GameManager.GetDuelScene().GetCurrentDuelProcess();
             for (int i = 1; i < durlProcessPanel.transform.GetChild(0).childCount; i++)
             {
                 if(currentDuelProcess > i)
@@ -470,6 +470,15 @@ namespace Assets.Script
             StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
             helpInfoPanel.transform.Find("MyRemainCardNumberText").GetComponent<Text>().text = stringResConfig.GetRecordById(8).value + myRemainCardNumberText;
             helpInfoPanel.transform.Find("OpponentRemainCardNumberText").GetComponent<Text>().text = stringResConfig.GetRecordById(8).value + opponentRemainCardNumberText;
+        }
+
+        /// <summary>
+        /// 显示标题，暂时使用帮助信息面板显示标题
+        /// </summary>
+        /// <param name="titleText"></param>
+        public void ShowTitle(string titleText)
+        {
+            helpInfoPanel.transform.Find("TitleText").GetComponent<Text>().text = titleText;
         }
 
         /// <summary>

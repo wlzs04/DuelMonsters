@@ -57,7 +57,7 @@ namespace Assets.Script.Card
 
         void Awake()
         {
-            duelScene = GameManager.GetSingleInstance().GetDuelScene();
+            duelScene = GameManager.GetDuelScene();
             cardImage = gameObject.transform.GetChild(0).gameObject;
             attackImage = gameObject.transform.GetChild(1).gameObject;
             borderImage = cardImage.transform.GetChild(0).gameObject;
@@ -394,6 +394,7 @@ namespace Assets.Script.Card
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            duelScene.SetCurrentPointCard(card);
             //如果卡牌在场上，则置顶，防遮挡
             if (card.GetCardGameState()==CardGameState.FrontAttack||
                 card.GetCardGameState() == CardGameState.FrontDefense||
@@ -407,7 +408,7 @@ namespace Assets.Script.Card
             gameObject.transform.localScale = new Vector3(selectScale, selectScale, 1);
             if(canShowInfo)
             {
-                duelScene.ShowCardInfo(card);
+                duelScene.SetCurrentInfoCard(card);
             }
             if(!duelScene.GetLockScene() && ownerPlayer.IsMyTurn())
             {
@@ -417,6 +418,7 @@ namespace Assets.Script.Card
 
         public void OnPointerExit(PointerEventData eventData)
         {
+            duelScene.SetCurrentPointCard(null);
             gameObject.transform.localScale = Vector3.one;
             GameManager.CleanPanelContent(operationPanelTransform);
         }
@@ -508,7 +510,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanNormalCall()
         {
-            if (card.GetCardGameState() == CardGameState.Hand &&
+            if (ownerPlayer.IsMyTurn() && 
+                card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
                 duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
@@ -529,7 +532,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanSacrificCall()
         {
-            if (card.GetCardGameState() == CardGameState.Hand &&
+            if (ownerPlayer.IsMyTurn() && 
+                card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
                 duelScene.GetCurrentDuelProcess() == DuelProcess.Second)&&
@@ -550,7 +554,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanBackPlaceToMonsterArea()
         {
-            if (card.GetCardGameState() == CardGameState.Hand &&
+            if (ownerPlayer.IsMyTurn() && 
+                card.GetCardGameState() == CardGameState.Hand &&
                 card.GetCardType() == CardType.Monster &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
                 duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
@@ -575,7 +580,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanFlipCall()
         {
-            if (card.GetCardGameState() == CardGameState.Back &&
+            if (ownerPlayer.IsMyTurn() && 
+                card.GetCardGameState() == CardGameState.Back &&
                 card.GetCardType() == CardType.Monster &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
                 duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
@@ -603,7 +609,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanBackPlaceToMagicTrapArea()
         {
-            if ((card.GetCardType() == CardType.Magic || 
+            if (ownerPlayer.IsMyTurn() &&
+                (card.GetCardType() == CardType.Magic || 
                 card.GetCardType() == CardType.Trap) &&
                 card.GetCardGameState() == CardGameState.Hand &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||

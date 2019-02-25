@@ -17,7 +17,7 @@ namespace Assets.Script.Protocol
         public override void Process()
         {
             DuelProcess opponentDuelProcess = (DuelProcess)Enum.Parse(typeof(DuelProcess), GetContent("duelProcess"));
-            GameManager.GetSingleInstance().GetDuelScene().OpponentEnterDuelProcess(opponentDuelProcess);
+            GameManager.GetDuelScene().OpponentEnterDuelProcess(opponentDuelProcess);
         }
     }
 }

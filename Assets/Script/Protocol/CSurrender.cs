@@ -10,7 +10,7 @@ namespace Assets.Script.Protocol
     {
         public override void Process()
         {
-            GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.Surrender();
+            GameManager.GetDuelScene().opponentPlayer.Surrender();
         }
     }
 }

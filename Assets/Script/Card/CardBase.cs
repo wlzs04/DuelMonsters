@@ -172,6 +172,8 @@ namespace Assets.Script.Card
         private ActionChangeCardGameState changeCardGameState = null;
         private string luaPath;
 
+        bool infoDirty = false;//卡牌的信息是否被修改并且没有刷新
+
         public CardBase(int cardNo)
         {
             this.cardNo = cardNo;
@@ -228,6 +230,14 @@ namespace Assets.Script.Card
             }
         }
 
+        public void Update()
+        {
+            if(infoDirty)
+            {
+                CheckAndShowCardInfo();
+            }
+        }
+
         /// <summary>
         /// 为卡牌设置场景内依附的物体
         /// </summary>
@@ -239,7 +249,7 @@ namespace Assets.Script.Card
             duelCardScript = cardObject.GetComponent<DuelCardScript>();
             if (duelCardScript!=null)
             {
-                duelScene = GameManager.GetSingleInstance().GetDuelScene();
+                duelScene = GameManager.GetDuelScene();
             }
         }
 
@@ -284,6 +294,7 @@ namespace Assets.Script.Card
         public void SetName(string name)
         {
             this.name = name;
+            infoDirty = true;
         }
 
         public string GetName()
@@ -352,7 +363,16 @@ namespace Assets.Script.Card
         {
             return cardGameState;
         }
-        
+
+        //检查卡牌信息面板显示的是否时此卡，是的话重新显示卡牌信息
+        public void CheckAndShowCardInfo()
+        {
+            if (duelScene!=null && duelScene.GetCurrentInfoCard() == this)
+            {
+                duelScene.SetCurrentInfoCard(this);
+            }
+        }
+
         /// <summary>
         /// 离场时的回调
         /// </summary>
@@ -384,6 +404,7 @@ namespace Assets.Script.Card
         public void SetEffectInfo(string effectInfo)
         {
             this.effectInfo = effectInfo;
+            infoDirty = true;
         }
 
         public string GetEffectInfo()
@@ -409,11 +430,12 @@ namespace Assets.Script.Card
         public void SetCardType(CardType cardType)
         {
             this.cardType = cardType;
+            infoDirty = true;
         }
 
         public void SetCardTypeByString(string value)
         {
-            cardType = GetCardTypeByString(value);
+            SetCardType( GetCardTypeByString(value));
         }
 
         public string GetCardTypeString()
@@ -491,7 +513,8 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanLaunchEffect()
         {
-            if ((GetCardType() == CardType.Magic || GetCardType() == CardType.Trap) &&
+            if (GetOwner().IsMyTurn() && 
+                (GetCardType() == CardType.Magic || GetCardType() == CardType.Trap) &&
                 (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
                 duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
                 GetOwner().GetCurrentEffectProcess() == null
@@ -594,11 +617,10 @@ namespace Assets.Script.Card
         public void RecalculationCardByCardEffect()
         {
             //计算攻击力和守备力
-            CardBase cardBase = GameManager.GetSingleInstance().GetAllCardInfoList()[cardNo];
             if(GetCardType()==CardType.Monster)
             {
-                SetAttackValue(cardBase.GetAttackValue());
-                SetDefenseValue(cardBase.GetDefenseValue());
+                SetAttackValue(GetOriginalAttackValue());
+                SetDefenseValue(GetOriginalDefenseValue());
             }
             foreach (var cardEffect in cardEffectMap)
             {

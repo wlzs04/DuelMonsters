@@ -16,7 +16,7 @@ namespace Assets.Script.Protocol
     {
         public override void Process()
         {
-            GameManager.GetSingleInstance().GetDuelScene().opponentPlayer.SetCardGroup(GetContent("cardGroupList"));
+            GameManager.GetDuelScene().opponentPlayer.SetCardGroup(GetContent("cardGroupList"));
         }
     }
 }

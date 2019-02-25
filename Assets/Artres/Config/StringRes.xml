@@ -21,5 +21,7 @@
     <Record id="18" value="我输了"/>
     <Record id="19" value="您选择："/>
     <Record id="20" value="骰子点数为："/>
+    <Record id="21" value="请丢弃卡牌！"/>
+    <Record id="22" value="请选择将被攻击的怪兽！"/>
   </RecordList>
 </StringRes>

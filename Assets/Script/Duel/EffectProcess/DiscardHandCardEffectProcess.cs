@@ -1,4 +1,5 @@
 using Assets.Script.Card;
+using Assets.Script.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Assets.Script.Duel.EffectProcess
     {
         CardBase launchEffectCard;
         int needDiscardHandCardNumber = 1;//需要丢弃的卡牌数量
+        string titleText = "";
 
         Action<CardBase, CardBase> discardCardFinishAction;
 
@@ -23,7 +25,12 @@ namespace Assets.Script.Duel.EffectProcess
             this.launchEffectCard = launchEffectCard;
             this.needDiscardHandCardNumber = needDiscardHandCardNumber;
             this.discardCardFinishAction = discardCardFinishAction;
-            finishAction += DiscardCardFinish;
+            finishAction += () =>
+            {
+                duelScene.SetTitle("");
+                DiscardCardFinish();
+            }; 
+            titleText = ConfigManager.GetConfigByName("StringRes").GetRecordValueById(21);
         }
 
         public override bool CheckCanTrigger()
@@ -34,7 +41,7 @@ namespace Assets.Script.Duel.EffectProcess
         protected override void ProcessFunction()
         {
             haveProcess = true;
-            GameManager.ShowMessage("请丢弃卡牌！");
+            duelScene.SetTitle(titleText);
             foreach (var item in ownerPlayer.GetHandCards())
             {
                 item.GetDuelCardScript().SetClickCallback(launchEffectCard, DiscardOneHandCard);
@@ -60,7 +67,7 @@ namespace Assets.Script.Duel.EffectProcess
             }
             else
             {
-                GameManager.ShowMessage("请丢弃卡牌！");
+                duelScene.SetTitle(titleText);
                 ownerPlayer.ThinkAction();
             }
         }

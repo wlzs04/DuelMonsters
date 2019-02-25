@@ -36,7 +36,7 @@ namespace Assets.Script.Duel.EffectProcess
         public EffectProcessBase(Player ownerPlayer)
         {
             this.ownerPlayer = ownerPlayer;
-            duelScene = GameManager.GetSingleInstance().GetDuelScene();
+            duelScene = GameManager.GetDuelScene();
         }
 
         public virtual void Update()

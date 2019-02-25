@@ -25,7 +25,7 @@ namespace Assets.Script.Protocol
 
             string sacrificeInfo = GetContent("sacrificeInfo");
 
-            GameManager.GetSingleInstance().GetDuelScene().OpponentCallMonsterBySacrifice(cardID, callType, fromCardGameState, toCardGameState, flag, sacrificeInfo);
+            GameManager.GetDuelScene().OpponentCallMonsterBySacrifice(cardID, callType, fromCardGameState, toCardGameState, flag, sacrificeInfo);
         }
     }
 }

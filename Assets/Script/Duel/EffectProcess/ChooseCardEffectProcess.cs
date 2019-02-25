@@ -28,7 +28,11 @@ namespace Assets.Script.Duel.EffectProcess
             this.chooseCardCallBack = chooseCardCallBack;
 
             finishAction += launchEffectCard.GetDuelCardScript().GetDuelScene().UnlockScene;
-            finishAction += RemoveChooseCardCallBackFromCardList;
+            finishAction += () =>
+             {
+                 RemoveChooseCardCallBackFromCardList();
+                 duelScene.SetTitle("");
+             };
         }
 
         public override bool CheckCanTrigger()
@@ -38,7 +42,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void ProcessFunction()
         {
-            launchEffectCard.GetDuelCardScript().GetDuelScene().LockScene();
+            duelScene.LockScene();
             //从我方魔法陷阱区进行选择
             CardBase[] myMagicTrapCardArea = launchEffectCard.GetOwner().GetMagicTrapCardArea();
             AddCanChooseCardFromList(myMagicTrapCardArea);
@@ -104,7 +108,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// <param name="titleText"></param>
         public void SetTitle(string titleText)
         {
-            GameManager.ShowMessage(titleText);
+            duelScene.SetTitle(titleText);
         }
     }
 }

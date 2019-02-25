@@ -7,8 +7,8 @@ function C81823360.InitInfo(card)
 	card:SetMonsterTypeByString("恐龙");
 
 	card:SetLevel(4);
-	card:SetAttackValue(2000);
-	card:SetDefenseValue(0);
+	card:SetOriginalAttackValue(2000);
+	card:SetOriginalDefenseValue(0);
 	card:SetEffectInfo("突然出现在太古大海原的恐龙型仿生体。虽然可以凭借其引以为傲的消音装甲，偷偷地接近猎物的背后，悄无声息地将其咬住，但进入捕食模式后身体会发光，因此常常让猎物逃走。");
 end
 

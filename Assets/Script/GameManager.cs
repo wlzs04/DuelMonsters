@@ -398,9 +398,9 @@ namespace Assets.Script
             return cardGroupNameForCardGroupEditScene;
         }
 
-        public DuelScene GetDuelScene()
+        public static DuelScene GetDuelScene()
         {
-            return duelScene;
+            return gameManagerInstance.duelScene;
         }
 
         /// <summary>

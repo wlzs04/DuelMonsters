@@ -7,8 +7,8 @@ function C58518520.InitInfo(card)
 	card:SetMonsterTypeByString("魔法师");
 
 	card:SetLevel(2);
-	card:SetAttackValue(0);
-	card:SetDefenseValue(900);
+	card:SetOriginalAttackValue(0);
+	card:SetOriginalDefenseValue(900);
 	card:SetEffectInfo("①：这张卡作为同调素材送去墓地的场合发动。自己从卡组抽1张。②：这张卡为同调素材的同调怪兽不会被效果破坏。");
 end
 

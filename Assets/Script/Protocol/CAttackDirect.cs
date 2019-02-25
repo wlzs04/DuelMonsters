@@ -16,7 +16,7 @@ namespace Assets.Script.Protocol
         public override void Process()
         {
             int cardID = int.Parse(GetContent("cardID"));
-            GameManager.GetSingleInstance().GetDuelScene().OpponentAttack(cardID);
+            GameManager.GetDuelScene().OpponentAttack(cardID);
         }
     }
 }

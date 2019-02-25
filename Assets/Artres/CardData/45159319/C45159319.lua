@@ -7,8 +7,8 @@ function C45159319.InitInfo(card)
 	card:SetMonsterTypeByString("岩石");
 
 	card:SetLevel(4);
-	card:SetAttackValue(1100);
-	card:SetDefenseValue(2000);
+	card:SetOriginalAttackValue(1100);
+	card:SetOriginalDefenseValue(2000);
 	card:SetEffectInfo("这张卡1个回合1次可以变成里侧守备表示。");
 end
 
