@@ -31,8 +31,6 @@ function C4178474.ChooseCardCallback(launchEffectCard,chooseCard)
 		return
 	end
 	
-	launchEffectCard:GetOwner():GetCurrentEffectProcess():AfterFinishProcessFunction();
-	
 	local moveCardToTombEffectProcess = CS.Assets.Script.Duel.EffectProcess.MoveCardToTombEffectProcess(chooseCard,CS.Assets.Script.Duel.EffectProcess.MoveCardToTombType.Effect, chooseCard:GetOwner());
     chooseCard:GetOwner():AddEffectProcess(moveCardToTombEffectProcess);
 end

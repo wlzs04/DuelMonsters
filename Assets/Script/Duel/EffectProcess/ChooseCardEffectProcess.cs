@@ -27,12 +27,12 @@ namespace Assets.Script.Duel.EffectProcess
             this.chooseCardJudgeAction = chooseCardJudgeAction;
             this.chooseCardCallBack = chooseCardCallBack;
 
-            finishAction += launchEffectCard.GetDuelCardScript().GetDuelScene().UnlockScene;
+            finishAction += duelScene.UnlockScene;
             finishAction += () =>
-             {
+            {
                  RemoveChooseCardCallBackFromCardList();
                  duelScene.SetTitle("");
-             };
+            };
         }
 
         public override bool CheckCanTrigger()
@@ -40,23 +40,23 @@ namespace Assets.Script.Duel.EffectProcess
             return true;
         }
 
-        protected override void ProcessFunction()
+        protected override void BeforeProcessFunction()
         {
             duelScene.LockScene();
             //从我方魔法陷阱区进行选择
-            CardBase[] myMagicTrapCardArea = launchEffectCard.GetOwner().GetMagicTrapCardArea();
+            CardBase[] myMagicTrapCardArea = ownerPlayer.GetMagicTrapCardArea();
             AddCanChooseCardFromList(myMagicTrapCardArea);
 
             //从对方魔法陷阱区进行选择
-            CardBase[] opponentMagicTrapCardArea = launchEffectCard.GetOwner().GetOpponentPlayer().GetMagicTrapCardArea();
+            CardBase[] opponentMagicTrapCardArea = ownerPlayer.GetOpponentPlayer().GetMagicTrapCardArea();
             AddCanChooseCardFromList(opponentMagicTrapCardArea);
 
             //从我方怪兽区进行选择
-            CardBase[] myMonsterCardArea = launchEffectCard.GetOwner().GetMonsterCardArea();
+            CardBase[] myMonsterCardArea = ownerPlayer.GetMonsterCardArea();
             AddCanChooseCardFromList(myMonsterCardArea);
 
             //从对方怪兽区进行选择
-            CardBase[] opponentMonsterCardArea = launchEffectCard.GetOwner().GetOpponentPlayer().GetMonsterCardArea();
+            CardBase[] opponentMonsterCardArea = ownerPlayer.GetOpponentPlayer().GetMonsterCardArea();
             AddCanChooseCardFromList(opponentMonsterCardArea);
 
             AddChooseCardCallBackToCardList();
@@ -87,8 +87,20 @@ namespace Assets.Script.Duel.EffectProcess
         {
             foreach (var item in canChooseCardBases)
             {
-                item.GetDuelCardScript().SetClickCallback(launchEffectCard, chooseCardCallBack);
+                
+                item.GetDuelCardScript().SetClickCallback(launchEffectCard, ChooseCardCallBack);
             }
+        }
+
+        /// <summary>
+        /// 选择卡牌的回调
+        /// </summary>
+        /// <param name="launchEffectCard"></param>
+        /// <param name="chooseCard"></param>
+        void ChooseCardCallBack(CardBase launchEffectCard, CardBase chooseCard)
+        {
+            AfterFinishProcessFunction();
+            chooseCardCallBack(launchEffectCard, chooseCard);
         }
 
         /// <summary>

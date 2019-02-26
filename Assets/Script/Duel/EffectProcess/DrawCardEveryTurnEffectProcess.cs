@@ -28,7 +28,7 @@ namespace Assets.Script.Duel.EffectProcess
             return false;
         }
 
-        protected override void ProcessFunction()
+        protected override void BeforeProcessFunction()
         {
             haveProcess = true;
 

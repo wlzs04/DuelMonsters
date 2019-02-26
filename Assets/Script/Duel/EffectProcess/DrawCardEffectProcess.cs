@@ -23,7 +23,7 @@ namespace Assets.Script.Duel.EffectProcess
             return !haveProcess;
         }
 
-        protected override void ProcessFunction()
+        protected override void BeforeProcessFunction()
         {
             haveProcess = true;
             for (int i = 0; i < drawCardNumber; i++)

@@ -56,6 +56,31 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 魔法卡判断是否可以发动效果
+        /// </summary>
+        /// <returns></returns>
+        public bool MagicCanLaunchEffect()
+        {
+            if (GetCardType() == CardType.Magic &&
+                GetOwner().IsMyTurn() &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
+                GetOwner().GetCurrentEffectProcess() == null
+                )
+            {
+                if (GetCardGameState() == CardGameState.Hand)
+                {
+                    return !GetOwner().MagicTrapAreaIsFull() && canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
+                }
+                else if (IsInArea(cardGameState))
+                {
+                    return (duelScene.GetCurrentTurnNumber() != GetBePlacedAreaTurnNumber()) && (canLaunchEffectAction != null ? canLaunchEffectAction(this) : true);
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 魔法卡发动效果后的回调
         /// </summary>
         public void MagicLaunchEffectCallback()

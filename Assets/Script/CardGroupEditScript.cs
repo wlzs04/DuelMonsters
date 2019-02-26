@@ -146,10 +146,6 @@ public class CardGroupEditScript : MonoBehaviour
                     gameObject.transform.localPosition = new Vector3(col * panelWidth, row * panelHeight, 0);
                     cardIndex++;
                 }
-                else
-                {
-                    GameManager.ShowMessage($"当前卡组：{currentCardGroupName}中存在未知卡牌：{item.cardNo}");
-                }
             }
         }
     }

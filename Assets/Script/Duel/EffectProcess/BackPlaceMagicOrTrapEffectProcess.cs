@@ -26,7 +26,7 @@ namespace Assets.Script.Duel.EffectProcess
             return true;
         }
 
-        protected override void ProcessFunction()
+        protected override void BeforeProcessFunction()
         {
             int index = 0;
             for (; index < DuelRuleManager.GetMagicTrapAreaNumber(); index++)

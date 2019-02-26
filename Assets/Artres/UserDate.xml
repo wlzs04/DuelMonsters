@@ -44,7 +44,6 @@
       </Extra>
       <Deputy>
         <UserCardData cardNo="14558127" number="1" />
-        <UserCardData cardNo="20155904" number="1" />
         <UserCardData cardNo="35618217" number="1" />
         <UserCardData cardNo="45121025" number="1" />
       </Deputy>
@@ -61,7 +60,6 @@
       </Main>
       <Extra>
         <UserCardData cardNo="14558127" number="1" />
-        <UserCardData cardNo="20155904" number="1" />
         <UserCardData cardNo="35618217" number="1" />
         <UserCardData cardNo="45121025" number="1" />
       </Extra>
@@ -76,8 +74,9 @@
       <Main>
         <UserCardData cardNo="81823360" number="3" />
         <UserCardData cardNo="5318639" number="1" />
-        <UserCardData cardNo="126218" number="1" />
-        <UserCardData cardNo="50277973" number="2" />
+        <UserCardData cardNo="126218" number="2" />
+        <UserCardData cardNo="50277973" number="1" />
+        <UserCardData cardNo="4178474" number="2" />
       </Main>
       <Extra />
       <Deputy />

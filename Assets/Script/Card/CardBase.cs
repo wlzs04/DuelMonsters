@@ -513,21 +513,17 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanLaunchEffect()
         {
-            if (GetOwner().IsMyTurn() && 
-                (GetCardType() == CardType.Magic || GetCardType() == CardType.Trap) &&
-                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
-                duelScene.GetCurrentDuelProcess() == DuelProcess.Second) &&
-                GetOwner().GetCurrentEffectProcess() == null
-                )
+            switch (cardType)
             {
-                if(GetCardGameState() == CardGameState.Hand && GetCardType() != CardType.Trap)
-                {
-                    return !GetOwner().MagicTrapAreaIsFull() && canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
-                }
-                else if(IsInArea(cardGameState) && duelScene.GetCurrentTurnNumber()> GetBePlacedAreaTurnNumber())
-                {
-                    return canLaunchEffectAction != null ? canLaunchEffectAction(this) : true;
-                }
+                case CardType.Monster:
+                    //MonsterCanLaunchEffect();
+                    break;
+                case CardType.Magic:
+                    return MagicCanLaunchEffect();
+                case CardType.Trap:
+                    return TrapCanLaunchEffect();
+                default:
+                    break;
             }
             return false;
         }
@@ -537,10 +533,7 @@ namespace Assets.Script.Card
         /// </summary>
         public void LaunchEffect()
         {
-            if (launchEffectAction != null)
-            {
-                launchEffectAction(this);
-            }
+            launchEffectAction?.Invoke(this);
             switch (cardType)
             {
                 case CardType.Monster:

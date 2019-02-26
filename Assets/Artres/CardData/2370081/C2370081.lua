@@ -46,8 +46,6 @@ function C2370081.ChooseCardCallback(launchEffectCard,chooseCard)
 		return
 	end
 
-	launchEffectCard:GetOwner():GetCurrentEffectProcess():AfterFinishProcessFunction();
-	
 	launchEffectCard:SetEquidMonster(chooseCard);
 	chooseCard:AddEquip(launchEffectCard);
 

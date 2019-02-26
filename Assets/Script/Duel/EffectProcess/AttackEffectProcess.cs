@@ -17,6 +17,8 @@ namespace Assets.Script.Duel.EffectProcess
 
         public AttackEffectProcess(CardBase attackCard, CardBase beAttackedCard, Player ownerPlayer) : base(ownerPlayer)
         {
+            effectName = "攻击";
+            canBeChained = true;
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             //如果对方没有可以被攻击的怪兽，则进行直接攻击
             if(!ownerPlayer.GetOpponentPlayer().HaveBeAttackedMonster())
@@ -39,7 +41,7 @@ namespace Assets.Script.Duel.EffectProcess
             return !haveProcess;
         }
 
-        protected override void ProcessFunction()
+        protected override void BeforeProcessFunction()
         {
             haveProcess = true;
             if (directAttack)
@@ -47,13 +49,7 @@ namespace Assets.Script.Duel.EffectProcess
                 attackCard.GetDuelCardScript().SetAttackState(false);
                 duelScene.SetAttackAnimationFinishEvent(() =>
                 {
-                    ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(attackCard.GetID());
-
-                    attackCard.Attack();
-                    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(attackCard.GetAttackValue(), ReduceLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
-                    attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
-
-                    AfterFinishProcessFunction();
+                    CheckCardCanChainLaunch();
                 });
                 duelScene.StartPlayAttackAnimation(attackCard.GetDuelCardScript().GetPosition(), ownerPlayer.GetOpponentPlayer().GetHeartPosition());
             }
@@ -93,9 +89,7 @@ namespace Assets.Script.Duel.EffectProcess
                 attackCard.GetDuelCardScript().SetAttackState(false);
                 duelScene.SetAttackAnimationFinishEvent(() =>
                 {
-                    beAttackedCard.GetDuelCardScript().GetOwner().BeAttackedMonsterNotify(attackCard.GetID(), beAttackedCard.GetID());
-                    Attack();
-                    AfterFinishProcessFunction();
+                    CheckCardCanChainLaunch();
                 });
                 duelScene.StartPlayAttackAnimation(attackCard.GetDuelCardScript().GetPosition(), beAttackedCard.GetDuelCardScript().GetPosition());
             }
@@ -106,6 +100,15 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         public void Attack()
         {
+            //直接攻击
+            if(beAttackedCard==null)
+            {
+                attackCard.Attack();
+                ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(attackCard.GetAttackValue(), ReduceLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
+                attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
+                return;
+            }
+            //怪兽间攻击
             attackCard.Attack();
             int card2Value = 0;
             bool card2Defense = false;
@@ -162,6 +165,20 @@ namespace Assets.Script.Duel.EffectProcess
         public override void Stop()
         {
             base.Stop();
+            AfterFinishProcessFunction();
+        }
+
+        protected override void RealProcessFunction()
+        {
+            if(directAttack)
+            {
+                ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(attackCard.GetID());
+            }
+            else
+            {
+                ownerPlayer.GetOpponentPlayer().BeAttackedMonsterNotify(attackCard.GetID(), beAttackedCard.GetID());
+            }
+            Attack();
             AfterFinishProcessFunction();
         }
     }

@@ -634,7 +634,23 @@ namespace Assets.Script
             {
                 if (!gameManagerInstance.GetAllCardInfoList().ContainsKey(item.cardNo))
                 {
-                    ShowMessage($"卡组：{cardGroupName}不合法。原因：存在未知卡牌{item.cardNo}！");
+                    ShowMessage($"卡组：{cardGroupName}不合法。原因：主卡组存在未知卡牌{item.cardNo}！");
+                    return false;
+                }
+            }
+            foreach (var item in userCardGroup.extraCardList)
+            {
+                if (!gameManagerInstance.GetAllCardInfoList().ContainsKey(item.cardNo))
+                {
+                    ShowMessage($"卡组：{cardGroupName}不合法。原因：额外卡组存在未知卡牌{item.cardNo}！");
+                    return false;
+                }
+            }
+            foreach (var item in userCardGroup.deputyCardList)
+            {
+                if (!gameManagerInstance.GetAllCardInfoList().ContainsKey(item.cardNo))
+                {
+                    ShowMessage($"卡组：{cardGroupName}不合法。原因：副卡组存在未知卡牌{item.cardNo}！");
                     return false;
                 }
             }
@@ -681,6 +697,20 @@ namespace Assets.Script
                     userCardGroup.mainCardList.RemoveAt(i);
                 }
             }
+            for (int i = userCardGroup.extraCardList.Count - 1; i >= 0; i--)
+            {
+                if (!gameManagerInstance.GetAllCardInfoList().ContainsKey(userCardGroup.extraCardList[i].cardNo))
+                {
+                    userCardGroup.extraCardList.RemoveAt(i);
+                }
+            }
+            for (int i = userCardGroup.deputyCardList.Count - 1; i >= 0; i--)
+            {
+                if (!gameManagerInstance.GetAllCardInfoList().ContainsKey(userCardGroup.deputyCardList[i].cardNo))
+                {
+                    userCardGroup.deputyCardList.RemoveAt(i);
+                }
+            }
             //检测同名卡牌的数量
             foreach (var item in userCardGroup.mainCardList)
             {
@@ -690,6 +720,8 @@ namespace Assets.Script
                 }
             }
             //检测禁卡的限制
+
+            gameManagerInstance.SaveUserData();
         }
 
         /// <summary>

@@ -604,10 +604,11 @@ namespace Assets.Script.Duel
 
         public void Update()
         {
-            if(duelScene.GetCurrentDuelProcess() == DuelProcess.End)
-            {
+            //当玩家此时没有正在处理的效果处理类时，将玩家注册的
+            //if(currentEffectProcess==null)
+            //{
 
-            }
+            //}
         }
 
         /// <summary>
@@ -1070,6 +1071,26 @@ namespace Assets.Script.Duel
                     item.CheckAllCardEffect();
                 }
             }
+        }
+
+        /// <summary>
+        /// 检测是否存在卡牌可以连锁发动效果
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckCardCanChainLaunch()
+        {
+            //检测魔法陷阱区
+            for (int i = 0; i < magicTrapCardArea.Length; i++)
+            {
+                if(magicTrapCardArea[i] != null)
+                {
+                    if (magicTrapCardArea[i].CanLaunchEffect())
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>

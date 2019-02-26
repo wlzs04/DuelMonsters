@@ -1,3 +1,4 @@
+using Assets.Script.Card;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,12 @@ namespace Assets.Script.Duel.EffectProcess
         protected Player ownerPlayer;
         protected DuelScene duelScene;
         protected bool haveProcess = false;//是否已经执行
+        protected bool haveFinish = false;//是否已经执行完成
+
+        protected bool beDisabled = false;//是否被禁止
+        protected bool canBeChained = false;//是否可以被连锁
+        protected string effectName = "未命名";//效果的名称
+
 
         public EffectProcessBase(Player ownerPlayer)
         {
@@ -50,6 +57,19 @@ namespace Assets.Script.Duel.EffectProcess
         /// <returns></returns>
         public abstract bool CheckCanTrigger();
 
+        public Player GetOwnPlayer()
+        {
+            return ownerPlayer;
+        }
+
+        /// <summary>
+        /// 继续执行，一般在连锁中让中断了的效果继续执行
+        /// </summary>
+        public void ContinueProcess()
+        {
+            RealProcessFunction();
+        }
+
         /// <summary>
         /// 执行
         /// </summary>
@@ -58,14 +78,23 @@ namespace Assets.Script.Duel.EffectProcess
             if(CheckCanTrigger())
             {
                 ownerPlayer.SetCurrentEffectProcess(this);
-                ProcessFunction();
+                duelScene.AddEffectProcessChain(this);
+                BeforeProcessFunction();
             }
         }
 
         /// <summary>
+        /// 在执行具体方法前的处理
+        /// </summary>
+        protected abstract void BeforeProcessFunction();
+
+        /// <summary>
         /// 需要具体执行的方法
         /// </summary>
-        protected abstract void ProcessFunction();
+        protected virtual void RealProcessFunction()
+        {
+
+        }
 
         /// <summary>
         /// 在完成执行方法后的处理
@@ -81,10 +110,8 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 ownerPlayer.RemoveCurrentEffectProcess(this);
             }
-            if (finishAction!=null)
-            {
-                finishAction();
-            }
+            finishAction?.Invoke();
+            haveFinish = true;
         }
 
         /// <summary>
@@ -95,9 +122,53 @@ namespace Assets.Script.Duel.EffectProcess
 
         }
 
-        public void SetEffectProcessType(EffectProcessType effectProcessType)
+        /// <summary>
+        /// 检测是否存在卡牌可以连锁发动效果
+        /// </summary>
+        /// <returns></returns>
+        protected void CheckCardCanChainLaunch()
         {
-            this.effectProcessType = effectProcessType;
+            Player chainPlayer = duelScene.CheckCardCanChainLaunch();
+            if (chainPlayer!=null && chainPlayer==duelScene.myPlayer)
+            {
+                string titleText = $"在效果：{effectName}中，是否发动卡牌效果。";
+                duelScene.ShowMakeSurePanel(titleText, ChooseCanChainCard, RealProcessFunction);
+            }
+            else
+            {
+                RealProcessFunction();
+            }
+        }
+
+        /// <summary>
+        /// 选择可以进行连锁的卡牌
+        /// </summary>
+        void ChooseCanChainCard()
+        {
+            ChooseCardEffectProcess chooseCardEffectProcess = new ChooseCardEffectProcess(null, ChooseCardJudgeAction, ChooseCardCallback, duelScene.myPlayer);
+            chooseCardEffectProcess.SetTitle("请选择发动的卡牌！");
+            ownerPlayer.AddEffectProcess(chooseCardEffectProcess);
+        }
+
+        /// <summary>
+        /// 选择条件
+        /// </summary>
+        bool ChooseCardJudgeAction(CardBase launchCardBase, CardBase chooseCard)
+        {
+            return chooseCard.CanLaunchEffect();
+        }
+
+        /// <summary>
+        /// 选择后回调
+        /// </summary>
+        void ChooseCardCallback(CardBase launchCardBase, CardBase chooseCard)
+        {
+            chooseCard.LaunchEffect();
+        }
+
+        public bool GetHaveFinish()
+        {
+            return haveFinish;
         }
     }
 }

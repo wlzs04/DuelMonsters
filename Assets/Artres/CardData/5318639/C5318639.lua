@@ -39,8 +39,6 @@ function C5318639.ChooseCardCallback(launchEffectCard,chooseCard)
 	if(not C5318639.ChooseCardJudgeAction(launchEffectCard,chooseCard))then
 		return
 	end
-
-	launchEffectCard:GetOwner():GetCurrentEffectProcess():AfterFinishProcessFunction();
 	
 	local moveCardToTombEffectProcess = CS.Assets.Script.Duel.EffectProcess.MoveCardToTombEffectProcess(chooseCard,CS.Assets.Script.Duel.EffectProcess.MoveCardToTombType.Effect, launchEffectCard:GetDuelCardScript():GetOwner());
     launchEffectCard:GetDuelCardScript():GetOwner():AddEffectProcess(moveCardToTombEffectProcess);

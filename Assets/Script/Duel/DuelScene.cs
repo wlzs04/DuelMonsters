@@ -56,7 +56,7 @@ namespace Assets.Script.Duel
         bool startDuel = false;
         
         bool inChain = false;//是否在连锁中
-        Stack<UnityAction> chainStack=new Stack<UnityAction>();
+        Stack<EffectProcessBase> effectProcessChainStack = new Stack<EffectProcessBase>();
 
         List<Vector2> myMonsterCardPositionAnchorList = new List<Vector2>();
         List<Vector2> myMagicTrapCardPositionAnchorList = new List<Vector2>();
@@ -445,18 +445,23 @@ namespace Assets.Script.Duel
                 {
                     MouseRightButtonDown();
                 }
-                if(!inChain)
+                //判断连锁
+                if(effectProcessChainStack.Count>0)
                 {
-                    if (chainStack.Count>0)
+                    EffectProcessBase effectProcess = effectProcessChainStack.Peek();
+                    if(effectProcess.GetHaveFinish())
                     {
-                        inChain = true;
-                        UnityAction action = chainStack.Pop();
-                        action += () => 
-                        {
-                            inChain = false;
-                        };
-                        action();
+                        effectProcessChainStack.Pop();
                     }
+                    else
+                    {
+                        if(effectProcess!=effectProcess.GetOwnPlayer().GetCurrentEffectProcess())
+                        {
+                            effectProcess.GetOwnPlayer().SetCurrentEffectProcess(effectProcess);
+                            effectProcess.ContinueProcess();
+                        }
+                    }
+
                 }
                 startPlayer.Update();
                 startPlayer.GetOpponentPlayer().Update();
@@ -470,6 +475,15 @@ namespace Assets.Script.Duel
         public bool IsInChain()
         {
             return inChain;
+        }
+
+        /// <summary>
+        /// 添加效果连锁
+        /// </summary>
+        /// <param name="effectProcess"></param>
+        public void AddEffectProcessChain(EffectProcessBase effectProcess)
+        {
+            effectProcessChainStack.Push(effectProcess);
         }
 
         /// <summary>
@@ -536,9 +550,24 @@ namespace Assets.Script.Duel
             duelSceneScript.ShowHelpInfoPanel(myPlayer.GetDuelCardGroup().GetCards().Count, opponentPlayer.GetDuelCardGroup().GetCards().Count);
         }
 
+        /// <summary>
+        /// 设置场景标题
+        /// </summary>
+        /// <param name="titleText"></param>
         public void SetTitle(string titleText)
         {
             duelSceneScript.ShowTitle(titleText);
+        }
+
+        /// <summary>
+        /// 显示确认面板
+        /// </summary>
+        /// <param name="titleText"></param>
+        /// <param name="chooseCanChainCard"></param>
+        /// <param name="realProcessFunction"></param>
+        public void ShowMakeSurePanel(string titleText, UnityAction chooseCanChainCard, UnityAction realProcessFunction)
+        {
+            duelSceneScript.ShowMakeSurePanel(titleText, chooseCanChainCard, realProcessFunction);
         }
 
         public void SetCurrentPointCard(CardBase currentPointCard)
@@ -570,13 +599,8 @@ namespace Assets.Script.Duel
         /// <param name=""></param>
         public void CheckAllEffectProcess(UnityAction nextAction = null)
         {
-            if(nextAction!=null)
-            {
-                chainStack.Push(nextAction);
-            }
-            if(!currentPlayer.CheckAllEffectProcess() && !currentPlayer.GetOpponentPlayer().CheckAllEffectProcess())
-            {
-            }
+            currentPlayer.CheckAllEffectProcess();
+            nextAction();
         }
 
         /// <summary>
@@ -805,6 +829,23 @@ namespace Assets.Script.Duel
         public int GetCardNumberInArea()
         {
             return myPlayer.GetCardNumberInArea() + opponentPlayer.GetCardNumberInArea();
+        }
+
+        /// <summary>
+        /// 检测玩家是否存在可以连锁发动效果的卡牌并返回玩家
+        /// </summary>
+        /// <returns></returns>
+        public Player CheckCardCanChainLaunch()
+        {
+            if(startPlayer.CheckCardCanChainLaunch())
+            {
+                return startPlayer;
+            }
+            else if(startPlayer.GetOpponentPlayer().CheckCardCanChainLaunch())
+            {
+                return startPlayer.GetOpponentPlayer();
+            }
+            return null;
         }
     }
 }

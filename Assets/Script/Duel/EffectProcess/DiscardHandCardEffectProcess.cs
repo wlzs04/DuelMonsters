@@ -38,7 +38,7 @@ namespace Assets.Script.Duel.EffectProcess
             return !haveProcess;
         }
 
-        protected override void ProcessFunction()
+        protected override void BeforeProcessFunction()
         {
             haveProcess = true;
             duelScene.SetTitle(titleText);

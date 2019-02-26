@@ -32,6 +32,7 @@ namespace Assets.Script
         GameObject tossCoinPanel = null;//抛硬币
         GameObject throwDicePanel = null;//掷骰子
         GameObject itemSelectPanel = null;//列表选择
+        GameObject makeSurePanel = null;//确认
 
         GameObject cardListPanel = null;//卡牌列表
         //此列表是否可以由玩家隐藏(点击右键)
@@ -93,6 +94,9 @@ namespace Assets.Script
 
             itemSelectPanel = canvasTransform.Find("rightPanel/ItemSelectPanel").gameObject;
             itemSelectPanel.SetActive(false);
+
+            makeSurePanel = canvasTransform.Find("rightPanel/MakeSurePanel").gameObject;
+            makeSurePanel.SetActive(false);
         }
 
         /// <summary>
@@ -387,7 +391,7 @@ namespace Assets.Script
         /// 抛硬币面板是否显示
         /// </summary>
         /// <returns></returns>
-        public bool ThrowDiceIsShowing()
+        public bool ThrowDicePanelIsShowing()
         {
             return throwDicePanel.activeSelf;
         }
@@ -479,6 +483,33 @@ namespace Assets.Script
         public void ShowTitle(string titleText)
         {
             helpInfoPanel.transform.Find("TitleText").GetComponent<Text>().text = titleText;
+        }
+
+        /// <summary>
+        /// 抛硬币面板是否显示
+        /// </summary>
+        /// <returns></returns>
+        public bool MakeSurePanelIsShowing()
+        {
+            return makeSurePanel.activeSelf;
+        }
+
+        /// <summary>
+        /// 显示确认面板
+        /// </summary>
+        /// <param name="titleText"></param>
+        /// <param name="chooseCanChainCard"></param>
+        /// <param name="realProcessFunction"></param>
+        public void ShowMakeSurePanel(string titleText, UnityAction chooseCanChainCard, UnityAction realProcessFunction)
+        {
+            makeSurePanel.SetActive(true);
+            makeSurePanel.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = titleText;
+
+            makeSurePanel.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
+            makeSurePanel.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(() => { makeSurePanel.SetActive(false); chooseCanChainCard(); });
+
+            makeSurePanel.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.RemoveAllListeners();
+            makeSurePanel.transform.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(()=> { makeSurePanel.SetActive(false); realProcessFunction(); });
         }
 
         /// <summary>

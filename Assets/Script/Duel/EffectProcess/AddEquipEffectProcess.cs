@@ -26,7 +26,7 @@ namespace Assets.Script.Duel.EffectProcess
             return true;
         }
 
-        protected override void ProcessFunction()
+        protected override void BeforeProcessFunction()
         {
             monsterCard.AddEquip(equipCard);
             AfterFinishProcessFunction();

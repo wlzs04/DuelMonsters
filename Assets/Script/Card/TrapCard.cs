@@ -1,4 +1,5 @@
 using Assets.Script.Config;
+using Assets.Script.Duel.Rule;
 using Assets.Script.Helper;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,25 @@ namespace Assets.Script.Card
             return GetStringByTrapType(trapType);
         }
 
+        /// <summary>
+        /// 陷阱卡判断是否可以发动效果
+        /// </summary>
+        /// <returns></returns>
+        public bool TrapCanLaunchEffect()
+        {
+            if (GetCardType() == CardType.Trap &&
+                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Battle ||
+                duelScene.GetCurrentDuelProcess() == DuelProcess.Second)
+                )
+            {
+                if (IsInArea(cardGameState))
+                {
+                    return (duelScene.GetCurrentTurnNumber() > GetBePlacedAreaTurnNumber()) && (canLaunchEffectAction != null ? canLaunchEffectAction(this) : true);
+                }
+            }
+            return false;
+        }
         /// <summary>
         /// 陷阱卡发动效果后的回调
         /// </summary>
