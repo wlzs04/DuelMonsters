@@ -476,7 +476,7 @@ namespace Assets.Script
         /// 弹出提示框
         /// </summary>
         /// <param name="value"></param>
-        public static void ShowMessage(string value)
+        public static void ShowMessage(object value)
         {
             for (int i = messageTipList.Count - 1; i >= 0; i--)
             {
@@ -491,7 +491,7 @@ namespace Assets.Script
             }
             Debug.Log(value);
             GameObject gameObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefab/MessageTip"), GameObject.Find("Canvas").transform);
-            gameObject.transform.GetChild(0).GetComponent<Text>().text = value;
+            gameObject.transform.GetChild(0).GetComponent<Text>().text = value.ToString();
             messageTipList.Add(gameObject);
         }
 

@@ -25,7 +25,7 @@ namespace Assets.Script
         public Transform infoContentTransform = null;
 
         GameObject duelResultPanel = null;//决斗结果
-        GameObject durlProcessPanel = null;//决斗流程
+        GameObject phaseTypePanel = null;//阶段
         GameObject attackOrDefensePanel = null;//攻守选择
         GameObject helpInfoPanel = null;//帮助信息
         GameObject effectSelectPanel = null;//效果选择
@@ -66,14 +66,14 @@ namespace Assets.Script
             duelResultPanel = canvasTransform.Find("DuelResultPanel").gameObject;
             duelResultPanel.SetActive(false);
 
-            durlProcessPanel = canvasTransform.Find("rightPanel/DuelProcessPanel").gameObject;
-            durlProcessPanel.SetActive(false);
+            phaseTypePanel = canvasTransform.Find("rightPanel/PhaseTypePanel").gameObject;
+            phaseTypePanel.SetActive(false);
 
-            DuelProcessConfig duelProcessConfig = ConfigManager.GetConfigByName("DuelProcess") as DuelProcessConfig;
+            PhaseTypeConfig phaseTypeConfig = ConfigManager.GetConfigByName("PhaseType") as PhaseTypeConfig;
 
-            for (int i = 1; i < durlProcessPanel.transform.GetChild(0).childCount; i++)
+            for (int i = 1; i < phaseTypePanel.transform.GetChild(0).childCount; i++)
             {
-                durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().text = duelProcessConfig.GetRecordById(i).value;
+                phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().text = phaseTypeConfig.GetRecordById(i).value;
             }
 
             attackOrDefensePanel = canvasTransform.Find("rightPanel/AttackOrDefensePanel").gameObject;
@@ -105,7 +105,7 @@ namespace Assets.Script
         public void EnterBattleProcessEvent()
         {
             GameManager.GetDuelScene().myPlayer.Battle();
-            durlProcessPanel.SetActive(false);
+            phaseTypePanel.SetActive(false);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Assets.Script
         public void EnterSecondProcessEvent()
         {
             GameManager.GetDuelScene().myPlayer.Second();
-            durlProcessPanel.SetActive(false);
+            phaseTypePanel.SetActive(false);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace Assets.Script
         public void EndProcessEvent()
         {
             GameManager.GetDuelScene().myPlayer.EndTurn();
-            durlProcessPanel.SetActive(false);
+            phaseTypePanel.SetActive(false);
         }
 
         /// <summary>
@@ -138,56 +138,56 @@ namespace Assets.Script
         /// 设置决斗流程面板是否显示
         /// </summary>
         /// <param name="show"></param>
-        public void SetDuelProcessPanel(bool show)
+        public void SetPhaseTypePanel(bool show)
         {
-            durlProcessPanel.SetActive(show);
+            phaseTypePanel.SetActive(show);
             if(show)
             {
-                ResetDuelProcessPanelInfo();
+                ResetPhaseTypePanelInfo();
             }
         }
 
         /// <summary>
         /// 重新设置决斗流程面板信息面板
         /// </summary>
-        public void ResetDuelProcessPanelInfo()
+        public void ResetPhaseTypePanelInfo()
         {
-            if(!durlProcessPanel.activeSelf)
+            if(!phaseTypePanel.activeSelf)
             {
                 return;
             }
             bool isMyTurn = GameManager.GetDuelScene().myPlayer.IsMyTurn();
             Color color = isMyTurn ? Color.green : Color.red;
-            int currentDuelProcess = (int)GameManager.GetDuelScene().GetCurrentDuelProcess();
-            for (int i = 1; i < durlProcessPanel.transform.GetChild(0).childCount; i++)
+            int currentPhaseType = (int)GameManager.GetDuelScene().GetCurrentPhaseType();
+            for (int i = 1; i < phaseTypePanel.transform.GetChild(0).childCount; i++)
             {
-                if(currentDuelProcess > i)
+                if(currentPhaseType > i)
                 {
-                    if(durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>()!=null)
+                    if(phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Button>()!=null)
                     {
-                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = false;
+                        phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = false;
                     }
-                    durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = Color.gray;
+                    phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = Color.gray;
                 }
-                else if(currentDuelProcess==i)
+                else if(currentPhaseType == i)
                 {
-                    if (durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>() != null)
+                    if (phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Button>() != null)
                     {
-                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = false;
+                        phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = false;
                     }
-                    durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = Color.yellow;
+                    phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = Color.yellow;
                 }
                 else
                 {
-                    if (durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>() != null)
+                    if (phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Button>() != null)
                     {
-                        durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = isMyTurn;
+                        phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Button>().interactable = isMyTurn;
                     }
-                    durlProcessPanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = color;
+                    phaseTypePanel.transform.GetChild(0).GetChild(i).GetComponent<Text>().color = color;
                 }
             }
             StringResConfig stringResConfig = ConfigManager.GetConfigByName("StringRes") as StringResConfig;
-            durlProcessPanel.transform.GetChild(1).GetComponent<Text>().text = stringResConfig.GetRecordById(15).value+duelScene.GetCurrentTurnNumber();
+            phaseTypePanel.transform.GetChild(1).GetComponent<Text>().text = stringResConfig.GetRecordById(15).value+duelScene.GetCurrentTurnNumber();
         }
 
         /// <summary>

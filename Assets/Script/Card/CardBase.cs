@@ -71,7 +71,7 @@ namespace Assets.Script.Card
         int value;//作用值
 
         int effectActivityTurnNumber = int.MaxValue;//作用持续回合数
-        DuelProcess removeEffectDuelProcess = DuelProcess.End;//移除当前效果的流程
+        PhaseType removeEffectPhaseType = PhaseType.End;//移除当前效果的流程
         bool removeWhenExitArea = true;//离场是否移除
 
         public CardEffect(CardBase effectCard,CardBase effectedCard,CardEffectType cardEffectType, int value)
@@ -110,10 +110,10 @@ namespace Assets.Script.Card
         /// <summary>
         /// 设置效果限制，如持续时间等
         /// </summary>
-        public void SetEffectLimit(int effectActivityTurnNumber, DuelProcess removeEffectDuelProcess)
+        public void SetEffectLimit(int effectActivityTurnNumber, PhaseType removeEffectPhaseType)
         {
             this.effectActivityTurnNumber = effectActivityTurnNumber;
-            this.removeEffectDuelProcess = removeEffectDuelProcess;
+            this.removeEffectPhaseType = removeEffectPhaseType;
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Assets.Script.Card
         /// </summary>
         public void CheckEffect()
         {
-            if(effectActivityTurnNumber<=0 && effectedCard.GetDuelCardScript().GetDuelScene().GetCurrentDuelProcess() == removeEffectDuelProcess)
+            if(effectActivityTurnNumber<=0 && effectedCard.GetDuelScene().GetCurrentPhaseType() == removeEffectPhaseType)
             {
                 effectedCard.RemoveCardEffect(this);
             }
@@ -659,6 +659,11 @@ namespace Assets.Script.Card
                 return true;
             }
             return false;
+        }
+
+        public DuelScene GetDuelScene()
+        {
+            return duelScene;
         }
     }
 }

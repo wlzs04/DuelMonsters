@@ -7,9 +7,9 @@ using System.Text;
 namespace Assets.Script.Duel.Rule
 {
     /// <summary>
-    /// 回合中的流程阶段
+    /// 回合中的阶段
     /// </summary>
-    public enum DuelProcess
+    public enum PhaseType
     {
         Unknown,//未知
         Draw,//抽卡

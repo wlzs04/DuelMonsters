@@ -7,9 +7,9 @@ using System.Xml.Serialization;
 namespace Assets.Script.Config
 {
     /// <summary>
-    /// 决斗回合流程配置
+    /// 决斗回合阶段配置
     /// </summary>
-    public struct DuelProcessRecord
+    public struct PhaseTypeRecord
     {
         [XmlAttribute]
         public int id;
@@ -18,19 +18,19 @@ namespace Assets.Script.Config
         public string value;
     }
 
-    [XmlRoot("DuelProcess")]
-    public class DuelProcessConfig : ConfigBase
+    [XmlRoot("PhaseType")]
+    public class PhaseTypeConfig : ConfigBase
     {
         [XmlArray("RecordList")]
         [XmlArrayItem("Record")]
-        public List<DuelProcessRecord> recordList;
+        public List<PhaseTypeRecord> recordList;
 
         public int GetRecordCount()
         {
             return recordList.Count;
         }
 
-        public DuelProcessRecord GetRecordById(int id)
+        public PhaseTypeRecord GetRecordById(int id)
         {
             return recordList[id];
         }

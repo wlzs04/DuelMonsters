@@ -47,11 +47,11 @@ namespace Assets.Script.Duel
             ClientManager.GetSingleInstance().SendProtocol(cDrawCard);
         }
 
-        public override void EnterDuelNotify(DuelProcess duelProcess)
+        public override void EnterPhaseNotify(PhaseType phaseType)
         {
-            CEnterDuelProcess cEnterDuelProcess = new CEnterDuelProcess();
-            cEnterDuelProcess.AddContent("duelProcess", duelProcess);
-            ClientManager.GetSingleInstance().SendProtocol(cEnterDuelProcess);
+            CEnterPhaseType cEnterPhaseType = new CEnterPhaseType();
+            cEnterPhaseType.AddContent("phaseType", phaseType);
+            ClientManager.GetSingleInstance().SendProtocol(cEnterPhaseType);
         }
         
         public override void CallMonsterNotify(int id, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag)

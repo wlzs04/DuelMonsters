@@ -354,7 +354,7 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool CanBattle()
         {
-            if(duelScene.GetCurrentDuelProcess() != DuelProcess.Battle)
+            if(duelScene.GetCurrentPhaseType() != PhaseType.Battle)
             {
                 return false;
             }
@@ -417,8 +417,8 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool CanCallMonster()
         {
-            bool duelProcessCheck = IsMyTurn() && duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
-                duelScene.GetCurrentDuelProcess() == DuelProcess.Second;
+            bool phaseTypeCheck = IsMyTurn() && duelScene.GetCurrentPhaseType() == PhaseType.Main ||
+                duelScene.GetCurrentPhaseType() == PhaseType.Second;
 
             bool callNumberCheck = normalCallNumber > 0;
 
@@ -432,7 +432,7 @@ namespace Assets.Script.Duel
                 }
             }
 
-            return duelProcessCheck&& callNumberCheck&&(canCall);
+            return phaseTypeCheck&& callNumberCheck&&(canCall);
         }
 
         /// <summary>
@@ -537,7 +537,7 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 进入流程通知
         /// </summary>
-        public virtual void EnterDuelNotify(DuelProcess duelProcess)
+        public virtual void EnterPhaseNotify(PhaseType phaseType)
         {
 
         }
@@ -589,7 +589,7 @@ namespace Assets.Script.Duel
         public void StartTurn()
         {
             normalCallNumber = DuelRuleManager.GetNormalCallMonsterNumber();
-            duelScene.EnterDuelProcess(DuelProcess.Draw);
+            duelScene.EnterPhaseType(PhaseType.Draw);
         }
 
         public void SetNormalCallNumber(int normalCallNumber)
@@ -638,15 +638,15 @@ namespace Assets.Script.Duel
             {
                 return;
             }
-            if (duelScene.GetCurrentDuelProcess() == DuelProcess.Draw)
+            if (duelScene.GetCurrentPhaseType() == PhaseType.Draw)
             {
-                duelScene.EnterDuelProcess(DuelProcess.Prepare);
+                duelScene.EnterPhaseType(PhaseType.Prepare);
             }
-            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.Prepare)
+            else if (duelScene.GetCurrentPhaseType() == PhaseType.Prepare)
             {
-                duelScene.EnterDuelProcess(DuelProcess.Main);
+                duelScene.EnterPhaseType(PhaseType.Main);
             }
-            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.End)
+            else if (duelScene.GetCurrentPhaseType() == PhaseType.End)
             {
             }
         }
@@ -674,13 +674,13 @@ namespace Assets.Script.Duel
                 GameManager.ShowMessage("不是你的回合！");
                 return;
             }
-            duelScene.EnterDuelProcess(DuelProcess.Second);
+            duelScene.EnterPhaseType(PhaseType.Second);
         }
 
         /// <summary>
         /// 判断当前玩家是否可以进入战斗流程
         /// </summary>
-        public bool CanEnterBattleDuelProcess()
+        public bool CanEnterBattlePhaseType()
         {
             //不是当前玩家的回合
             if (!IsMyTurn())
@@ -693,7 +693,7 @@ namespace Assets.Script.Duel
                 return false;
             }
             //只有主要流程才可以进入战斗
-            if (duelScene.GetCurrentDuelProcess() != DuelProcess.Main)
+            if (duelScene.GetCurrentPhaseType() != PhaseType.Main)
             {
                 return false;
             }
@@ -705,7 +705,7 @@ namespace Assets.Script.Duel
         /// </summary>
         public void Battle()
         {
-            if(!CanEnterBattleDuelProcess())
+            if(!CanEnterBattlePhaseType())
             {
                 return;
             }
@@ -716,7 +716,7 @@ namespace Assets.Script.Duel
                     item.SetAttackNumber();
                 }
             }
-            duelScene.EnterDuelProcess(DuelProcess.Battle);
+            duelScene.EnterPhaseType(PhaseType.Battle);
         }
 
         /// <summary>

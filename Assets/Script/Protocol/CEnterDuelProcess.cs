@@ -8,16 +8,16 @@ using System.Text;
 namespace Assets.Script.Protocol
 {
     /// <summary>
-    /// 猜先的选择
-    /// key：duelProcess
-    /// value：DuelProcess 
+    /// 进入决斗阶段
+    /// key：phaseType
+    /// value：PhaseType 
     /// </summary>
-    class CEnterDuelProcess : ClientProtocol
+    class CEnterPhaseType : ClientProtocol
     {
         public override void Process()
         {
-            DuelProcess opponentDuelProcess = (DuelProcess)Enum.Parse(typeof(DuelProcess), GetContent("duelProcess"));
-            GameManager.GetDuelScene().OpponentEnterDuelProcess(opponentDuelProcess);
+            PhaseType opponentPhaseType = (PhaseType)Enum.Parse(typeof(PhaseType), GetContent("phaseType"));
+            GameManager.GetDuelScene().OpponentEnterPhaseType(opponentPhaseType);
         }
     }
 }

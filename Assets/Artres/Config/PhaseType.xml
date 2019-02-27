@@ -1,4 +1,4 @@
-<DuelProcess>
+<PhaseType>
   <RecordList>
     <Record id="0" value="未知"/>
     <Record id="1" value="抽卡"/>
@@ -8,4 +8,4 @@
     <Record id="5" value="第二"/>
     <Record id="6" value="结束"/>
   </RecordList>
-</DuelProcess>
+</PhaseType>

@@ -22,6 +22,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         public ChooseCardEffectProcess(CardBase launchEffectCard, ChooseCardJudgeAction chooseCardJudgeAction, Action<CardBase, CardBase> chooseCardCallBack, Player ownerPlayer) : base(ownerPlayer, "选取卡牌对象")
         {
+            canChain = false;
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.launchEffectCard = launchEffectCard;
             this.chooseCardJudgeAction = chooseCardJudgeAction;

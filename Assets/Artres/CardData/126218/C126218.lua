@@ -22,7 +22,7 @@ function C126218.ThrowDiceCallBack(card,resultNumber)
 	for i=0,opponentMonsterArea.Length-1 do
 		if(opponentMonsterArea[i]~=nil)then
 			local cardEffect = opponentMonsterArea[i]:AddCardEffect(card,CS.Assets.Script.Card.CardEffectType.Attack,-(100*resultNumber));
-			cardEffect:SetEffectLimit(0,CS.Assets.Script.Duel.Rule.DuelProcess.End);
+			cardEffect:SetEffectLimit(0,CS.Assets.Script.Duel.Rule.PhaseType.End);
 		end
 	end
 end

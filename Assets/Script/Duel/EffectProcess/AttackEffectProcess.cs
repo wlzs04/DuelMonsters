@@ -31,7 +31,6 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 duelScene.SetTitle("");
                 attackCard.GetDuelCardScript().ClearPrepareAttackState();
-                ownerPlayer.ThinkAction();
             };
         }
 

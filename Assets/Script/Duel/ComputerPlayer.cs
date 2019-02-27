@@ -69,18 +69,18 @@ namespace Assets.Script.Duel
                 }
                 return;
             }
-            if (duelScene.GetCurrentDuelProcess() == DuelProcess.Draw)
+            if (duelScene.GetCurrentPhaseType() == PhaseType.Draw)
             {
-                duelScene.EnterDuelProcess(DuelProcess.Prepare);
+                duelScene.EnterPhaseType(PhaseType.Prepare);
                 return;
             }
-            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.Prepare)
+            else if (duelScene.GetCurrentPhaseType() == PhaseType.Prepare)
             {
-                duelScene.EnterDuelProcess(DuelProcess.Main);
+                duelScene.EnterPhaseType(PhaseType.Main);
                 return;
             }
             //在主要流程中
-            else if (duelScene.GetCurrentDuelProcess() == DuelProcess.Main)
+            else if (duelScene.GetCurrentPhaseType() == PhaseType.Main)
             {
                 //先召唤怪兽
                 if (GameManager.GetSingleInstance().GetUserData().opponentCanCallMonster && CanCallMonster())
@@ -159,13 +159,13 @@ namespace Assets.Script.Duel
                     }
                 }
                 //最后进入战斗流程
-                else if (GameManager.GetSingleInstance().GetUserData().opponentCanAttack && CanEnterBattleDuelProcess())
+                else if (GameManager.GetSingleInstance().GetUserData().opponentCanAttack && CanEnterBattlePhaseType())
                 {
                     Battle();
                     return;
                 }
             }
-            else if(duelScene.GetCurrentDuelProcess() == DuelProcess.Battle)
+            else if(duelScene.GetCurrentPhaseType() == PhaseType.Battle)
             {
                 //先判断是否存在可以进行攻击的怪兽，并选出攻击力最大的怪兽先进行攻击
                 int canAttackMonsterIndex = -1;
@@ -182,7 +182,7 @@ namespace Assets.Script.Duel
                 //没有的话进入第二主要回合或回合结束
                 if(canAttackMonsterIndex==-1)
                 {
-                    duelScene.EnterDuelProcess(DuelProcess.Second);
+                    duelScene.EnterPhaseType(PhaseType.Second);
                     return;
                 }
                 else
@@ -237,12 +237,12 @@ namespace Assets.Script.Duel
                     return;
                 }
             }
-            else if(duelScene.GetCurrentDuelProcess() == DuelProcess.End)
+            else if(duelScene.GetCurrentPhaseType() == PhaseType.End)
             {
             }
-            if(duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
-                duelScene.GetCurrentDuelProcess() == DuelProcess.Battle ||
-                duelScene.GetCurrentDuelProcess() == DuelProcess.Second)
+            if(duelScene.GetCurrentPhaseType() == PhaseType.Main ||
+                duelScene.GetCurrentPhaseType() == PhaseType.Battle ||
+                duelScene.GetCurrentPhaseType() == PhaseType.Second)
             {
                 EndTurn();
             }

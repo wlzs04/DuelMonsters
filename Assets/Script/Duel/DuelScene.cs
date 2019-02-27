@@ -39,7 +39,7 @@ namespace Assets.Script.Duel
         public Player currentPlayer;//当前玩家
         public Player startPlayer;//开始玩家
         int currentTurnNumber = 1;//当前回合数
-        DuelProcess currentDuelProcess = DuelProcess.Unknown;//当前流程
+        PhaseType currentPhaseType = PhaseType.Unknown;//当前流程
 
         bool inSpecialState = false;//在特殊状态，例如进入流程选择界面
         bool lockScene = false;//锁定场景，例如选择卡牌做效果对象，防止右键点击或卡牌操作等进行干扰
@@ -261,12 +261,12 @@ namespace Assets.Script.Duel
                 //显示或隐藏决斗流程面板
                 if (!inSpecialState)
                 {
-                    duelSceneScript.SetDuelProcessPanel(true);
+                    duelSceneScript.SetPhaseTypePanel(true);
                     inSpecialState = true;
                 }
                 else
                 {
-                    duelSceneScript.SetDuelProcessPanel(false);
+                    duelSceneScript.SetPhaseTypePanel(false);
                     inSpecialState = false;
                 }
             }
@@ -419,12 +419,12 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 获得当前决斗流程
+        /// 获得当前阶段
         /// </summary>
         /// <returns></returns>
-        public DuelProcess GetCurrentDuelProcess()
+        public PhaseType GetCurrentPhaseType()
         {
-            return currentDuelProcess;
+            return currentPhaseType;
         }
 
         /// <summary>
@@ -466,6 +466,10 @@ namespace Assets.Script.Duel
                     }
 
                 }
+                else
+                {
+                    currentPlayer.ThinkAction();
+                }
                 startPlayer.Update();
                 startPlayer.GetOpponentPlayer().Update();
                 if(currentInfoCard!=null)
@@ -487,6 +491,27 @@ namespace Assets.Script.Duel
         public void AddEffectProcessChain(EffectProcessBase effectProcess)
         {
             effectProcessChainStack.Push(effectProcess);
+        }
+
+        public Stack<EffectProcessBase> GetEffectProcessChain()
+        {
+            return effectProcessChainStack;
+        }
+
+        /// <summary>
+        /// 获得当前进行连锁的效果
+        /// </summary>
+        /// <returns></returns>
+        public EffectProcessBase GetCurrentChainEffectProcess()
+        {
+            foreach (var item in effectProcessChainStack)
+            {
+                if(item.GetCanChain())
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -593,7 +618,7 @@ namespace Assets.Script.Duel
         /// </summary>
         public void EndTurn()
         {
-            EnterDuelProcess(DuelProcess.End);
+            EnterPhaseType(PhaseType.End);
         }
 
         /// <summary>
@@ -603,7 +628,7 @@ namespace Assets.Script.Duel
         public void CheckAllEffectProcess(UnityAction nextAction = null)
         {
             currentPlayer.CheckAllEffectProcess();
-            nextAction();
+            //nextAction();
         }
 
         /// <summary>
@@ -613,7 +638,7 @@ namespace Assets.Script.Duel
         public void ChangeCurrentPlayer()
         {
             currentTurnNumber++;
-            currentDuelProcess = DuelProcess.Unknown;
+            currentPhaseType = PhaseType.Unknown;
             currentPlayer = currentPlayer == myPlayer ? opponentPlayer : myPlayer;
             currentPlayer.StartTurn();
         }
@@ -644,104 +669,37 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 进入指定流程
         /// </summary>
-        /// <param name="duelProcess"></param>
-        public void EnterDuelProcess(DuelProcess duelProcess)
+        /// <param name="phaseType"></param>
+        public void EnterPhaseType(PhaseType phaseType)
         {
-            if(currentDuelProcess == duelProcess)
-            {
-                Debug.LogError("当前流程已经是："+ currentDuelProcess + "无法重复进入！");
-                return;
-            }
-            switch (currentDuelProcess)
-            {
-                case DuelProcess.Unknown:
-                    break;
-                case DuelProcess.Draw:
-                    break;
-                case DuelProcess.Prepare:
-                    break;
-                case DuelProcess.Main:
-                    break;
-                case DuelProcess.Battle:
-                    EndBattleDuelProcessEvent();
-                    break;
-                case DuelProcess.Second:
-                    break;
-                case DuelProcess.End:
-                    break;
-                default:
-                    break;
-            }
-            currentDuelProcess = duelProcess;
-            duelSceneScript.ResetDuelProcessPanelInfo();
-            string ex = currentPlayer == myPlayer ? "我方进入" : "对方进入";
-            switch (duelProcess)
-            {
-                case DuelProcess.Unknown:
-                    GameManager.ShowMessage(ex + "未知流程！");
-                    break;
-                case DuelProcess.Draw:
-                    GameManager.ShowMessage(ex + "抽牌流程！");
-                    break;
-                case DuelProcess.Prepare:
-                    GameManager.ShowMessage(ex + "准备流程！");
-                    break;
-                case DuelProcess.Main:
-                    GameManager.ShowMessage(ex + "主要流程！");
-                    BeginMainDuelProcessEvent();
-                    break;
-                case DuelProcess.Battle:
-                    GameManager.ShowMessage(ex + "战斗流程！");
-                    BeginBattleDuelProcessEvent();
-                    break;
-                case DuelProcess.Second:
-                    GameManager.ShowMessage(ex + "第二主要流程！");
-                    break;
-                case DuelProcess.End:
-                    GameManager.ShowMessage(ex + "结束流程！");
-                    break;
-                default:
-                    break;
-            }
-            currentPlayer.GetOpponentPlayer().EnterDuelNotify(currentDuelProcess);
-            startPlayer.CheckAllCardEffect();
-            startPlayer.GetOpponentPlayer().CheckAllCardEffect();
-            TimerFunction timerFunction = new TimerFunction();
-            timerFunction.SetFunction(1, () =>
-            {
-                if(currentPointCard!=null)
-                {
-                    currentPointCard.GetDuelCardScript().RecheckAllowedOperation();
-                }
-                CheckAllEffectProcess(currentPlayer.ThinkAction);
-            });
-            GameManager.AddTimerFunction(timerFunction);
+            EnterPhaseEffectProcess enterPhaseEffectProcess = new EnterPhaseEffectProcess(phaseType, currentPlayer);
+            currentPlayer.AddEffectProcess(enterPhaseEffectProcess);
+        }
+
+        public void SetCurrentPhaseType(PhaseType phaseType)
+        {
+            currentPhaseType = phaseType;
         }
 
         /// <summary>
-        /// 开始战斗流程事件
+        /// 重新设置决斗流程面板信息面板
         /// </summary>
-        void BeginBattleDuelProcessEvent()
+        public void ResetPhaseTypePanelInfo()
         {
-             currentPlayer.CheckAndShowAllMonsterCanAttack();
-        }
-
-        /// <summary>
-        /// 开始主要流程事件
-        /// </summary>
-        void BeginMainDuelProcessEvent()
-        {
-            currentPlayer.CheckAndSetAllMonsterChangeAttackOrDefenseNumber();
-        }
-
-        /// <summary>
-        /// 结束战斗流程事件
-        /// </summary>
-        void EndBattleDuelProcessEvent()
-        {
-            currentPlayer.ClearAllMonsterCanAttack();
+            duelSceneScript.ResetPhaseTypePanelInfo();
         }
         
+        /// <summary>
+        /// 停止战斗流程，一般是由效果中断
+        /// </summary>
+        public void StopBattlePhaseType()
+        {
+            if(currentPhaseType==PhaseType.Battle)
+            {
+                EnterPhaseType(PhaseType.Second);
+            }
+        }
+
         //带有Opponent前缀的方法
 
         /// <summary>
@@ -782,10 +740,10 @@ namespace Assets.Script.Duel
         /// <summary>
         /// 对方进入某个流程
         /// </summary>
-        /// <param name="opponentDuelProcess"></param>
-        public void OpponentEnterDuelProcess(DuelProcess opponentDuelProcess)
+        /// <param name="opponentPhaseType"></param>
+        public void OpponentEnterPhaseType(PhaseType opponentPhaseType)
         {
-            EnterDuelProcess(opponentDuelProcess);
+            EnterPhaseType(opponentPhaseType);
         }
 
         /// <summary>

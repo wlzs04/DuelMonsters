@@ -37,6 +37,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected bool beDisabled = false;//是否被禁止
         protected bool canBeChained = false;//是否可以被连锁
+        protected bool canChain = true;//是否可以进入连锁
         protected bool beInterrupted = false;//是否被中断
         protected string effectName = "未命名";//效果的名称
 
@@ -104,7 +105,7 @@ namespace Assets.Script.Duel.EffectProcess
         public void AfterFinishProcessFunction()
         {
             haveProcess = false;
-            if (effectProcessType== EffectProcessType.RemoveAfterFinish)
+            if (effectProcessType == EffectProcessType.RemoveAfterFinish)
             {
                 ownerPlayer.RemoveEffectProcess(this);
             }
@@ -177,6 +178,11 @@ namespace Assets.Script.Duel.EffectProcess
         public bool GetBeInterrupted()
         {
             return beInterrupted;
+        }
+
+        public bool GetCanChain()
+        {
+            return canChain;
         }
     }
 }

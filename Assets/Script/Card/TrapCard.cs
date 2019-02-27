@@ -54,9 +54,9 @@ namespace Assets.Script.Card
         public bool TrapCanLaunchEffect()
         {
             if (GetCardType() == CardType.Trap &&
-                (duelScene.GetCurrentDuelProcess() == DuelProcess.Main ||
-                duelScene.GetCurrentDuelProcess() == DuelProcess.Battle ||
-                duelScene.GetCurrentDuelProcess() == DuelProcess.Second)
+                (duelScene.GetCurrentPhaseType() == PhaseType.Main ||
+                duelScene.GetCurrentPhaseType() == PhaseType.Battle ||
+                duelScene.GetCurrentPhaseType() == PhaseType.Second)
                 )
             {
                 if (IsInArea(cardGameState))
