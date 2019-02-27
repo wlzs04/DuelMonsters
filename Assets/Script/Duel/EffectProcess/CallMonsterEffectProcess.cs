@@ -31,7 +31,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         List<CardBase> sacrificeCards = new List<CardBase>();//祭品列表
 
-        public CallMonsterEffectProcess(CardBase callMonster, CardGameState cardGameState, Player ownerPlayer) : base(ownerPlayer)
+        public CallMonsterEffectProcess(CardBase callMonster, CardGameState cardGameState, Player ownerPlayer) : base(ownerPlayer, "召唤怪兽")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.callMonster = callMonster;

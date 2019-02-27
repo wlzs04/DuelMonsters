@@ -20,11 +20,11 @@ end
 
 function C8842266.ChooseIndexCallback(launchEffectCard,index)
 	if(index==0)then
-		local reduceLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ReduceLifeEffectProcess(-1200, CS.Assets.Script.Duel.EffectProcess.ReduceLifeType.Effect, launchEffectCard:GetDuelCardScript():GetOwner())
-		launchEffectCard:GetDuelCardScript():GetOwner():AddEffectProcess(reduceLifeEffectProcess);
+		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(-1200, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetDuelCardScript():GetOwner())
+		launchEffectCard:GetDuelCardScript():GetOwner():AddEffectProcess(changeLifeEffectProcess);
 	elseif(index==1)then
-		local reduceLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ReduceLifeEffectProcess(800, CS.Assets.Script.Duel.EffectProcess.ReduceLifeType.Effect, launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer())
-		launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(reduceLifeEffectProcess);
+		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(800, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer())
+		launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
 	end
 end
 

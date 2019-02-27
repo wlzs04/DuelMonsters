@@ -19,7 +19,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         Action<CardBase, CardBase> discardCardFinishAction;
 
-        public DiscardHandCardEffectProcess(CardBase launchEffectCard,int needDiscardHandCardNumber, Action<CardBase, CardBase> discardCardFinishAction, Player ownerPlayer) :base(ownerPlayer)
+        public DiscardHandCardEffectProcess(CardBase launchEffectCard,int needDiscardHandCardNumber, Action<CardBase, CardBase> discardCardFinishAction, Player ownerPlayer) :base(ownerPlayer, "丢弃手卡")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.launchEffectCard = launchEffectCard;

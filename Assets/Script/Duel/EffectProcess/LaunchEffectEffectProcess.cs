@@ -15,7 +15,7 @@ namespace Assets.Script.Duel.EffectProcess
     {
         CardBase launchEffectCard;
 
-        public LaunchEffectEffectProcess(CardBase launchEffectCard, Player ownerPlayer) : base(ownerPlayer)
+        public LaunchEffectEffectProcess(CardBase launchEffectCard, Player ownerPlayer) : base(ownerPlayer, "发动效果")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.launchEffectCard = launchEffectCard;

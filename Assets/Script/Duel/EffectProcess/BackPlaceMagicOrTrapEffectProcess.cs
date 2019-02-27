@@ -15,7 +15,7 @@ namespace Assets.Script.Duel.EffectProcess
     {
         CardBase backPlaceCard;
 
-        public BackPlaceMagicOrTrapEffectProcess(CardBase card, Player ownerPlayer) : base(ownerPlayer)
+        public BackPlaceMagicOrTrapEffectProcess(CardBase card, Player ownerPlayer) : base(ownerPlayer, "放置卡牌")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             backPlaceCard = card;

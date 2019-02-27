@@ -23,7 +23,7 @@ namespace Assets.Script.Duel.EffectProcess
         CardBase card;
         MoveCardToTombType moveCardToTombType;
 
-        public MoveCardToTombEffectProcess(CardBase card, MoveCardToTombType moveCardToTombType, Player ownerPlayer) : base(ownerPlayer)
+        public MoveCardToTombEffectProcess(CardBase card, MoveCardToTombType moveCardToTombType, Player ownerPlayer) : base(ownerPlayer, "移动卡牌到墓地")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.card = card;

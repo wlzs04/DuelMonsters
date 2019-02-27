@@ -15,7 +15,7 @@ namespace Assets.Script.Duel.EffectProcess
         CardBase monsterCard;
         CardGameState cardGameState;
 
-        public ChangeAttackDefenseEffectProcess(CardBase monsterCard,CardGameState cardGameState,Player ownerPlayer) : base(ownerPlayer)
+        public ChangeAttackDefenseEffectProcess(CardBase monsterCard,CardGameState cardGameState,Player ownerPlayer) : base(ownerPlayer, "转换攻防")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.monsterCard = monsterCard;

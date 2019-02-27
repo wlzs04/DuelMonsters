@@ -37,12 +37,14 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected bool beDisabled = false;//是否被禁止
         protected bool canBeChained = false;//是否可以被连锁
+        protected bool beInterrupted = false;//是否被中断
         protected string effectName = "未命名";//效果的名称
 
 
-        public EffectProcessBase(Player ownerPlayer)
+        public EffectProcessBase(Player ownerPlayer,string effectName)
         {
             this.ownerPlayer = ownerPlayer;
+            this.effectName = effectName;
             duelScene = GameManager.GetDuelScene();
         }
 
@@ -145,9 +147,10 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         void ChooseCanChainCard()
         {
+            beInterrupted = true;
             ChooseCardEffectProcess chooseCardEffectProcess = new ChooseCardEffectProcess(null, ChooseCardJudgeAction, ChooseCardCallback, duelScene.myPlayer);
             chooseCardEffectProcess.SetTitle("请选择发动的卡牌！");
-            ownerPlayer.AddEffectProcess(chooseCardEffectProcess);
+            duelScene.myPlayer.AddEffectProcess(chooseCardEffectProcess);
         }
 
         /// <summary>
@@ -169,6 +172,11 @@ namespace Assets.Script.Duel.EffectProcess
         public bool GetHaveFinish()
         {
             return haveFinish;
+        }
+
+        public bool GetBeInterrupted()
+        {
+            return beInterrupted;
         }
     }
 }

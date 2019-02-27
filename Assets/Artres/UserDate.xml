@@ -1,4 +1,4 @@
-<UserData playerName="LL" audioValue="0" guessMustWin="true" showOpponentHandCard="true" opponentCanCallMonster="true" opponentCanLaunchEffect="false" opponentCanAttack="false" ip="10.237.40.95" port="7777">
+<UserData playerName="LL" audioValue="0" guessMustWin="true" showOpponentHandCard="true" opponentCanCallMonster="true" opponentCanLaunchEffect="false" opponentCanAttack="true" ip="10.237.40.95" port="7777">
   <UserCardList>
     <UserCardData cardNo="8842266" number="3" />
     <UserCardData cardNo="9852718" number="3" />

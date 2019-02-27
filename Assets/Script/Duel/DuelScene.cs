@@ -455,9 +455,12 @@ namespace Assets.Script.Duel
                     }
                     else
                     {
-                        if(effectProcess!=effectProcess.GetOwnPlayer().GetCurrentEffectProcess())
+                        if(effectProcess.GetBeInterrupted())
                         {
-                            effectProcess.GetOwnPlayer().SetCurrentEffectProcess(effectProcess);
+                            if(effectProcess != effectProcess.GetOwnPlayer().GetCurrentEffectProcess())
+                            {
+                                effectProcess.GetOwnPlayer().SetCurrentEffectProcess(effectProcess);
+                            }
                             effectProcess.ContinueProcess();
                         }
                     }

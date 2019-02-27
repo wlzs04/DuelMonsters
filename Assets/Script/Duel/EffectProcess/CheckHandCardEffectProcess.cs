@@ -11,7 +11,7 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class CheckHandCardEffectProcess : EffectProcessBase
     {
-        public CheckHandCardEffectProcess(Player ownerPlayer):base(ownerPlayer)
+        public CheckHandCardEffectProcess(Player ownerPlayer):base(ownerPlayer, "检查手牌数量")
         {
             effectProcessType = EffectProcessType.Forever;
             finishAction = duelScene.ChangeCurrentPlayer;

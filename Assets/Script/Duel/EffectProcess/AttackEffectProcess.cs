@@ -15,9 +15,8 @@ namespace Assets.Script.Duel.EffectProcess
         CardBase beAttackedCard;
         bool directAttack = false;
 
-        public AttackEffectProcess(CardBase attackCard, CardBase beAttackedCard, Player ownerPlayer) : base(ownerPlayer)
+        public AttackEffectProcess(CardBase attackCard, CardBase beAttackedCard, Player ownerPlayer) : base(ownerPlayer, "攻击")
         {
-            effectName = "攻击";
             canBeChained = true;
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             //如果对方没有可以被攻击的怪兽，则进行直接攻击
@@ -104,8 +103,8 @@ namespace Assets.Script.Duel.EffectProcess
             if(beAttackedCard==null)
             {
                 attackCard.Attack();
-                ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(attackCard.GetAttackValue(), ReduceLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
-                attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(reduceLifeEffectProcess);
+                ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(attackCard.GetAttackValue(), ChangeLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
+                attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(changeLifeEffectProcess);
                 return;
             }
             //怪兽间攻击
@@ -135,15 +134,15 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 if (!card2Defense || attackCard.GetCanPenetrateDefense())
                 {
-                    ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(differenceValue, ReduceLifeType.Battle, beAttackedCard.GetDuelCardScript().GetOwner());
-                    beAttackedCard.GetDuelCardScript().GetOwner().AddEffectProcess(reduceLifeEffectProcess);
+                    ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(differenceValue, ChangeLifeType.Battle, beAttackedCard.GetDuelCardScript().GetOwner());
+                    beAttackedCard.GetDuelCardScript().GetOwner().AddEffectProcess(changeLifeEffectProcess);
                 }
                 SendCardToTomb(beAttackedCard, MoveCardToTombType.Battle);
             }
             else
             {
-                ReduceLifeEffectProcess reduceLifeEffectProcess = new ReduceLifeEffectProcess(-differenceValue, ReduceLifeType.Battle, attackCard.GetDuelCardScript().GetOwner());
-                attackCard.GetDuelCardScript().GetOwner().AddEffectProcess(reduceLifeEffectProcess);
+                ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(-differenceValue, ChangeLifeType.Battle, attackCard.GetDuelCardScript().GetOwner());
+                attackCard.GetDuelCardScript().GetOwner().AddEffectProcess(changeLifeEffectProcess);
                 if (!card2Defense)
                 {
                     SendCardToTomb(attackCard, MoveCardToTombType.Battle);

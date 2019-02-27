@@ -12,7 +12,7 @@ namespace Assets.Script.Duel.EffectProcess
     {
         int drawCardNumber = 0;
 
-        public DrawCardEffectProcess(int drawCardNumber,Player ownerPlayer) : base(ownerPlayer)
+        public DrawCardEffectProcess(int drawCardNumber,Player ownerPlayer) : base(ownerPlayer, "效果抽卡")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.drawCardNumber = drawCardNumber;

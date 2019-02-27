@@ -14,7 +14,7 @@ namespace Assets.Script.Duel.EffectProcess
         CardBase equipCard;
         CardBase monsterCard;
 
-        public AddEquipEffectProcess(CardBase monsterCard ,CardBase equipCard, Player ownerPlayer) : base(ownerPlayer)
+        public AddEquipEffectProcess(CardBase monsterCard ,CardBase equipCard, Player ownerPlayer) : base(ownerPlayer, "添加装备")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.monsterCard = monsterCard;

@@ -30,7 +30,7 @@ namespace Assets.Script.Duel.EffectProcess
         ActionTossCoin tossCoinCallBack;
         CoinType selectCoinType;
 
-        public TossCoinEffectProcess(CardBase launchEffectCard,bool showSelectCoinPanel, ActionTossCoin tossCoinCallBack,CoinType selectCoinType, Player ownerPlayer) : base(ownerPlayer)
+        public TossCoinEffectProcess(CardBase launchEffectCard,bool showSelectCoinPanel, ActionTossCoin tossCoinCallBack,CoinType selectCoinType, Player ownerPlayer) : base(ownerPlayer, "抛硬币")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
 

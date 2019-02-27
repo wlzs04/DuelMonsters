@@ -8,8 +8,8 @@ function C87769556.InitInfo(card)
 end
 
 function C87769556.LaunchEffect(card)
-	local reduceLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ReduceLifeEffectProcess(1000, CS.Assets.Script.Duel.EffectProcess.ReduceLifeType.Effect, card:GetDuelCardScript():GetOwner():GetOpponentPlayer())
-	card:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(reduceLifeEffectProcess);
+	local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(1000, CS.Assets.Script.Duel.ChangeLifeType.ReduceLifeType.Effect, card:GetDuelCardScript():GetOwner():GetOpponentPlayer())
+	card:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
 end
 
 return C87769556

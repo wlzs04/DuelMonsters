@@ -12,7 +12,7 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class DrawCardEveryTurnEffectProcess : EffectProcessBase
     {
-        public DrawCardEveryTurnEffectProcess(Player ownerPlayer) : base(ownerPlayer)
+        public DrawCardEveryTurnEffectProcess(Player ownerPlayer) : base(ownerPlayer, "抽卡流程抽卡")
         {
             effectProcessType = EffectProcessType.Forever;
         }
