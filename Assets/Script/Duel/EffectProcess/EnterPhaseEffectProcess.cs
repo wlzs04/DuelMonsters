@@ -1,3 +1,4 @@
+using Assets.Script.Config;
 using Assets.Script.Duel.Rule;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,6 @@ namespace Assets.Script.Duel.EffectProcess
     class EnterPhaseEffectProcess : EffectProcessBase
     {
         PhaseType phaseType;
-        bool waitCheckHandCardNumber = false;//检测手卡数量
         public EnterPhaseEffectProcess(PhaseType phaseType,Player ownerPlayer) : base(ownerPlayer, "进入阶段")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
@@ -61,7 +61,8 @@ namespace Assets.Script.Duel.EffectProcess
             duelScene.SetCurrentPhaseType(phaseType);
             duelScene.ResetPhaseTypePanelInfo();
             string ex = duelScene.GetCurrentPlayer() == duelScene.GetMyPlayer() ? "我方进入" : "对方进入";
-            GameManager.ShowMessage(ex + phaseType+"流程！");
+            PhaseTypeConfig phaseTypeConfig = ConfigManager.GetConfigByName("PhaseType") as PhaseTypeConfig;
+            GameManager.ShowMessage(ex + phaseTypeConfig.GetRecordById((int)phaseType).value + "流程！");
             duelScene.GetCurrentPlayer().GetOpponentPlayer().EnterPhaseNotify(phaseType);
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>

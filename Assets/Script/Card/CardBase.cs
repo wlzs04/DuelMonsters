@@ -204,7 +204,7 @@ namespace Assets.Script.Card
             canLaunchEffectAction = scriptEnv.GetInPath<ActionJudge>("C" + cardNo + ".CanLaunchEffect");
             launchEffectAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".LaunchEffect");
             changeCardGameState = scriptEnv.GetInPath<ActionChangeCardGameState>("C" + cardNo + ".ChangeCardGameState");
-            
+
             if (initInfoAction != null)
             {
                 initInfoAction(this);
@@ -353,10 +353,7 @@ namespace Assets.Script.Card
 
             GetDuelCardScript().SetCardGameState(cardGameState,index);
 
-            if (changeCardGameState !=null)
-            {
-                changeCardGameState(this,oldCardGameState);
-            }
+            changeCardGameState?.Invoke(this, oldCardGameState);
         }
 
         public CardGameState GetCardGameState()

@@ -99,6 +99,7 @@ namespace Assets.Script.Card
         /// <param name="cardGameState"></param>
         public void SetCardGameState(CardGameState cardGameState,int index = 0)
         {
+            SetAttackState(false);
             switch (cardGameState)
             {
                 case CardGameState.Group:
@@ -385,11 +386,11 @@ namespace Assets.Script.Card
                     }
                 }
             }
-            else if(card.GetCardGameState() == CardGameState.Tomb ||
-                card.GetCardGameState() == CardGameState.Exclusion)
-            {
-                duelScene.ShowCardList(ownerPlayer, card.GetCardGameState(), true, null, null);
-            }
+            //else if(card.GetCardGameState() == CardGameState.Tomb ||
+            //    card.GetCardGameState() == CardGameState.Exclusion)
+            //{
+            //    duelScene.ShowCardList(ownerPlayer, card.GetCardGameState(), true, null, null);
+            //}
         }
 
         public void OnPointerEnter(PointerEventData eventData)

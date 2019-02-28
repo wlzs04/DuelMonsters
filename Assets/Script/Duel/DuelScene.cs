@@ -342,7 +342,7 @@ namespace Assets.Script.Duel
         /// </summary>
         /// <param name="ownerPlayer"></param>
         /// <param name="cardGameState"></param>
-        public void ShowCardList(Player ownerPlayer, CardGameState cardGameState,bool canHideByPlayer, CardBase launchEffectCard, Action<CardBase, CardBase> clickCalback)
+        public void ShowCardList(Player ownerPlayer, CardGameState cardGameState,bool canHideByPlayer, CardBase launchEffectCard, Action<CardBase, CardBase> clickCallback)
         {
             if(duelSceneScript.CardListPanelIsShowing())
             {
@@ -353,10 +353,10 @@ namespace Assets.Script.Duel
             switch (cardGameState)
             {
                 case CardGameState.Tomb:
-                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetTombCards(), titleText + stringResConfig.GetRecordById(11).value, canHideByPlayer, launchEffectCard, clickCalback);
+                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetTombCards(), titleText + stringResConfig.GetRecordById(11).value, canHideByPlayer, launchEffectCard, clickCallback);
                     break;
                 case CardGameState.Exclusion:
-                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetExceptCards(),titleText + stringResConfig.GetRecordById(12).value, canHideByPlayer, launchEffectCard, clickCalback);
+                    duelSceneScript.ShowCardListPanel(ownerPlayer.GetExceptCards(),titleText + stringResConfig.GetRecordById(12).value, canHideByPlayer, launchEffectCard, clickCallback);
                     break;
                 default:
                     Debug.LogError("无法显示当前卡牌状态的列表:" + cardGameState);
@@ -568,11 +568,6 @@ namespace Assets.Script.Duel
             GameManager.ShowMessage("决斗开始！");
 
             startDuel = true;
-
-            //EffectProcessBase myDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(myPlayer);
-            //myPlayer.AddEffectProcess(myDrawCardEveryTurnEffectProcess);
-            //EffectProcessBase opponentDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(opponentPlayer);
-            //opponentPlayer.AddEffectProcess(opponentDrawCardEveryTurnEffectProcess);
 
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>

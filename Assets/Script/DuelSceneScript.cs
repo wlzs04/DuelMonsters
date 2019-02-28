@@ -515,7 +515,7 @@ namespace Assets.Script
         /// <summary>
         /// 显示卡牌列表面板
         /// </summary>
-        public void ShowCardListPanel(List<CardBase> cardList,string title, bool canHideByPlayerForCardListPanel, CardBase launchEffectCard, Action<CardBase, CardBase> clickCalback)
+        public void ShowCardListPanel(List<CardBase> cardList,string title, bool canHideByPlayerForCardListPanel, CardBase launchEffectCard, Action<CardBase, CardBase> clickCallback)
         {
             this.canHideByPlayerForCardListPanel = canHideByPlayerForCardListPanel;
             cardListPanel.SetActive(true);
@@ -523,7 +523,7 @@ namespace Assets.Script
             foreach (var item in cardList)
             {
                 item.GetDuelCardScript().SetParent(cardListContentTransform);
-                item.GetDuelCardScript().SetClickCallback(launchEffectCard, clickCalback);
+                item.GetDuelCardScript().SetClickCallback(launchEffectCard, clickCallback);
             }
         }
 
@@ -546,7 +546,7 @@ namespace Assets.Script
                 return;
             }
             cardListPanel.SetActive(false);
-            for (int i = 0; i < cardListContentTransform.childCount; i++)
+            for (int i = cardListContentTransform.childCount - 1; i >= 0; i--)
             {
                 CardBase card = cardListContentTransform.GetChild(i).GetComponent<DuelCardScript>().GetCard();
                 card.GetDuelCardScript().SetParent(duelScene.duelBackImage.transform);
@@ -581,6 +581,22 @@ namespace Assets.Script
 
             DuelEndReasonConfig duelEndReasonConfig = ConfigManager.GetConfigByName("DuelEndReason") as DuelEndReasonConfig;
             duelResultPanel.transform.GetChild(3).GetComponent<Text>().text = duelEndReasonConfig.GetRecordById((int)duelEndReason).value;
+        }
+
+        /// <summary>
+        /// 我方墓地点击回调事件
+        /// </summary>
+        public void MyTombClickCallBack()
+        {
+            duelScene.ShowCardList(duelScene.GetMyPlayer(), CardGameState.Tomb, true, null, null);
+        }
+
+        /// <summary>
+        /// 对方墓地点击回调事件
+        /// </summary>
+        public void OpponentTombClickCallBack()
+        {
+            duelScene.ShowCardList(duelScene.GetOpponentPlayer(), CardGameState.Tomb, true, null, null);
         }
     }
 }
