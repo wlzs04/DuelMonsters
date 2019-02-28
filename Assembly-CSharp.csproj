@@ -96,11 +96,9 @@
     <Compile Include="Assets\Script\Duel\EffectProcess\CallMonsterEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\ChangeAttackDefenseEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\ChangeLifeEffectProcess.cs" />
-    <Compile Include="Assets\Script\Duel\EffectProcess\CheckHandCardEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\ChooseCardEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\DiscardHandCardEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\DrawCardEffectProcess.cs" />
-    <Compile Include="Assets\Script\Duel\EffectProcess\DrawCardEveryTurnEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\EffectProcessBase.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\EnterPhaseEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\LaunchEffectEffectProcess.cs" />

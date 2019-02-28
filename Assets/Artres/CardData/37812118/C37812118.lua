@@ -18,11 +18,11 @@ end
 
 function C37812118.TossCoinCallBack(card,selectCoinType,resultCoinType)
 	if(resultCoinType==CS.Assets.Script.Duel.EffectProcess.CoinType.Front)then
-		local drawCardEveryTurnEffectProcess = CS.Assets.Script.Duel.EffectProcess.DrawCardEffectProcess(2,card:GetOwner());
-		card:GetOwner():AddEffectProcess(drawCardEveryTurnEffectProcess);
+		local drawCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.DrawCardEffectProcess(2,CS.Assets.Script.Duel.EffectProcess.DrawCardType.Effect,card:GetOwner());
+		card:GetOwner():AddEffectProcess(drawCardEffectProcess);
 	elseif(resultCoinType==CS.Assets.Script.Duel.EffectProcess.CoinType.Back)then
-		local drawCardEveryTurnEffectProcess = CS.Assets.Script.Duel.EffectProcess.DrawCardEffectProcess(2,card:GetOwner():GetOpponentPlayer());
-		card:GetOwner():GetOpponentPlayer():AddEffectProcess(drawCardEveryTurnEffectProcess);
+		local drawCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.DrawCardEffectProcess(2,CS.Assets.Script.Duel.EffectProcess.DrawCardType.Effect,card:GetOwner():GetOpponentPlayer());
+		card:GetOwner():GetOpponentPlayer():AddEffectProcess(drawCardEffectProcess);
 	end
 end
 

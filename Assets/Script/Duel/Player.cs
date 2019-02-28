@@ -604,11 +604,6 @@ namespace Assets.Script.Duel
 
         public void Update()
         {
-            //当玩家此时没有正在处理的效果处理类时，将玩家注册的
-            //if(currentEffectProcess==null)
-            //{
-
-            //}
         }
 
         /// <summary>
@@ -630,7 +625,7 @@ namespace Assets.Script.Duel
         /// </summary>
         public virtual void ThinkAction()
         {
-            if(duelScene.currentPlayer!=this)
+            if(duelScene.GetCurrentPlayer()!= this)
             {
                 return;
             }
@@ -688,7 +683,7 @@ namespace Assets.Script.Duel
                 return false;
             }
             //第一回合先攻者不能攻击
-            if (duelScene.GetCurrentTurnNumber() == 1 && duelScene.startPlayer == this)
+            if (duelScene.GetCurrentTurnNumber() == 1 && duelScene.GetStartPlayer() == this)
             {
                 return false;
             }
@@ -863,7 +858,7 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool IsMyTurn()
         {
-            return this == duelScene.currentPlayer;
+            return this == duelScene.GetCurrentPlayer();
         }
 
         /// <summary>
@@ -872,7 +867,7 @@ namespace Assets.Script.Duel
         /// <returns></returns>
         public bool IsMyPlayer()
         {
-            return this == duelScene.myPlayer;
+            return this == duelScene.GetMyPlayer();
         }
 
         /// <summary>

@@ -56,7 +56,7 @@ namespace Assets.Script.Duel
         public override void ThinkAction()
         {
             //不是自己回合不进行操作
-            if (duelScene.currentPlayer != this)
+            if (duelScene.GetCurrentPlayer() != this)
             {
                 return;
             }
@@ -286,7 +286,7 @@ namespace Assets.Script.Duel
             }
             if (GameManager.GetSingleInstance().GetUserData().guessMustWin)
             {
-                int tempMyGuessEnum = (int)duelScene.myPlayer.GetGuessEnum();
+                int tempMyGuessEnum = (int)duelScene.GetMyPlayer().GetGuessEnum();
                 int tempOpponentGuessEnum = tempMyGuessEnum - 1 > 0 ? tempMyGuessEnum - 1 : 3;
                 GameObject.Find("Main Camera").GetComponent<GuessFirstSceneScript>().SetOpponentGuess((GuessEnum)tempOpponentGuessEnum);
 

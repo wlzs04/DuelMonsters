@@ -34,11 +34,11 @@ namespace Assets.Script.Duel
 
         public GameObject cardPre = null;
 
-        public Player myPlayer = null;//我方玩家
-        public Player opponentPlayer = null;//敌方玩家
+        Player myPlayer = null;//我方玩家
+        Player opponentPlayer = null;//敌方玩家
+        Player currentPlayer;//当前玩家
+        Player startPlayer;//开始玩家
 
-        public Player currentPlayer;//当前玩家
-        public Player startPlayer;//开始玩家
         int currentTurnNumber = 1;//当前回合数
         PhaseType currentPhaseType = PhaseType.Unknown;//当前流程
 
@@ -146,6 +146,26 @@ namespace Assets.Script.Duel
             return duelBackImage.rectTransform.rect.height;
         }
 
+        public Player GetMyPlayer()
+        {
+            return myPlayer;
+        }
+
+        public Player GetOpponentPlayer()
+        {
+            return opponentPlayer;
+        }
+
+        public Player GetCurrentPlayer()
+        {
+            return currentPlayer;
+        }
+
+        public Player GetStartPlayer()
+        {
+            return startPlayer;
+        }
+        
         /// <summary>
         /// 获得指定玩家怪兽区指定位置的锚点
         /// </summary>
@@ -549,15 +569,10 @@ namespace Assets.Script.Duel
 
             startDuel = true;
 
-            EffectProcessBase myCheckHandCardEffectProcess = new CheckHandCardEffectProcess(myPlayer);
-            myPlayer.AddEffectProcess(myCheckHandCardEffectProcess);
-            EffectProcessBase opponentCheckHandCardEffectProcess = new CheckHandCardEffectProcess(opponentPlayer);
-            opponentPlayer.AddEffectProcess(opponentCheckHandCardEffectProcess);
-
-            EffectProcessBase myDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(myPlayer);
-            myPlayer.AddEffectProcess(myDrawCardEveryTurnEffectProcess);
-            EffectProcessBase opponentDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(opponentPlayer);
-            opponentPlayer.AddEffectProcess(opponentDrawCardEveryTurnEffectProcess);
+            //EffectProcessBase myDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(myPlayer);
+            //myPlayer.AddEffectProcess(myDrawCardEveryTurnEffectProcess);
+            //EffectProcessBase opponentDrawCardEveryTurnEffectProcess = new DrawCardEveryTurnEffectProcess(opponentPlayer);
+            //opponentPlayer.AddEffectProcess(opponentDrawCardEveryTurnEffectProcess);
 
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>

@@ -239,7 +239,7 @@ namespace Assets.Script
                     currentGameState = GameState.CardGroupScene;
                     break;
                 case GameState.GuessFirstScene:
-                    duelScene.myPlayer.StopDuel();
+                    duelScene.GetMyPlayer().StopDuel();
                     SceneManager.LoadScene("SeleteDuelModeScene", LoadSceneMode.Single);
                     currentGameState = GameState.SeleteDuelModeScene;
                     break;

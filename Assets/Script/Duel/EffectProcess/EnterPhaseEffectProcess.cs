@@ -14,6 +14,7 @@ namespace Assets.Script.Duel.EffectProcess
     class EnterPhaseEffectProcess : EffectProcessBase
     {
         PhaseType phaseType;
+        bool waitCheckHandCardNumber = false;//检测手卡数量
         public EnterPhaseEffectProcess(PhaseType phaseType,Player ownerPlayer) : base(ownerPlayer, "进入阶段")
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
@@ -59,45 +60,25 @@ namespace Assets.Script.Duel.EffectProcess
             }
             duelScene.SetCurrentPhaseType(phaseType);
             duelScene.ResetPhaseTypePanelInfo();
-            string ex = duelScene.currentPlayer == duelScene.myPlayer ? "我方进入" : "对方进入";
-
-            switch (phaseType)
-            {
-                case PhaseType.Unknown:
-                    GameManager.ShowMessage(ex + "未知流程！");
-                    break;
-                case PhaseType.Draw:
-                    GameManager.ShowMessage(ex + "抽牌流程！");
-                    break;
-                case PhaseType.Prepare:
-                    GameManager.ShowMessage(ex + "准备流程！");
-                    break;
-                case PhaseType.Main:
-                    GameManager.ShowMessage(ex + "主要流程！");
-                    BeginMainPhaseTypeEvent();
-                    break;
-                case PhaseType.Battle:
-                    GameManager.ShowMessage(ex + "战斗流程！");
-                    BeginBattlePhaseTypeEvent();
-                    break;
-                case PhaseType.Second:
-                    GameManager.ShowMessage(ex + "第二主要流程！");
-                    break;
-                case PhaseType.End:
-                    GameManager.ShowMessage(ex + "结束流程！");
-                    break;
-                default:
-                    break;
-            }
-            duelScene.currentPlayer.GetOpponentPlayer().EnterPhaseNotify(phaseType);
-            duelScene.startPlayer.CheckAllCardEffect();
-            duelScene.startPlayer.GetOpponentPlayer().CheckAllCardEffect();
+            string ex = duelScene.GetCurrentPlayer() == duelScene.GetMyPlayer() ? "我方进入" : "对方进入";
+            GameManager.ShowMessage(ex + phaseType+"流程！");
+            duelScene.GetCurrentPlayer().GetOpponentPlayer().EnterPhaseNotify(phaseType);
             TimerFunction timerFunction = new TimerFunction();
             timerFunction.SetFunction(1, () =>
             {
-                AfterFinishProcessFunction();
+                DoProcessFunction();
             });
             GameManager.AddTimerFunction(timerFunction);
+        }
+
+        /// <summary>
+        /// 开始抽卡流程事件
+        /// </summary>
+        void BeginDrawPhaseTypeEvent()
+        {
+            beInterrupted = true;
+            DrawCardEffectProcess drawCardEffectProcess = new DrawCardEffectProcess(1, DrawCardType.EveryTurn, duelScene.GetCurrentPlayer());
+            duelScene.GetCurrentPlayer().AddEffectProcess(drawCardEffectProcess);
         }
 
         /// <summary>
@@ -105,7 +86,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         void BeginMainPhaseTypeEvent()
         {
-            duelScene.currentPlayer.CheckAndSetAllMonsterChangeAttackOrDefenseNumber();
+            duelScene.GetCurrentPlayer().CheckAndSetAllMonsterChangeAttackOrDefenseNumber();
         }
 
         /// <summary>
@@ -113,7 +94,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         void BeginBattlePhaseTypeEvent()
         {
-            duelScene.currentPlayer.CheckAndShowAllMonsterCanAttack();
+            duelScene.GetCurrentPlayer().CheckAndShowAllMonsterCanAttack();
         }
 
         /// <summary>
@@ -121,7 +102,65 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         void EndBattlePhaseTypeEvent()
         {
-            duelScene.currentPlayer.ClearAllMonsterCanAttack();
+            duelScene.GetCurrentPlayer().ClearAllMonsterCanAttack();
+        }
+
+        /// <summary>
+        /// 开始结束流程事件
+        /// </summary>
+        void BeginEndPhaseTypeEvent()
+        {
+            //在回合结束后检查手牌是否超过规定的最大数量，超过的话丢弃多余数量
+            if (duelScene.GetCurrentPlayer().GetHandCards().Count > DuelRuleManager.GetHandCardNumberUpperLimit())
+            {
+                GameManager.ShowMessage("当前手牌数量大于规定数量！");
+                beInterrupted = true;
+                int number = duelScene.GetCurrentPlayer().GetHandCards().Count - DuelRuleManager.GetHandCardNumberUpperLimit();
+                DiscardHandCardEffectProcess discardHandCardEffectProcess = new DiscardHandCardEffectProcess(null, number, null, duelScene.GetCurrentPlayer());
+                duelScene.GetCurrentPlayer().AddEffectProcess(discardHandCardEffectProcess);
+            }
+            finishAction += duelScene.ChangeCurrentPlayer;
+        }
+
+        /// <summary>
+        /// 做一些进入阶段的特殊处理
+        /// </summary>
+        void DoProcessFunction()
+        {
+            switch (phaseType)
+            {
+                case PhaseType.Unknown:
+                    break;
+                case PhaseType.Draw:
+                    BeginDrawPhaseTypeEvent();
+                    break;
+                case PhaseType.Prepare:
+                    break;
+                case PhaseType.Main:
+                    BeginMainPhaseTypeEvent();
+                    break;
+                case PhaseType.Battle:
+                    BeginBattlePhaseTypeEvent();
+                    break;
+                case PhaseType.Second:
+                    break;
+                case PhaseType.End:
+                    BeginEndPhaseTypeEvent();
+                    break;
+                default:
+                    break;
+            }
+            if(!beInterrupted)
+            {
+                RealProcessFunction();
+            }
+        }
+
+        protected override void RealProcessFunction()
+        {
+            duelScene.GetStartPlayer().CheckAllCardEffect();
+            duelScene.GetStartPlayer().GetOpponentPlayer().CheckAllCardEffect();
+            AfterFinishProcessFunction();
         }
     }
 }

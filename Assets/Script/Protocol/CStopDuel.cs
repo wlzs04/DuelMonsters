@@ -15,7 +15,7 @@ namespace Assets.Script.Protocol
     {
         public override void Process()
         {
-            GameManager.GetDuelScene().opponentPlayer.StopDuel();
+            GameManager.GetDuelScene().GetOpponentPlayer().StopDuel();
         }
     }
 }

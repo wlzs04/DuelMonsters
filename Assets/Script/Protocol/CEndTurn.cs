@@ -13,7 +13,7 @@ namespace Assets.Script.Protocol
     {
         public override void Process()
         {
-            GameManager.GetDuelScene().opponentPlayer.EndTurn();
+            GameManager.GetDuelScene().GetOpponentPlayer().EndTurn();
         }
     }
 }

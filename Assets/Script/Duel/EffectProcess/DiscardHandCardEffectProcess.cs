@@ -77,7 +77,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         void DiscardCardFinish()
         {
-            discardCardFinishAction(launchEffectCard, null);
+            discardCardFinishAction?.Invoke(launchEffectCard, null);
         }
     }
 }

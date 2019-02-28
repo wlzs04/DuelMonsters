@@ -118,12 +118,12 @@ namespace Assets.Script.Card
                     }
                 case CardGameState.Hand:
                     SetParent(GetOwner().GetHandPanel().transform);
-                    if (GetOwner() == duelScene.myPlayer)
+                    if (GetOwner() == duelScene.GetMyPlayer())
                     {
                         ShowFront();
                         SetCanShowInfo(true);
                     }
-                    else if (GetOwner() == duelScene.opponentPlayer)
+                    else if (GetOwner() == duelScene.GetOpponentPlayer())
                     {
                         if (GetOwner() is ComputerPlayer && GameManager.GetSingleInstance().GetUserData().showOpponentHandCard)
                         {
@@ -229,7 +229,7 @@ namespace Assets.Script.Card
         {
             cardImage.transform.localEulerAngles = new Vector3(0, 0, angle);
             //根据卡牌拥有者是否为己方玩家，旋转卡牌方向
-            if (GetOwner() != GetDuelScene().myPlayer)
+            if (GetOwner() != GetDuelScene().GetMyPlayer())
             {
                 cardImage.transform.localEulerAngles += new Vector3(0, 0, 180);
             }

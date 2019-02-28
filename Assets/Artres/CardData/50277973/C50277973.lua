@@ -16,7 +16,6 @@ end
 function C50277973.LaunchEffect(card)
 	local selectItemEffectProcess = CS.Assets.Script.Duel.EffectProcess.SelectItemEffectProcess(card,typeof(CS.Assets.Script.Card.PropertyType),C50277973.SelectPropertyTypeCallback, card:GetOwner());
     card:GetOwner():AddEffectProcess(selectItemEffectProcess);
-	--card:GetDuelCardScript():GetDuelScene():ShowSelectItemPanel(card,);
 end
 
 function C50277973.SelectPropertyTypeCallback(card,index)
@@ -24,8 +23,6 @@ function C50277973.SelectPropertyTypeCallback(card,index)
 
 	local selectItemEffectProcess = CS.Assets.Script.Duel.EffectProcess.SelectItemEffectProcess(card,typeof(CS.Assets.Script.Card.MonsterType),C50277973.SelectMonsterTypeCallback, card:GetOwner());
     card:GetOwner():AddEffectProcess(selectItemEffectProcess);
-	
-	--card:GetDuelCardScript():GetDuelScene():ShowSelectItemPanel(card,typeof(CS.Assets.Script.Card.MonsterType),C50277973.SelectMonsterTypeCallback);
 end
 
 function C50277973.SelectMonsterTypeCallback(card,index)

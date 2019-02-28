@@ -54,8 +54,8 @@ public class GuessFirstSceneScript : MonoBehaviour {
         if (GameManager.CheckCardGroupLegal(cardGroupName))
         {
             //暂时将我方和对方卡组设为一样
-            GameManager.GetDuelScene().myPlayer.SetCardGroupName(cardGroupName);
-            GameManager.GetDuelScene().opponentPlayer.SetCardGroupName(cardGroupName);
+            GameManager.GetDuelScene().GetMyPlayer().SetCardGroupName(cardGroupName);
+            GameManager.GetDuelScene().GetOpponentPlayer().SetCardGroupName(cardGroupName);
             selectCardGroupPanel.SetActive(false);
             guessFirstPanel.SetActive(true);
             selectFirstPanel.SetActive(false);
@@ -64,9 +64,9 @@ public class GuessFirstSceneScript : MonoBehaviour {
 
     public bool SetMyGuess(GuessEnum guessEnum)
     {
-        if (duelScene.myPlayer.SetGuessEnum(guessEnum))
+        if (duelScene.GetMyPlayer().SetGuessEnum(guessEnum))
         {
-            GameObject.Find("myPanel").transform.GetChild((int)duelScene.myPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
+            GameObject.Find("myPanel").transform.GetChild((int)duelScene.GetMyPlayer().GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
             DecideGuessFirst();
             return true;
         }
@@ -79,9 +79,9 @@ public class GuessFirstSceneScript : MonoBehaviour {
 
     public bool SetOpponentGuess(GuessEnum guessEnum)
     {
-        if (duelScene.opponentPlayer.SetGuessEnum(guessEnum))
+        if (duelScene.GetOpponentPlayer().SetGuessEnum(guessEnum))
         {
-            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
+            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.GetOpponentPlayer().GetGuessEnum() - 1).GetComponent<GuessFirstScript>().SetChooseState();
             DecideGuessFirst();
             return true;
         }
@@ -101,8 +101,8 @@ public class GuessFirstSceneScript : MonoBehaviour {
         {
             return;
         }
-        GuessEnum myGuessEnum = duelScene.myPlayer.GetGuessEnum();
-        GuessEnum opponentGuessEnum = duelScene.opponentPlayer.GetGuessEnum();
+        GuessEnum myGuessEnum = duelScene.GetMyPlayer().GetGuessEnum();
+        GuessEnum opponentGuessEnum = duelScene.GetOpponentPlayer().GetGuessEnum();
         if (myGuessEnum != GuessEnum.Unknown && opponentGuessEnum != GuessEnum.Unknown)
         {
             if (myGuessEnum == opponentGuessEnum)
@@ -144,12 +144,12 @@ public class GuessFirstSceneScript : MonoBehaviour {
 
                 if (iGuessWin == 1)
                 {
-                    duelScene.myPlayer.SelectFristOrBack();
+                    duelScene.GetMyPlayer().SelectFristOrBack();
                 }
 
                 if (iGuessWin == 2)
                 {
-                    duelScene.opponentPlayer.SelectFristOrBack();
+                    duelScene.GetOpponentPlayer().SelectFristOrBack();
                 }
             });
             GameManager.AddTimerFunction(timerFunction);
@@ -161,15 +161,15 @@ public class GuessFirstSceneScript : MonoBehaviour {
     /// </summary>
     public void ClearChoose()
     {
-        if(duelScene.myPlayer.GetGuessEnum()!=GuessEnum.Unknown)
+        if(duelScene.GetMyPlayer().GetGuessEnum()!=GuessEnum.Unknown)
         {
-            GameObject.Find("myPanel").transform.GetChild((int)duelScene.myPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-            duelScene.myPlayer.SetGuessEnum(GuessEnum.Unknown);
+            GameObject.Find("myPanel").transform.GetChild((int)duelScene.GetMyPlayer().GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+            duelScene.GetMyPlayer().SetGuessEnum(GuessEnum.Unknown);
         }
-        if (duelScene.opponentPlayer.GetGuessEnum() != GuessEnum.Unknown)
+        if (duelScene.GetOpponentPlayer().GetGuessEnum() != GuessEnum.Unknown)
         {
-            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.opponentPlayer.GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
-            duelScene.opponentPlayer.SetGuessEnum(GuessEnum.Unknown);
+            GameObject.Find("opponentPanel").transform.GetChild((int)duelScene.GetOpponentPlayer().GetGuessEnum() - 1).GetComponent<GuessFirstScript>().ClearChooseState();
+            duelScene.GetOpponentPlayer().SetGuessEnum(GuessEnum.Unknown);
         }
     }
 

@@ -104,7 +104,7 @@ namespace Assets.Script
         /// </summary>
         public void EnterBattleProcessEvent()
         {
-            GameManager.GetDuelScene().myPlayer.Battle();
+            GameManager.GetDuelScene().GetMyPlayer().Battle();
             phaseTypePanel.SetActive(false);
         }
 
@@ -113,7 +113,7 @@ namespace Assets.Script
         /// </summary>
         public void EnterSecondProcessEvent()
         {
-            GameManager.GetDuelScene().myPlayer.Second();
+            GameManager.GetDuelScene().GetMyPlayer().Second();
             phaseTypePanel.SetActive(false);
         }
 
@@ -122,7 +122,7 @@ namespace Assets.Script
         /// </summary>
         public void EndProcessEvent()
         {
-            GameManager.GetDuelScene().myPlayer.EndTurn();
+            GameManager.GetDuelScene().GetMyPlayer().EndTurn();
             phaseTypePanel.SetActive(false);
         }
 
@@ -131,7 +131,7 @@ namespace Assets.Script
         /// </summary>
         public void SurrenderEvent()
         {
-            GameManager.GetDuelScene().myPlayer.Surrender();
+            GameManager.GetDuelScene().GetMyPlayer().Surrender();
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Assets.Script
             {
                 return;
             }
-            bool isMyTurn = GameManager.GetDuelScene().myPlayer.IsMyTurn();
+            bool isMyTurn = GameManager.GetDuelScene().GetMyPlayer().IsMyTurn();
             Color color = isMyTurn ? Color.green : Color.red;
             int currentPhaseType = (int)GameManager.GetDuelScene().GetCurrentPhaseType();
             for (int i = 1; i < phaseTypePanel.transform.GetChild(0).childCount; i++)
@@ -569,7 +569,7 @@ namespace Assets.Script
             {
                 resultText = stringResConfig.GetRecordById(16).value;
             }
-            else if (winnerPlayer == duelScene.myPlayer)
+            else if (winnerPlayer == duelScene.GetMyPlayer())
             {
                 resultText = stringResConfig.GetRecordById(17).value;
             }

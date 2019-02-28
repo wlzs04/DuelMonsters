@@ -132,7 +132,7 @@ namespace Assets.Script.Duel.EffectProcess
         protected void CheckCardCanChainLaunch()
         {
             Player chainPlayer = duelScene.CheckCardCanChainLaunch();
-            if (chainPlayer!=null && chainPlayer==duelScene.myPlayer)
+            if (chainPlayer!=null && chainPlayer==duelScene.GetMyPlayer())
             {
                 string titleText = $"在效果：{effectName}中，是否发动卡牌效果。";
                 duelScene.ShowMakeSurePanel(titleText, ChooseCanChainCard, RealProcessFunction);
@@ -149,9 +149,9 @@ namespace Assets.Script.Duel.EffectProcess
         void ChooseCanChainCard()
         {
             beInterrupted = true;
-            ChooseCardEffectProcess chooseCardEffectProcess = new ChooseCardEffectProcess(null, ChooseCardJudgeAction, ChooseCardCallback, duelScene.myPlayer);
+            ChooseCardEffectProcess chooseCardEffectProcess = new ChooseCardEffectProcess(null, ChooseCardJudgeAction, ChooseCardCallback, duelScene.GetMyPlayer());
             chooseCardEffectProcess.SetTitle("请选择发动的卡牌！");
-            duelScene.myPlayer.AddEffectProcess(chooseCardEffectProcess);
+            duelScene.GetMyPlayer().AddEffectProcess(chooseCardEffectProcess);
         }
 
         /// <summary>
