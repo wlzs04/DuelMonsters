@@ -478,8 +478,7 @@ namespace Assets.Script.Card
         {
             if (ownerPlayer.IsMyTurn() &&
                 duelScene.GetCurrentPhaseType() == PhaseType.Battle &&
-                card.GetCardType() == CardType.Monster &&
-                ownerPlayer.GetCurrentEffectProcess() == null)
+                card.GetCardType() == CardType.Monster)
             {
                 return card.CanAttack() ;
             }

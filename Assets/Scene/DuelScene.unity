@@ -3417,7 +3417,7 @@ GameObject:
   - component: {fileID: 643837947}
   - component: {fileID: 643837946}
   m_Layer: 5
-  m_Name: ItemSelectPanel
+  m_Name: SelectItemPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -100,9 +100,13 @@ namespace Assets.Script.Card
             return canDirectAttack;
         }
 
+        /// <summary>
+        /// 判断怪兽是否可以被攻击，特殊效果或不在怪兽区时也不能受到攻击
+        /// </summary>
+        /// <returns></returns>
         public bool CanBeAttacked()
         {
-            return canBeAttacked;
+            return cardType == CardType.Monster && IsInArea() && canBeAttacked;
         }
 
         /// <summary>

@@ -20,6 +20,7 @@ namespace Assets.Script.Duel.EffectProcess
             this.phaseType = phaseType;
             finishAction = () =>
             {
+                duelScene.ResetCurrentPointCardAllowedOperation();
                 duelScene.CheckAllEffectProcess();
             };
         }

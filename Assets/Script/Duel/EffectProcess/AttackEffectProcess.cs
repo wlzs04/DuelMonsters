@@ -18,7 +18,6 @@ namespace Assets.Script.Duel.EffectProcess
         public AttackEffectProcess(CardBase attackCard, CardBase beAttackedCard, Player ownerPlayer) : base(ownerPlayer, "攻击")
         {
             canBeChained = true;
-            effectProcessType = EffectProcessType.RemoveAfterFinish;
             //如果对方没有可以被攻击的怪兽，则进行直接攻击
             if(!ownerPlayer.GetOpponentPlayer().HaveBeAttackedMonster())
             {
@@ -168,13 +167,37 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void RealProcessFunction()
         {
+            //如果此时攻击的怪兽被破坏或不是攻击表示都会停止攻击。
+            if(attackCard.GetCardGameState()!=CardGameState.FrontAttack)
+            {
+                AfterFinishProcessFunction();
+                return;
+            }
             if(directAttack)
             {
-                ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(attackCard.GetID());
+                //如果应直接攻击，但对方召唤出可以被攻击的怪兽时，停止攻击。
+                if (ownerPlayer.GetOpponentPlayer().HaveBeAttackedMonster())
+                {
+                    AfterFinishProcessFunction();
+                    return;
+                }
+                else
+                {
+                    ownerPlayer.GetOpponentPlayer().BeDirectAttackedNotify(attackCard.GetID());
+                }
             }
             else
             {
-                ownerPlayer.GetOpponentPlayer().BeAttackedMonsterNotify(attackCard.GetID(), beAttackedCard.GetID());
+                //如果被攻击的怪兽不能受到攻击时（特殊效果或不在怪兽区时），停止攻击。
+                if (!beAttackedCard.CanBeAttacked())
+                {
+                    AfterFinishProcessFunction();
+                    return;
+                }
+                else
+                {
+                    ownerPlayer.GetOpponentPlayer().BeAttackedMonsterNotify(attackCard.GetID(), beAttackedCard.GetID());
+                }
             }
             Attack();
             AfterFinishProcessFunction();

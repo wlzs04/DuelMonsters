@@ -105,6 +105,7 @@
     <Compile Include="Assets\Script\Duel\EffectProcess\EnterPhaseEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\LaunchEffectEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\MoveCardToTombEffectProcess.cs" />
+    <Compile Include="Assets\Script\Duel\EffectProcess\SelectItemEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\ThrowDiceEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\EffectProcess\TossCoinEffectProcess.cs" />
     <Compile Include="Assets\Script\Duel\NetPlayer.cs" />

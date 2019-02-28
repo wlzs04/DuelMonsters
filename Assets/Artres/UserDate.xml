@@ -1,4 +1,4 @@
-<UserData playerName="LL" audioValue="0" guessMustWin="true" showOpponentHandCard="true" opponentCanCallMonster="true" opponentCanLaunchEffect="false" opponentCanAttack="true" ip="10.237.40.95" port="7777">
+<UserData playerName="LL" audioValue="0" guessMustWin="true" showOpponentHandCard="true" opponentCanCallMonster="false" opponentCanLaunchEffect="false" opponentCanAttack="false" ip="10.237.40.95" port="7777">
   <UserCardList>
     <UserCardData cardNo="8842266" number="3" />
     <UserCardData cardNo="9852718" number="3" />
@@ -28,47 +28,30 @@
   <UserCardGroupList>
     <UserCardGroup cardGroupName="test">
       <Main>
-        <UserCardData cardNo="14558127" number="3" />
-        <UserCardData cardNo="35618217" number="3" />
         <UserCardData cardNo="45121025" number="3" />
         <UserCardData cardNo="45159319" number="3" />
-        <UserCardData cardNo="45221020" number="3" />
-        <UserCardData cardNo="58518520" number="3" />
-        <UserCardData cardNo="58984738" number="3" />
         <UserCardData cardNo="2370081" number="3" />
         <UserCardData cardNo="2130625" number="3" />
         <UserCardData cardNo="56649609" number="2" />
       </Main>
       <Extra>
         <UserCardData cardNo="45159319" number="1" />
-        <UserCardData cardNo="45221020" number="1" />
       </Extra>
       <Deputy>
-        <UserCardData cardNo="14558127" number="1" />
-        <UserCardData cardNo="35618217" number="1" />
         <UserCardData cardNo="45121025" number="1" />
       </Deputy>
     </UserCardGroup>
     <UserCardGroup cardGroupName="卡组2">
       <Main>
         <UserCardData cardNo="9852718" number="3" />
-        <UserCardData cardNo="35618217" number="3" />
         <UserCardData cardNo="45121025" number="3" />
         <UserCardData cardNo="45159319" number="3" />
-        <UserCardData cardNo="45221020" number="3" />
-        <UserCardData cardNo="58518520" number="3" />
-        <UserCardData cardNo="58984738" number="3" />
       </Main>
       <Extra>
-        <UserCardData cardNo="14558127" number="1" />
-        <UserCardData cardNo="35618217" number="1" />
         <UserCardData cardNo="45121025" number="1" />
       </Extra>
       <Deputy>
         <UserCardData cardNo="45159319" number="1" />
-        <UserCardData cardNo="45221020" number="1" />
-        <UserCardData cardNo="58518520" number="1" />
-        <UserCardData cardNo="58984738" number="1" />
       </Deputy>
     </UserCardGroup>
     <UserCardGroup cardGroupName="magictest">
@@ -76,7 +59,7 @@
         <UserCardData cardNo="81823360" number="2" />
         <UserCardData cardNo="5318639" number="1" />
         <UserCardData cardNo="126218" number="1" />
-        <UserCardData cardNo="50277973" number="1" />
+        <UserCardData cardNo="50277973" number="2" />
         <UserCardData cardNo="4178474" number="1" />
         <UserCardData cardNo="14315573" number="2" />
       </Main>

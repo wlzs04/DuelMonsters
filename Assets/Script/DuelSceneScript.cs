@@ -31,7 +31,7 @@ namespace Assets.Script
         GameObject effectSelectPanel = null;//效果选择
         GameObject tossCoinPanel = null;//抛硬币
         GameObject throwDicePanel = null;//掷骰子
-        GameObject itemSelectPanel = null;//列表选择
+        GameObject selectItemPanel = null;//选择项
         GameObject makeSurePanel = null;//确认
 
         GameObject cardListPanel = null;//卡牌列表
@@ -92,8 +92,8 @@ namespace Assets.Script
             throwDicePanel = canvasTransform.Find("rightPanel/ThrowDicePanel").gameObject;
             throwDicePanel.SetActive(false);
 
-            itemSelectPanel = canvasTransform.Find("rightPanel/ItemSelectPanel").gameObject;
-            itemSelectPanel.SetActive(false);
+            selectItemPanel = canvasTransform.Find("rightPanel/SelectItemPanel").gameObject;
+            selectItemPanel.SetActive(false);
 
             makeSurePanel = canvasTransform.Find("rightPanel/MakeSurePanel").gameObject;
             makeSurePanel.SetActive(false);
@@ -423,14 +423,14 @@ namespace Assets.Script
         }
 
         /// <summary>
-        /// 显示列表选择面板
+        /// 显示选择项面板
         /// </summary>
         /// <param name="actionIndex"></param>
-        public void ShowItemSelectPanel(CardBase card, Type type, ActionIndex actionIndex)
+        public void ShowSelectItemPanel(Type type, UnityAction<int> actionIndex)
         {
-            itemSelectPanel.SetActive(true);
+            selectItemPanel.SetActive(true);
 
-            GameObject content = itemSelectPanel.transform.Find("BackPanel").Find("Scroll View").Find("Viewport").Find("Content").gameObject;
+            GameObject content = selectItemPanel.transform.Find("BackPanel").Find("Scroll View").Find("Viewport").Find("Content").gameObject;
 
             GameManager.CleanPanelContent(content.transform);
 
@@ -445,7 +445,7 @@ namespace Assets.Script
             else
             {
                 Debug.LogError("显示列表选择面板中出现未知类型：" + type);
-                itemSelectPanel.SetActive(false);
+                selectItemPanel.SetActive(false);
                 return;
             }
 
@@ -458,8 +458,8 @@ namespace Assets.Script
                 GameObject buttonObject = Instantiate(itemSelectPrefab, content.transform);
                 buttonObject.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    itemSelectPanel.SetActive(false);
-                    actionIndex(card, selectIndex);
+                    selectItemPanel.SetActive(false);
+                    actionIndex(selectIndex);
                 });
                 buttonObject.transform.Find("Text").GetComponent<Text>().text = config.GetRecordValueById(i);
             }

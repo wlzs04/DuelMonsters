@@ -16,8 +16,6 @@ namespace Assets.Script.Duel.EffectProcess
 
         public ThrowDiceEffectProcess(CardBase launchEffectCard, ActionIndex throwDiceCallBack, Player ownerPlayer) : base(ownerPlayer, "掷骰子")
         {
-            effectProcessType = EffectProcessType.RemoveAfterFinish;
-
             this.launchEffectCard = launchEffectCard;
             this.throwDiceCallBack = throwDiceCallBack;
         }

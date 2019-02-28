@@ -14,12 +14,18 @@ function C50277973.CanLaunchEffect(card)
 end
 
 function C50277973.LaunchEffect(card)
-	card:GetDuelCardScript():GetDuelScene():ShowItemSelectPanel(card,typeof(CS.Assets.Script.Card.PropertyType),C50277973.SelectPropertyTypeCallback);
+	local selectItemEffectProcess = CS.Assets.Script.Duel.EffectProcess.SelectItemEffectProcess(card,typeof(CS.Assets.Script.Card.PropertyType),C50277973.SelectPropertyTypeCallback, card:GetOwner());
+    card:GetOwner():AddEffectProcess(selectItemEffectProcess);
+	--card:GetDuelCardScript():GetDuelScene():ShowSelectItemPanel(card,);
 end
 
 function C50277973.SelectPropertyTypeCallback(card,index)
 	C50277973.propertyTypeIndex=index;
-	card:GetDuelCardScript():GetDuelScene():ShowItemSelectPanel(card,typeof(CS.Assets.Script.Card.MonsterType),C50277973.SelectMonsterTypeCallback);
+
+	local selectItemEffectProcess = CS.Assets.Script.Duel.EffectProcess.SelectItemEffectProcess(card,typeof(CS.Assets.Script.Card.MonsterType),C50277973.SelectMonsterTypeCallback, card:GetOwner());
+    card:GetOwner():AddEffectProcess(selectItemEffectProcess);
+	
+	--card:GetDuelCardScript():GetDuelScene():ShowSelectItemPanel(card,typeof(CS.Assets.Script.Card.MonsterType),C50277973.SelectMonsterTypeCallback);
 end
 
 function C50277973.SelectMonsterTypeCallback(card,index)

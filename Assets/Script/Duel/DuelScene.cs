@@ -31,6 +31,7 @@ namespace Assets.Script.Duel
     public class DuelScene
     {
         string cardPrefabPath = "Prefab/CardPre";
+
         public GameObject cardPre = null;
 
         public Player myPlayer = null;//我方玩家
@@ -309,11 +310,11 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 显示列表选择面板
+        /// 显示选择项面板
         /// </summary>
-        public void ShowItemSelectPanel(CardBase card,Type type, ActionIndex actionIndex)
+        public void ShowSelectItemPanel(Type type, UnityAction<int> actionIndex)
         {
-            duelSceneScript.ShowItemSelectPanel(card, type, actionIndex);
+            duelSceneScript.ShowSelectItemPanel(type, actionIndex);
         }
 
         /// <summary>
@@ -619,6 +620,17 @@ namespace Assets.Script.Duel
         public void EndTurn()
         {
             EnterPhaseType(PhaseType.End);
+        }
+
+        /// <summary>
+        /// 重新检查当前鼠标所在卡牌允许的操作
+        /// </summary>
+        public void ResetCurrentPointCardAllowedOperation()
+        {
+            if (currentPointCard != null)
+            {
+                currentPointCard.GetDuelCardScript().RecheckAllowedOperation();
+            }
         }
 
         /// <summary>
