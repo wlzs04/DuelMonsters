@@ -17,7 +17,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         public LaunchEffectEffectProcess(CardBase launchEffectCard, Player ownerPlayer) : base(ownerPlayer, "发动效果")
         {
-            effectProcessType = EffectProcessType.RemoveAfterFinish;
+            canBeChained = true;
             this.launchEffectCard = launchEffectCard;
             finishAction += () => { ownerPlayer.ThinkAction(); };
         }
@@ -56,10 +56,26 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 launchEffectCard.SetCardGameState(CardGameState.Front);
             }
-            
-            launchEffectCard.LaunchEffect();
 
+            CheckCardCanChainLaunch();
+        }
+
+        protected override void RealProcessFunction()
+        {
+            if(!beDisabled)
+            {
+                launchEffectCard.LaunchEffect();
+            }
+            else
+            {
+                GameManager.ShowMessage("此次发动被无效！");
+            }
             AfterFinishProcessFunction();
+        }
+
+        public CardBase GetLaunchCard()
+        {
+            return launchEffectCard;
         }
     }
 }

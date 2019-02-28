@@ -184,5 +184,10 @@ namespace Assets.Script.Duel.EffectProcess
         {
             return canChain;
         }
+
+        public void SetBeDisabled(bool beDisabled)
+        {
+            this.beDisabled = beDisabled;
+        }
     }
 }

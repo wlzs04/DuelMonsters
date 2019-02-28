@@ -386,11 +386,6 @@ namespace Assets.Script.Card
                     }
                 }
             }
-            //else if(card.GetCardGameState() == CardGameState.Tomb ||
-            //    card.GetCardGameState() == CardGameState.Exclusion)
-            //{
-            //    duelScene.ShowCardList(ownerPlayer, card.GetCardGameState(), true, null, null);
-            //}
         }
 
         public void OnPointerEnter(PointerEventData eventData)

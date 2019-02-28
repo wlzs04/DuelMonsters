@@ -15,16 +15,16 @@ function C8842266.LaunchEffect(card)
 	local totalStringList = CS.Assets.Script.Helper.XLuaHelper.CreateStringList();
 	totalStringList:Add("●自己恢复1200LP。");
 	totalStringList:Add("●给予对手800伤害。");
-	card:GetDuelCardScript():GetDuelScene():ShowEffectSelectPanel(card,totalStringList,C8842266.ChooseIndexCallback);
+	card:GetDuelScene():ShowEffectSelectPanel(card,totalStringList,C8842266.ChooseIndexCallback);
 end
 
 function C8842266.ChooseIndexCallback(launchEffectCard,index)
 	if(index==0)then
-		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(-1200, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetDuelCardScript():GetOwner())
-		launchEffectCard:GetDuelCardScript():GetOwner():AddEffectProcess(changeLifeEffectProcess);
+		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(-1200, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetOwner())
+		launchEffectCard:GetOwner():AddEffectProcess(changeLifeEffectProcess);
 	elseif(index==1)then
-		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(800, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer())
-		launchEffectCard:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
+		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(800, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetOwner():GetOpponentPlayer())
+		launchEffectCard:GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
 	end
 end
 

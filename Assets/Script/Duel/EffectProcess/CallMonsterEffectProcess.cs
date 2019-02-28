@@ -25,16 +25,16 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     public class CallMonsterEffectProcess : EffectProcessBase
     {
-        CardBase callMonster = null;//被召唤的怪兽
+        CardBase calledMonster = null;//被召唤的怪兽
         CardGameState cardGameState;//召唤后卡牌状态
         CallMonsterType callMonsterType;//召唤类型
 
         List<CardBase> sacrificeCards = new List<CardBase>();//祭品列表
 
-        public CallMonsterEffectProcess(CardBase callMonster, CardGameState cardGameState, Player ownerPlayer) : base(ownerPlayer, "召唤怪兽")
+        public CallMonsterEffectProcess(CardBase calledMonster, CardGameState cardGameState, Player ownerPlayer) : base(ownerPlayer, "召唤怪兽")
         {
-            effectProcessType = EffectProcessType.RemoveAfterFinish;
-            this.callMonster = callMonster;
+            canBeChained = true;
+            this.calledMonster = calledMonster;
             this.cardGameState = cardGameState;
 
             finishAction += () => { };
@@ -49,7 +49,7 @@ namespace Assets.Script.Duel.EffectProcess
         {
             if(cardGameState== CardGameState.Unknown)
             {
-                duelScene.ShowAttackOrDefensePanel(callMonster, (cardGameState) =>
+                duelScene.ShowAttackOrDefensePanel(calledMonster, (cardGameState) =>
                 {
                     this.cardGameState= cardGameState;
                     RealFunction();
@@ -65,27 +65,27 @@ namespace Assets.Script.Duel.EffectProcess
         void RealFunction()
         {
             //如果当前怪兽的状态是里侧表示，则进行反转召唤
-            if (callMonster.GetCardGameState() == CardGameState.Back)
+            if (calledMonster.GetCardGameState() == CardGameState.Back)
             {
                 callMonsterType = CallMonsterType.Flip;
-                callMonster.SetCardGameState(cardGameState);
-                callMonster.SetChangeAttackOrDefenseNumber(0);
-                callMonster.GetDuelCardScript().SetOwner(ownerPlayer);
-                AfterFinishProcessFunction();
+                calledMonster.SetCardGameState(cardGameState);
+                calledMonster.SetChangeAttackOrDefenseNumber(0);
+                calledMonster.GetDuelCardScript().SetOwner(ownerPlayer);
+                CheckCardCanChainLaunch();
                 return;
             }
-            int monsterLevel = callMonster.GetLevel();
+            int monsterLevel = calledMonster.GetLevel();
             //先判断是否可以直接进行召唤
             if (monsterLevel <= DuelRuleManager.GetCallMonsterWithoutSacrificeLevelUpperLimit())
             {
                 int index = CallMonster();
-                callMonster.GetDuelCardScript().SetOwner(ownerPlayer);
-                ownerPlayer.GetOpponentPlayer().CallMonsterNotify(callMonster.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index);
-                AfterFinishProcessFunction();
+                calledMonster.GetDuelCardScript().SetOwner(ownerPlayer);
+                ownerPlayer.GetOpponentPlayer().CallMonsterNotify(calledMonster.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index);
+                CheckCardCanChainLaunch();
             }
             else//使用祭品召唤
             {
-                if (ownerPlayer.GetCanBeSacrificeMonsterNumber() >= callMonster.NeedSacrificeMonsterNumer())
+                if (ownerPlayer.GetCanBeSacrificeMonsterNumber() >= calledMonster.NeedSacrificeMonsterNumer())
                 {
                     callMonsterType = CallMonsterType.Sacrifice;
                 }
@@ -102,23 +102,23 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 if (ownerPlayer.GetMonsterCardArea()[index] == null)
                 {
-                    ownerPlayer.GetMonsterCardArea()[index] = callMonster;
+                    ownerPlayer.GetMonsterCardArea()[index] = calledMonster;
                     break;
                 }
             }
             callMonsterType = CallMonsterType.Normal;
-            callMonster.AddContent("monsterCardAreaIndex", index);
+            calledMonster.AddContent("monsterCardAreaIndex", index);
 
-            if(callMonster.GetCardGameState()==CardGameState.Tomb)
+            if(calledMonster.GetCardGameState()==CardGameState.Tomb)
             {
-                callMonster.GetDuelCardScript().GetOwner().GetTombCards().Remove(callMonster);
+                calledMonster.GetDuelCardScript().GetOwner().GetTombCards().Remove(calledMonster);
             }
-            else if(callMonster.GetCardGameState() == CardGameState.Hand)
+            else if(calledMonster.GetCardGameState() == CardGameState.Hand)
             {
-                callMonster.GetDuelCardScript().GetOwner().GetHandCards().Remove(callMonster);
+                calledMonster.GetDuelCardScript().GetOwner().GetHandCards().Remove(calledMonster);
             }
 
-            callMonster.SetCardGameState(cardGameState, index);
+            calledMonster.SetCardGameState(cardGameState, index);
             
             ownerPlayer.SetNormalCallNumber(ownerPlayer.GetNormalCallNumber() - 1);
             return index;
@@ -156,7 +156,7 @@ namespace Assets.Script.Duel.EffectProcess
         {
             if(callMonsterType== CallMonsterType.Sacrifice)
             {
-                if (sacrificeCards.Count >= callMonster.NeedSacrificeMonsterNumer())
+                if (sacrificeCards.Count >= calledMonster.NeedSacrificeMonsterNumer())
                 {
                     CallMonsterWithSacrifice();
                 }
@@ -188,10 +188,21 @@ namespace Assets.Script.Duel.EffectProcess
                     sacrificeInfo.Append(sacrificeCards[i].GetID() + ":");
                 }
             }
-            callMonster.GetDuelCardScript().SetOwner(ownerPlayer);
-            ownerPlayer.GetOpponentPlayer().CallMonsterWithSacrificeNotify(callMonster.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index, sacrificeInfo.ToString());
+            calledMonster.GetDuelCardScript().SetOwner(ownerPlayer);
+            ownerPlayer.GetOpponentPlayer().CallMonsterWithSacrificeNotify(calledMonster.GetID(), CallType.Normal, CardGameState.Hand, cardGameState, index, sacrificeInfo.ToString());
 
             sacrificeCards.Clear();
+
+            CheckCardCanChainLaunch();
+        }
+
+        public CardBase GetCalledMonster()
+        {
+            return calledMonster;
+        }
+
+        protected override void RealProcessFunction()
+        {
             AfterFinishProcessFunction();
         }
     }
