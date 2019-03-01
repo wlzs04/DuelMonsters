@@ -12,9 +12,4 @@ function C45121025.InitInfo(card)
 	card:SetEffectInfo("被黑影附体的恶鬼。用惊人的速度突击。");
 end
 
-function C45121025.LaunchEffect(card)
-	local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(500, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, card:GetDuelCardScript():GetOwner():GetOpponentPlayer())
-    card:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
-end
-
 return C45121025

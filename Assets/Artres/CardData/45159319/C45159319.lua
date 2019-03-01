@@ -12,9 +12,4 @@ function C45159319.InitInfo(card)
 	card:SetEffectInfo("这张卡1个回合1次可以变成里侧守备表示。");
 end
 
-function C45159319.LaunchEffect(card)
-	local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(500, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, card:GetDuelCardScript():GetOwner():GetOpponentPlayer())
-    card:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
-end
-
 return C45159319

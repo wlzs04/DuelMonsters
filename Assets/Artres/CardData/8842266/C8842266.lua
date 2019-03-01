@@ -20,10 +20,10 @@ end
 
 function C8842266.ChooseIndexCallback(launchEffectCard,index)
 	if(index==0)then
-		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(-1200, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetOwner())
+		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(1200, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetOwner())
 		launchEffectCard:GetOwner():AddEffectProcess(changeLifeEffectProcess);
 	elseif(index==1)then
-		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(800, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetOwner():GetOpponentPlayer())
+		local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(-800, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, launchEffectCard:GetOwner():GetOpponentPlayer())
 		launchEffectCard:GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
 	end
 end

@@ -19,6 +19,7 @@ namespace Assets.Script.Duel.EffectProcess
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.monsterCard = monsterCard;
             this.equipCard = equipCard;
+            launchEffectCard = equipCard;//有问题，添加装备效果不一定是由装备卡发动的，暂时这样写
         }
 
         public override bool CheckCanTrigger()

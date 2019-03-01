@@ -31,6 +31,8 @@ namespace Assets.Script.Duel.EffectProcess
         protected UnityAction finishAction;
         protected EffectProcessType effectProcessType=EffectProcessType.RemoveAfterFinish;
         protected Player ownerPlayer;
+        protected CardBase launchEffectCard = null;//发动此效果的卡，默认为空
+        
         protected DuelScene duelScene;
         protected bool haveProcess = false;//是否已经执行
         protected bool haveFinish = false;//是否已经执行完成
@@ -167,7 +169,8 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         void ChooseCardCallback(CardBase launchCardBase, CardBase chooseCard)
         {
-            chooseCard.LaunchEffect();
+            LaunchEffectEffectProcess launchEffectEffectProcess = new LaunchEffectEffectProcess(chooseCard, chooseCard.GetOwner());
+            chooseCard.GetOwner().AddEffectProcess(launchEffectEffectProcess);
         }
 
         public bool GetHaveFinish()
@@ -188,6 +191,11 @@ namespace Assets.Script.Duel.EffectProcess
         public void SetBeDisabled(bool beDisabled)
         {
             this.beDisabled = beDisabled;
+        }
+
+        public CardBase GetLaunchEffectCard()
+        {
+            return launchEffectCard;
         }
     }
 }

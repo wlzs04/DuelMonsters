@@ -9,7 +9,7 @@ end
 
 function C41420027.CanLaunchEffect(card)
 	--在召唤、发动魔法、陷阱卡牌时才能发动。
-	local currentChainEffectProcess = card:GetDuelScene():GetCurrentChainEffectProcess();
+	local currentChainEffectProcess = card:GetDuelScene():GetCurrentChainEffectProcess(card);
 	if(currentChainEffectProcess~=nil and 
 		(currentChainEffectProcess:GetType()==typeof(CS.Assets.Script.Duel.EffectProcess.CallMonsterEffectProcess) or
 		currentChainEffectProcess:GetType()==typeof(CS.Assets.Script.Duel.EffectProcess.LaunchEffectEffectProcess)))then
@@ -23,10 +23,11 @@ function C41420027.LaunchEffect(card)
 	--先将自己的生命值减半
 	local myLifeValue = card:GetOwner():GetLife();
 
-	local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(myLifeValue/2, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, card:GetOwner())
+	local currentChainEffectProcess = card:GetDuelScene():GetCurrentChainEffectProcess(card);
+
+	local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(-myLifeValue/2, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, card:GetOwner())
 	card:GetOwner():AddEffectProcess(changeLifeEffectProcess);
 
-	local currentChainEffectProcess = card:GetDuelScene():GetCurrentChainEffectProcess();
 	if(currentChainEffectProcess~=nil and currentChainEffectProcess:GetType()==typeof(CS.Assets.Script.Duel.EffectProcess.CallMonsterEffectProcess))then
 		local calledMonster = currentChainEffectProcess:GetCalledMonster();
 		local moveCardToTombEffectProcess = CS.Assets.Script.Duel.EffectProcess.MoveCardToTombEffectProcess(calledMonster,CS.Assets.Script.Duel.EffectProcess.MoveCardToTombType.Effect, calledMonster:GetOwner());
@@ -36,8 +37,8 @@ function C41420027.LaunchEffect(card)
 	if(currentChainEffectProcess~=nil and currentChainEffectProcess:GetType()==typeof(CS.Assets.Script.Duel.EffectProcess.LaunchEffectEffectProcess))then
 		local launchCard = currentChainEffectProcess:GetLaunchCard();
 		currentChainEffectProcess:SetBeDisabled(true);
-		local moveCardToTombEffectProcess = CS.Assets.Script.Duel.EffectProcess.MoveCardToTombEffectProcess(calledMonster,CS.Assets.Script.Duel.EffectProcess.MoveCardToTombType.Effect, calledMonster:GetOwner());
-		calledMonster:GetOwner():AddEffectProcess(moveCardToTombEffectProcess);
+		local moveCardToTombEffectProcess = CS.Assets.Script.Duel.EffectProcess.MoveCardToTombEffectProcess(launchCard,CS.Assets.Script.Duel.EffectProcess.MoveCardToTombType.Effect, launchCard:GetOwner());
+		launchCard:GetOwner():AddEffectProcess(moveCardToTombEffectProcess);
 		return;
 	end
 end

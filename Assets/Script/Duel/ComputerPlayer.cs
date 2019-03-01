@@ -67,6 +67,12 @@ namespace Assets.Script.Duel
                 {
                     (currentEffectProcess as DiscardHandCardEffectProcess).DiscardOneHandCard(null,FindWorstCardInHand());
                 }
+                if (currentEffectProcess is ChooseCardEffectProcess)
+                {
+                    ChooseCardEffectProcess chooseCardEffectProcess = currentEffectProcess as ChooseCardEffectProcess;
+
+                    chooseCardEffectProcess.ChooseCardCallBack(chooseCardEffectProcess.GetLaunchEffectCard(),FindCanBeChooseCardFromList(chooseCardEffectProcess.GetCanChooseCardList()));
+                }
                 return;
             }
             if (duelScene.GetCurrentPhaseType() == PhaseType.Draw)
@@ -93,14 +99,15 @@ namespace Assets.Script.Duel
                             int sacrificeMonsterNumer = item.NeedSacrificeMonsterNumer();
                             if (sacrificeMonsterNumer > 0)
                             {
-                                string sacrificeInfo = "";
+                                List<CardBase> sacrificeCards = new List<CardBase>();//祭品列表
+
                                 int index = 0;
                                 for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
                                 {
                                     if (monsterCardArea[i] != null)
                                     {
-                                        sacrificeInfo += monsterCardArea[i].GetID() + ":";
-                                        sacrificeMonsterNumer--;
+                                        sacrificeCards.Add(monsterCardArea[i]);
+                                        sacrificeMonsterNumer-= monsterCardArea[i].GetCanBeSacrificedNumber();
                                         index = i;
                                         if (sacrificeMonsterNumer <= 0)
                                         {
@@ -108,11 +115,17 @@ namespace Assets.Script.Duel
                                         }
                                     }
                                 }
-                                if (sacrificeInfo.EndsWith(":"))
+                                CardGameState nextCardGameState;
+                                if (item.GetAttackValue() >= item.GetDefenseValue())
                                 {
-                                    sacrificeInfo = sacrificeInfo.Substring(0, sacrificeInfo.Length - 1);
+                                    nextCardGameState = CardGameState.FrontAttack;
                                 }
-                                CallMonsterByProtocol(item.GetID(), CallType.Normal, CardGameState.Hand, CardGameState.FrontAttack, index, sacrificeInfo);
+                                else
+                                {
+                                    nextCardGameState = CardGameState.FrontDefense;
+                                }
+                                CallMonsterEffectProcess callMonsterEffectProcess = new CallMonsterEffectProcess(item, nextCardGameState, sacrificeCards, this);
+                                AddEffectProcess(callMonsterEffectProcess);
                             }
                             else
                             {
@@ -125,14 +138,8 @@ namespace Assets.Script.Duel
                                 {
                                     nextCardGameState = CardGameState.FrontDefense;
                                 }
-                                for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
-                                {
-                                    if (monsterCardArea[i] == null)
-                                    {
-                                        CallMonsterByProtocol(item.GetID(), CallType.Normal, CardGameState.Hand, nextCardGameState, i);
-                                        return;
-                                    }
-                                }
+                                CallMonsterEffectProcess callMonsterEffectProcess = new CallMonsterEffectProcess(item, nextCardGameState, this);
+                                AddEffectProcess(callMonsterEffectProcess);
                             }
                             return;
                         }
@@ -276,6 +283,20 @@ namespace Assets.Script.Duel
                 return handCards[0];
             }
             return null;
+        }
+
+        /// <summary>
+        /// 从指定列表中选择一张卡牌
+        /// </summary>
+        /// <param name="cardList"></param>
+        /// <returns></returns>
+        CardBase FindCanBeChooseCardFromList(List<CardBase> cardList)
+        {
+            if(cardList==null || cardList.Count<=0)
+            {
+                return null;
+            }
+            return cardList[0];
         }
 
         public override void GuessFirstNotify(GuessEnum guessEnum)

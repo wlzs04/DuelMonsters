@@ -15,10 +15,9 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class ChooseCardEffectProcess : EffectProcessBase
     {
-        CardBase launchEffectCard;
         ChooseCardJudgeAction chooseCardJudgeAction;
         Action<CardBase, CardBase> chooseCardCallBack;
-        List<CardBase> canChooseCardBases=new List<CardBase>();
+        List<CardBase> canChooseCardList = new List<CardBase>();
 
         public ChooseCardEffectProcess(CardBase launchEffectCard, ChooseCardJudgeAction chooseCardJudgeAction, Action<CardBase, CardBase> chooseCardCallBack, Player ownerPlayer) : base(ownerPlayer, "选取卡牌对象")
         {
@@ -75,7 +74,7 @@ namespace Assets.Script.Duel.EffectProcess
                 {
                     if (chooseCardJudgeAction(launchEffectCard, item))
                     {
-                        canChooseCardBases.Add(item);
+                        canChooseCardList.Add(item);
                     }
                 }
             }
@@ -86,7 +85,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         public void AddChooseCardCallBackToCardList()
         {
-            foreach (var item in canChooseCardBases)
+            foreach (var item in canChooseCardList)
             {
                 
                 item.GetDuelCardScript().SetClickCallback(launchEffectCard, ChooseCardCallBack);
@@ -98,7 +97,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         /// <param name="launchEffectCard"></param>
         /// <param name="chooseCard"></param>
-        void ChooseCardCallBack(CardBase launchEffectCard, CardBase chooseCard)
+        public void ChooseCardCallBack(CardBase launchEffectCard, CardBase chooseCard)
         {
             AfterFinishProcessFunction();
             chooseCardCallBack(launchEffectCard, chooseCard);
@@ -109,7 +108,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// </summary>
         public void RemoveChooseCardCallBackFromCardList()
         {
-            foreach (var item in canChooseCardBases)
+            foreach (var item in canChooseCardList)
             {
                 item.GetDuelCardScript().RemoveClickCallback();
             }
@@ -122,6 +121,11 @@ namespace Assets.Script.Duel.EffectProcess
         public void SetTitle(string titleText)
         {
             duelScene.SetTitle(titleText);
+        }
+
+        public List<CardBase> GetCanChooseCardList()
+        {
+            return canChooseCardList;
         }
     }
 }

@@ -12,9 +12,4 @@ function C52589809.InitInfo(card)
 	card:SetEffectInfo("历经炽烈战涡的猛龙。其负伤的身躯接触古老之光达成浸涡。随即，那龙展开双翅，成为制霸天涡的煌者。那全新的煌，不知是梦是真还是幻。");
 end
 
-function C52589809.LaunchEffect(card)
-	local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(500, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, card:GetDuelCardScript():GetOwner():GetOpponentPlayer())
-    card:GetDuelCardScript():GetOwner():GetOpponentPlayer():AddEffectProcess(changeLifeEffectProcess);
-end
-
 return C52589809

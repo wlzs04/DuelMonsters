@@ -40,6 +40,16 @@ namespace Assets.Script.Duel.EffectProcess
             finishAction += () => { };
         }
 
+        public CallMonsterEffectProcess(CardBase calledMonster, CardGameState cardGameState, List<CardBase> sacrificeCards, Player ownerPlayer) : base(ownerPlayer, "召唤怪兽")
+        {
+            canBeChained = true;
+            this.calledMonster = calledMonster;
+            this.cardGameState = cardGameState;
+            this.sacrificeCards = sacrificeCards;
+
+            finishAction += () => { };
+        }
+
         public override bool CheckCanTrigger()
         {
             return true;
@@ -88,6 +98,7 @@ namespace Assets.Script.Duel.EffectProcess
                 if (ownerPlayer.GetCanBeSacrificeMonsterNumber() >= calledMonster.NeedSacrificeMonsterNumer())
                 {
                     callMonsterType = CallMonsterType.Sacrifice;
+                    TrySacrificeCall();
                 }
             }
         }
@@ -143,6 +154,20 @@ namespace Assets.Script.Duel.EffectProcess
             }
         }
 
+        /// <summary>
+        /// 获得当前列表中可被祭品的个数
+        /// </summary>
+        /// <returns></returns>
+        int GetCurrentSacrificeCount()
+        {
+            int count = 0;
+            foreach (var item in sacrificeCards)
+            {
+                count+= item.GetCanBeSacrificedNumber();
+            }
+            return count;
+        }
+
         public CallMonsterType GetCallMonsterType()
         {
             return callMonsterType;
@@ -156,7 +181,7 @@ namespace Assets.Script.Duel.EffectProcess
         {
             if(callMonsterType== CallMonsterType.Sacrifice)
             {
-                if (sacrificeCards.Count >= calledMonster.NeedSacrificeMonsterNumer())
+                if (GetCurrentSacrificeCount() >= calledMonster.NeedSacrificeMonsterNumer())
                 {
                     CallMonsterWithSacrifice();
                 }

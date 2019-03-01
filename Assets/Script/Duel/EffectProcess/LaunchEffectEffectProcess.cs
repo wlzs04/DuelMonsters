@@ -13,13 +13,15 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class LaunchEffectEffectProcess : EffectProcessBase
     {
-        CardBase launchEffectCard;
-
         public LaunchEffectEffectProcess(CardBase launchEffectCard, Player ownerPlayer) : base(ownerPlayer, "发动效果")
         {
             canBeChained = true;
             this.launchEffectCard = launchEffectCard;
-            finishAction += () => { ownerPlayer.ThinkAction(); };
+            finishAction += () => 
+            {
+                launchEffectCard.LaunchEffectFinishCallBack();
+                ownerPlayer.ThinkAction();
+            };
         }
 
         public override void Update()
@@ -56,7 +58,7 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 launchEffectCard.SetCardGameState(CardGameState.Front);
             }
-
+            launchEffectCard.BeforeLaunchEffect();
             CheckCardCanChainLaunch();
         }
 
@@ -68,7 +70,9 @@ namespace Assets.Script.Duel.EffectProcess
             }
             else
             {
-                GameManager.ShowMessage("此次发动被无效！");
+                Debug.Log($"{launchEffectCard.GetName()}此次发动被无效！");
+
+
             }
             AfterFinishProcessFunction();
         }

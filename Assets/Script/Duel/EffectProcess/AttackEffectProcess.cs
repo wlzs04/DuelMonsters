@@ -31,6 +31,7 @@ namespace Assets.Script.Duel.EffectProcess
                 duelScene.SetTitle("");
                 attackCard.GetDuelCardScript().ClearPrepareAttackState();
             };
+            launchEffectCard = attackCard;
         }
 
         public override bool CheckCanTrigger()
@@ -101,7 +102,7 @@ namespace Assets.Script.Duel.EffectProcess
             if(beAttackedCard==null)
             {
                 attackCard.Attack();
-                ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(attackCard.GetAttackValue(), ChangeLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
+                ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(-attackCard.GetAttackValue(), ChangeLifeType.Battle, attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer());
                 attackCard.GetDuelCardScript().GetOwner().GetOpponentPlayer().AddEffectProcess(changeLifeEffectProcess);
                 return;
             }
@@ -132,14 +133,14 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 if (!card2Defense || attackCard.GetCanPenetrateDefense())
                 {
-                    ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(differenceValue, ChangeLifeType.Battle, beAttackedCard.GetDuelCardScript().GetOwner());
+                    ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(-differenceValue, ChangeLifeType.Battle, beAttackedCard.GetDuelCardScript().GetOwner());
                     beAttackedCard.GetDuelCardScript().GetOwner().AddEffectProcess(changeLifeEffectProcess);
                 }
                 SendCardToTomb(beAttackedCard, MoveCardToTombType.Battle);
             }
             else
             {
-                ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(-differenceValue, ChangeLifeType.Battle, attackCard.GetDuelCardScript().GetOwner());
+                ChangeLifeEffectProcess changeLifeEffectProcess = new ChangeLifeEffectProcess(differenceValue, ChangeLifeType.Battle, attackCard.GetDuelCardScript().GetOwner());
                 attackCard.GetDuelCardScript().GetOwner().AddEffectProcess(changeLifeEffectProcess);
                 if (!card2Defense)
                 {

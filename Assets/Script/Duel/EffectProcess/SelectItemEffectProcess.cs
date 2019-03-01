@@ -12,7 +12,6 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class SelectItemEffectProcess : EffectProcessBase
     {
-        CardBase launchEffectCard;
         Type type;
         ActionIndex selectItemCallBack;
 

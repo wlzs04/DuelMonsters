@@ -19,6 +19,7 @@ namespace Assets.Script.Duel.EffectProcess
         {
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.monsterCard = monsterCard;
+            launchEffectCard = monsterCard;
             this.cardGameState = cardGameState;
         }
 

@@ -173,6 +173,7 @@ namespace Assets.Script.Card
         private string luaPath;
 
         bool infoDirty = false;//卡牌的信息是否被修改并且没有刷新
+        bool inLaunch = false;
 
         public CardBase(int cardNo)
         {
@@ -510,6 +511,11 @@ namespace Assets.Script.Card
         /// <returns></returns>
         public bool CanLaunchEffect()
         {
+            //在发动效果期间的卡片不能再次发动效果。
+            if(inLaunch)
+            {
+                return false;
+            }
             switch (cardType)
             {
                 case CardType.Monster:
@@ -526,11 +532,26 @@ namespace Assets.Script.Card
         }
 
         /// <summary>
+        /// 在发动效果前的操作
+        /// </summary>
+        public void BeforeLaunchEffect()
+        {
+            inLaunch = true;
+        }
+
+        /// <summary>
         /// 发动效果
         /// </summary>
         public void LaunchEffect()
         {
             launchEffectAction?.Invoke(this);
+        }
+
+        /// <summary>
+        /// 发动效果后的回调
+        /// </summary>
+        public void LaunchEffectFinishCallBack()
+        {
             switch (cardType)
             {
                 case CardType.Monster:
@@ -545,6 +566,7 @@ namespace Assets.Script.Card
                 default:
                     break;
             }
+            inLaunch = false;
         }
 
         /// <summary>

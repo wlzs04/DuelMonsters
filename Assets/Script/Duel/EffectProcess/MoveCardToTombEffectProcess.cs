@@ -37,7 +37,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         protected override void BeforeProcessFunction()
         {
-            ownerPlayer.MoveCardToTomb(card);
+            card.GetOwner().MoveCardToTomb(card);
             AfterFinishProcessFunction();
         }
 

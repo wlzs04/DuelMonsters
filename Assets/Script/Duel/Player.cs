@@ -743,12 +743,12 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 减血
+        /// 血量发生变化
         /// </summary>
         /// <param name="life"></param>
-        public void ReduceLife(int reduceLife)
+        public void ChangeLife(int changeLifeValue)
         {
-            life -= reduceLife;
+            life += changeLifeValue;
             life = life > 0 ? life : 0;
             lifeScrollBar.size =(float)life / DuelRuleManager.GetPlayerStartLife();
             lifeNumberText.text = life + "/" + DuelRuleManager.GetPlayerStartLife();
@@ -879,45 +879,45 @@ namespace Assets.Script.Duel
         /// <param name="toCardGameState"></param>
         /// <param name="flag"></param>
         /// <param name="sacrificeList"></param>
-        public void CallMonsterByProtocol(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeinfo = null)
-        {
-            if(fromCardGameState!=CardGameState.Hand)
-            {
-                Debug.LogError("非手卡召唤！");
-                return;
-            }
+        //public void CallMonsterByProtocol(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeinfo = null)
+        //{
+        //    if(fromCardGameState!=CardGameState.Hand)
+        //    {
+        //        Debug.LogError("非手卡召唤！");
+        //        return;
+        //    }
 
-            if(sacrificeinfo != null)
-            {
-                string[] sacrificeIDs = sacrificeinfo.Split(':');
+        //    if(sacrificeinfo != null)
+        //    {
+        //        string[] sacrificeIDs = sacrificeinfo.Split(':');
 
-                foreach (var item in sacrificeIDs)
-                {
-                    MoveCardToTomb(GetCardByID(int.Parse(item)));
-                }
-            }
+        //        foreach (var item in sacrificeIDs)
+        //        {
+        //            MoveCardToTomb(GetCardByID(int.Parse(item)));
+        //        }
+        //    }
 
-            CardBase monsterCard = null;
-            foreach (var item in handCards)
-            {
-                if(item.GetID()==cardID)
-                {
-                    monsterCard = item;
-                    break;
-                }
-            }
+        //    CardBase monsterCard = null;
+        //    foreach (var item in handCards)
+        //    {
+        //        if(item.GetID()==cardID)
+        //        {
+        //            monsterCard = item;
+        //            break;
+        //        }
+        //    }
 
-            int index = flag;
+        //    int index = flag;
 
-            monsterCardArea[flag] = monsterCard;
-            monsterCard.AddContent("monsterCardAreaIndex", flag);
-            monsterCard.SetCardGameState(toCardGameState, index);
+        //    monsterCardArea[flag] = monsterCard;
+        //    monsterCard.AddContent("monsterCardAreaIndex", flag);
+        //    monsterCard.SetCardGameState(toCardGameState, index);
             
-            handCards.Remove(monsterCard);
-            normalCallNumber--;
+        //    handCards.Remove(monsterCard);
+        //    normalCallNumber--;
 
-            ThinkAction();
-        }
+        //    ThinkAction();
+        //}
 
         /// <summary>
         /// 通过ID获得卡牌

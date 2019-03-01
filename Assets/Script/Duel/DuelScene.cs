@@ -536,11 +536,27 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
+        /// 获得当前进行连锁中不是由指定卡牌发动的效果，一般用来过滤LaunchEffectEffectProcess
+        /// </summary>
+        /// <returns></returns>
+        public EffectProcessBase GetCurrentChainEffectProcess(CardBase cardBase)
+        {
+            foreach (var item in effectProcessChainStack)
+            {
+                if (item.GetCanChain() && item.GetLaunchEffectCard()!= cardBase)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// 检查是否决斗双方都已经初始化完成
         /// </summary>
         public void CheckPlayInit()
         {
-            if(myPlayer.IAmReady()&& opponentPlayer.IAmReady())
+            if (myPlayer.IAmReady()&& opponentPlayer.IAmReady())
             {
                 currentPlayer = startPlayer;
 

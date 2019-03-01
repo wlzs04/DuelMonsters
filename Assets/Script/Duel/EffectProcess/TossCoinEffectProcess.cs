@@ -25,7 +25,6 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class TossCoinEffectProcess : EffectProcessBase
     {
-        CardBase launchEffectCard;
         bool showSelectCoinPanel;
         ActionTossCoin tossCoinCallBack;
         CoinType selectCoinType;

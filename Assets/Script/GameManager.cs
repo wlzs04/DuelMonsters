@@ -264,7 +264,20 @@ namespace Assets.Script
             DirectoryInfo directoryInfo = new DirectoryInfo(GetCardResourceRootPath());
             foreach (var item in directoryInfo.GetDirectories())
             {
-                WWW www= new WWW(item.FullName + "/image.jpg");
+                WWW www = null;
+                if (File.Exists(item.FullName + "/"+ item.Name + ".jpg"))
+                {
+                    www = new WWW(item.FullName + "/" + item.Name + ".jpg");
+                }
+                else if(File.Exists(item.FullName + "/image.jpg"))
+                {
+                    www = new WWW(item.FullName + "/image.jpg");
+                }
+                else
+                {
+                    Debug.Log($"卡牌{item.FullName}的图片找不到！");
+                    continue;
+                }
                 Texture2D texture = new Texture2D(177,254);
                 www.LoadImageIntoTexture(texture);
                 Sprite image = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);

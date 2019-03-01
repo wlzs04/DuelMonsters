@@ -79,6 +79,7 @@ namespace Assets.Script.Card
                 case TrapType.Forever:
                     break;
                 case TrapType.BeatBack:
+                    GetDuelCardScript().GetOwner().MoveCardToTomb(this);
                     break;
                 default:
                     Debug.LogError("未知TrapType：" + trapType);

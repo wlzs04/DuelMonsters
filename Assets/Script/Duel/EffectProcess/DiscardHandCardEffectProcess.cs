@@ -13,7 +13,6 @@ namespace Assets.Script.Duel.EffectProcess
     /// </summary>
     class DiscardHandCardEffectProcess : EffectProcessBase
     {
-        CardBase launchEffectCard;
         int needDiscardHandCardNumber = 1;//需要丢弃的卡牌数量
         string titleText = "";
 
