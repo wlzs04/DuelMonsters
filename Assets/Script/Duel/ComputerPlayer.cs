@@ -100,44 +100,28 @@ namespace Assets.Script.Duel
                             if (sacrificeMonsterNumer > 0)
                             {
                                 List<CardBase> sacrificeCards = new List<CardBase>();//祭品列表
-
-                                int index = 0;
+                                
                                 for (int i = 0; i < DuelRuleManager.GetMonsterAreaNumber(); i++)
                                 {
                                     if (monsterCardArea[i] != null)
                                     {
                                         sacrificeCards.Add(monsterCardArea[i]);
                                         sacrificeMonsterNumer-= monsterCardArea[i].GetCanBeSacrificedNumber();
-                                        index = i;
                                         if (sacrificeMonsterNumer <= 0)
                                         {
                                             break;
                                         }
                                     }
                                 }
-                                CardGameState nextCardGameState;
-                                if (item.GetAttackValue() >= item.GetDefenseValue())
-                                {
-                                    nextCardGameState = CardGameState.FrontAttack;
-                                }
-                                else
-                                {
-                                    nextCardGameState = CardGameState.FrontDefense;
-                                }
+                                CardGameState nextCardGameState = ThinkCallMonsterCardGameState(item);
+                                
                                 CallMonsterEffectProcess callMonsterEffectProcess = new CallMonsterEffectProcess(item, nextCardGameState, sacrificeCards, this);
                                 AddEffectProcess(callMonsterEffectProcess);
                             }
                             else
                             {
-                                CardGameState nextCardGameState;
-                                if (item.GetAttackValue() >= item.GetDefenseValue())
-                                {
-                                    nextCardGameState = CardGameState.FrontAttack;
-                                }
-                                else
-                                {
-                                    nextCardGameState = CardGameState.FrontDefense;
-                                }
+                                CardGameState nextCardGameState = ThinkCallMonsterCardGameState(item);
+                                
                                 CallMonsterEffectProcess callMonsterEffectProcess = new CallMonsterEffectProcess(item, nextCardGameState, this);
                                 AddEffectProcess(callMonsterEffectProcess);
                             }
@@ -297,6 +281,33 @@ namespace Assets.Script.Duel
                 return null;
             }
             return cardList[0];
+        }
+
+        /// <summary>
+        /// 在召唤怪兽时考虑召唤状态，攻击或防守
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        CardGameState ThinkCallMonsterCardGameState(CardBase card)
+        {
+            CardGameState nextCardGameState;
+            int maxAttackValue = 0;
+            foreach (var item in GetOpponentPlayer().GetMonsterCardArea())
+            {
+                if(item!=null && item.GetAttackValue()> maxAttackValue)
+                {
+                    maxAttackValue = item.GetAttackValue();
+                }
+            }
+            if (card.GetAttackValue() >= maxAttackValue)
+            {
+                nextCardGameState = CardGameState.FrontAttack;
+            }
+            else
+            {
+                nextCardGameState = CardGameState.FrontDefense;
+            }
+            return nextCardGameState;
         }
 
         public override void GuessFirstNotify(GuessEnum guessEnum)

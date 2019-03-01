@@ -20,7 +20,6 @@ namespace Assets.Script.Duel.EffectProcess
             finishAction += () => 
             {
                 launchEffectCard.LaunchEffectFinishCallBack();
-                ownerPlayer.ThinkAction();
             };
         }
 

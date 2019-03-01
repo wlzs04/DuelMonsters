@@ -482,6 +482,10 @@ namespace Assets.Script
         /// <param name="titleText"></param>
         public void ShowTitle(string titleText)
         {
+            if (string.IsNullOrEmpty(titleText))
+            {
+                Debug.Log(titleText);
+            }
             helpInfoPanel.transform.Find("TitleText").GetComponent<Text>().text = titleText;
         }
 

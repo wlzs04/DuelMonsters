@@ -26,6 +26,7 @@ namespace Assets.Script.Duel.EffectProcess
 
         public ChangeLifeEffectProcess(int changeLifeValue, ChangeLifeType changeLifeType, Player ownerPlayer) : base(ownerPlayer, "减少生命值")
         {
+            canBeChained = true;
             effectProcessType = EffectProcessType.RemoveAfterFinish;
             this.changeLifeValue = changeLifeValue;
             this.changeLifeType = changeLifeType;
@@ -39,12 +40,22 @@ namespace Assets.Script.Duel.EffectProcess
         protected override void BeforeProcessFunction()
         {
             ownerPlayer.ChangeLife(changeLifeValue);
+            CheckCardCanChainLaunch();
+        }
+
+        protected override void RealProcessFunction()
+        {
             AfterFinishProcessFunction();
         }
 
         public ChangeLifeType GetChangeLifeType()
         {
             return changeLifeType;
+        }
+
+        public int GetChangeLifeValue()
+        {
+            return changeLifeValue;
         }
     }
 }

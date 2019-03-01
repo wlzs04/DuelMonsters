@@ -62,7 +62,7 @@ namespace Assets.Script.Duel.EffectProcess
         /// <returns></returns>
         public abstract bool CheckCanTrigger();
 
-        public Player GetOwnPlayer()
+        public Player GetOwnerPlayer()
         {
             return ownerPlayer;
         }

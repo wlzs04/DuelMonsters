@@ -478,9 +478,9 @@ namespace Assets.Script.Duel
                     {
                         if(effectProcess.GetBeInterrupted())
                         {
-                            if(effectProcess != effectProcess.GetOwnPlayer().GetCurrentEffectProcess())
+                            if(effectProcess != effectProcess.GetOwnerPlayer().GetCurrentEffectProcess())
                             {
-                                effectProcess.GetOwnPlayer().SetCurrentEffectProcess(effectProcess);
+                                effectProcess.GetOwnerPlayer().SetCurrentEffectProcess(effectProcess);
                             }
                             effectProcess.ContinueProcess();
                         }

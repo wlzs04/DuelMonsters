@@ -871,55 +871,6 @@ namespace Assets.Script.Duel
         }
 
         /// <summary>
-        /// 由协议调用召唤怪兽,最后一项祭品列表为空代表直接召唤，否则为祭品召唤
-        /// </summary>
-        /// <param name="cardID"></param>
-        /// <param name="callType"></param>
-        /// <param name="fromCardGameState"></param>
-        /// <param name="toCardGameState"></param>
-        /// <param name="flag"></param>
-        /// <param name="sacrificeList"></param>
-        //public void CallMonsterByProtocol(int cardID, CallType callType, CardGameState fromCardGameState, CardGameState toCardGameState, int flag, string sacrificeinfo = null)
-        //{
-        //    if(fromCardGameState!=CardGameState.Hand)
-        //    {
-        //        Debug.LogError("非手卡召唤！");
-        //        return;
-        //    }
-
-        //    if(sacrificeinfo != null)
-        //    {
-        //        string[] sacrificeIDs = sacrificeinfo.Split(':');
-
-        //        foreach (var item in sacrificeIDs)
-        //        {
-        //            MoveCardToTomb(GetCardByID(int.Parse(item)));
-        //        }
-        //    }
-
-        //    CardBase monsterCard = null;
-        //    foreach (var item in handCards)
-        //    {
-        //        if(item.GetID()==cardID)
-        //        {
-        //            monsterCard = item;
-        //            break;
-        //        }
-        //    }
-
-        //    int index = flag;
-
-        //    monsterCardArea[flag] = monsterCard;
-        //    monsterCard.AddContent("monsterCardAreaIndex", flag);
-        //    monsterCard.SetCardGameState(toCardGameState, index);
-            
-        //    handCards.Remove(monsterCard);
-        //    normalCallNumber--;
-
-        //    ThinkAction();
-        //}
-
-        /// <summary>
         /// 通过ID获得卡牌
         /// </summary>
         /// <param name="cardID"></param>
