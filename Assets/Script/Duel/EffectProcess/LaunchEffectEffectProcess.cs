@@ -57,7 +57,14 @@ namespace Assets.Script.Duel.EffectProcess
             {
                 launchEffectCard.SetCardGameState(CardGameState.Front);
             }
-            launchEffectCard.BeforeLaunchEffect();
+            launchEffectCard.BeforeLaunchEffect(CostFinish); 
+        }
+
+        /// <summary>
+        /// 支付发动代价结束
+        /// </summary>
+        public void CostFinish()
+        {
             CheckCardCanChainLaunch();
         }
 

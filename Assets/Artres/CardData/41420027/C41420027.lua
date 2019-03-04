@@ -19,15 +19,16 @@ function C41420027.CanLaunchEffect(card)
 	return false;
 end
 
-function C41420027.LaunchEffect(card)
+function C41420027.Cost(card)
+	local currentChainEffectProcess = card:GetDuelScene():GetCurrentChainEffectProcess();
 	--先将自己的生命值减半
 	local myLifeValue = card:GetOwner():GetLife();
+	card:GetOwner():ChangeLife(-myLifeValue/2);
+	currentChainEffectProcess:CostFinish()
+end
 
+function C41420027.LaunchEffect(card)
 	local currentChainEffectProcess = card:GetDuelScene():GetCurrentChainEffectProcess(card);
-
-	local changeLifeEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChangeLifeEffectProcess(-myLifeValue/2, CS.Assets.Script.Duel.EffectProcess.ChangeLifeType.Effect, card:GetOwner())
-	card:GetOwner():AddEffectProcess(changeLifeEffectProcess);
-
 	if(currentChainEffectProcess~=nil and currentChainEffectProcess:GetType()==typeof(CS.Assets.Script.Duel.EffectProcess.CallMonsterEffectProcess))then
 		local calledMonster = currentChainEffectProcess:GetCalledMonster();
 		local moveCardToTombEffectProcess = CS.Assets.Script.Duel.EffectProcess.MoveCardToTombEffectProcess(calledMonster,CS.Assets.Script.Duel.EffectProcess.MoveCardToTombType.Effect, calledMonster:GetOwner());

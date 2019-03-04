@@ -492,7 +492,7 @@ public class CardGroupEditScript : MonoBehaviour
     /// </summary>
     public void OnlyShowOwnedCardChangeEvent(bool value)
     {
-        onlyShowOwnedCard = !onlyShowOwnedCard;
+        onlyShowOwnedCard = value;
         ResetAllCard();
     }
 

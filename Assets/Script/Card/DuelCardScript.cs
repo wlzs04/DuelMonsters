@@ -97,7 +97,7 @@ namespace Assets.Script.Card
         /// 设置当前卡牌状态，由CardBase类调用，仅做卡牌位置，方向，正反等显示处理
         /// </summary>
         /// <param name="cardGameState"></param>
-        public void SetCardGameState(CardGameState cardGameState,int index = 0)
+        public void SetCardGameState(CardGameState cardGameState,int index = -1)
         {
             SetAttackState(false);
             switch (cardGameState)
@@ -135,7 +135,11 @@ namespace Assets.Script.Card
                 case CardGameState.FrontAttack:
                     {
                         SetParent(duelScene.duelBackImage.transform);
-                        SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
+                        if(index>-1)
+                        {
+                            SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
+                        }
+                        
                         ShowFront();
                         SetCardAngle(0);
                         break;
@@ -143,7 +147,10 @@ namespace Assets.Script.Card
                 case CardGameState.FrontDefense:
                     {
                         SetParent(duelScene.duelBackImage.transform);
-                        SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
+                        if (index > -1)
+                        {
+                            SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
+                        }
                         ShowFront();
                         SetCardAngle(90);
                         break;
@@ -151,7 +158,10 @@ namespace Assets.Script.Card
                 case CardGameState.Front:
                     {
                         SetParent(duelScene.duelBackImage.transform);
-                        SetAnchorPosition(duelScene.GetMagicTrapPositionAnchorByIndex(ownerPlayer, index));
+                        if (index > -1)
+                        {
+                            SetAnchorPosition(duelScene.GetMagicTrapPositionAnchorByIndex(ownerPlayer, index));
+                        }
                         ShowFront();
                         SetCardAngle(0);
                         break;
@@ -162,12 +172,18 @@ namespace Assets.Script.Card
                         SetParent(duelScene.duelBackImage.transform);
                         if (card.GetCardType() == CardType.Monster)
                         {
-                            SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
+                            if (index > -1)
+                            {
+                                SetAnchorPosition(duelScene.GetMonsterPositionAnchorByIndex(ownerPlayer, index));
+                            }
                             SetCardAngle(90);
                         }
                         else if (card.GetCardType() == CardType.Magic || card.GetCardType() == CardType.Trap)
                         {
-                            SetAnchorPosition(duelScene.GetMagicTrapPositionAnchorByIndex(ownerPlayer, index));
+                            if (index > -1)
+                            {
+                                SetAnchorPosition(duelScene.GetMagicTrapPositionAnchorByIndex(ownerPlayer, index));
+                            }
                             SetCardAngle(0);
                         }
                         break;

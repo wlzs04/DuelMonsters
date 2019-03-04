@@ -69,6 +69,7 @@ namespace Assets.Script.Card
         CardBase effectedCard;//受效果影响的卡牌
         CardEffectType cardEffectType;
         int value;//作用值
+        int speed = 1;//咒文速度(1 2 3)
 
         int effectActivityTurnNumber = int.MaxValue;//作用持续回合数
         PhaseType removeEffectPhaseType = PhaseType.End;//移除当前效果的流程
@@ -126,6 +127,16 @@ namespace Assets.Script.Card
                 effectedCard.RemoveCardEffect(this);
             }
         }
+
+        public void SetSpeed(int speed)
+        {
+            this.speed = speed;
+        }
+
+        public int GetSpeed()
+        {
+            return speed;
+        }
     }
 
     [CSharpCallLua]
@@ -136,6 +147,8 @@ namespace Assets.Script.Card
 
     [CSharpCallLua]
     public delegate void ActionIndex(CardBase cardBase,int index);
+
+    
 
     /// <summary>
     /// 卡牌基础部分
@@ -162,18 +175,21 @@ namespace Assets.Script.Card
         Dictionary<string, object> contentMap = new Dictionary<string, object>();
 
         //效果map，表示当前卡牌受到其他卡牌的作用
-        List<CardEffect> cardEffectMap = new List<CardEffect>();
+        List<CardEffect> cardEffectedMap = new List<CardEffect>();
 
         //lua部分
         private LuaTable scriptEnv;
         private Action<CardBase> initInfoAction = null;
         private ActionJudge canLaunchEffectAction = null;
+        private Action<CardBase> costAction = null;
         private Action<CardBase> launchEffectAction = null;
         private ActionChangeCardGameState changeCardGameState = null;
         private string luaPath;
 
         bool infoDirty = false;//卡牌的信息是否被修改并且没有刷新
         bool inLaunch = false;
+
+        int areaIndex = 0;
 
         public CardBase(int cardNo)
         {
@@ -203,6 +219,7 @@ namespace Assets.Script.Card
 
             initInfoAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".InitInfo");
             canLaunchEffectAction = scriptEnv.GetInPath<ActionJudge>("C" + cardNo + ".CanLaunchEffect");
+            costAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".Cost");
             launchEffectAction = scriptEnv.GetInPath<Action<CardBase>>("C" + cardNo + ".LaunchEffect");
             changeCardGameState = scriptEnv.GetInPath<ActionChangeCardGameState>("C" + cardNo + ".ChangeCardGameState");
 
@@ -336,7 +353,7 @@ namespace Assets.Script.Card
         /// 设置当前卡牌状态，如果是在怪兽魔法陷阱区时，根据设置index位置
         /// </summary>
         /// <param name="cardGameState"></param>
-        public void SetCardGameState(CardGameState cardGameState,int index = 0)
+        public void SetCardGameState(CardGameState cardGameState,int index = -1)
         {
             CardGameState oldCardGameState = this.cardGameState;
             //卡牌刚进入场上开始计被放置到场上的第回合数
@@ -390,11 +407,11 @@ namespace Assets.Script.Card
                 default:
                     break;
             }
-            for (int i = cardEffectMap.Count - 1; i >= 0; i--)
+            for (int i = cardEffectedMap.Count - 1; i >= 0; i--)
             {
-                if(cardEffectMap[i].GetRemoveWhenExitArea())
+                if(cardEffectedMap[i].GetRemoveWhenExitArea())
                 {
-                    RemoveCardEffect(cardEffectMap[i]);
+                    RemoveCardEffect(cardEffectedMap[i]);
                 }
             }
         }
@@ -534,9 +551,17 @@ namespace Assets.Script.Card
         /// <summary>
         /// 在发动效果前的操作
         /// </summary>
-        public void BeforeLaunchEffect()
+        public void BeforeLaunchEffect(Action costFinishAction)
         {
             inLaunch = true;
+            if(costAction!=null)
+            {
+                costAction(this);
+            }
+            else
+            {
+                costFinishAction();
+            }
         }
 
         /// <summary>
@@ -575,7 +600,7 @@ namespace Assets.Script.Card
         public CardEffect AddCardEffect(CardBase cardBase, CardEffectType cardEffectType, int value)
         {
             CardEffect cardEffect = new CardEffect(cardBase,this, cardEffectType, value);
-            cardEffectMap.Add(cardEffect);
+            cardEffectedMap.Add(cardEffect);
             RecalculationCardByCardEffect();
             return cardEffect;
         }
@@ -587,7 +612,7 @@ namespace Assets.Script.Card
         /// <param name="cardEffect"></param>
         public void RemoveCardEffect(CardEffect cardEffect)
         {
-            cardEffectMap.Remove(cardEffect);
+            cardEffectedMap.Remove(cardEffect);
             RecalculationCardByCardEffect();
         }
 
@@ -596,11 +621,11 @@ namespace Assets.Script.Card
         /// </summary>
         public void RemoveCardEffect(CardBase effectCard)
         {
-            for (int i = cardEffectMap.Count - 1; i >= 0; i--)
+            for (int i = cardEffectedMap.Count - 1; i >= 0; i--)
             {
-                if(cardEffectMap[i].GetEffectCard()== effectCard)
+                if(cardEffectedMap[i].GetEffectCard()== effectCard)
                 {
-                    cardEffectMap.RemoveAt(i);
+                    cardEffectedMap.RemoveAt(i);
                 }
             }
             RecalculationCardByCardEffect();
@@ -611,15 +636,15 @@ namespace Assets.Script.Card
         /// </summary>
         public void RemoveAllCardEffect()
         {
-            cardEffectMap.Clear();
+            cardEffectedMap.Clear();
             RecalculationCardByCardEffect();
         }
 
         public void CheckAllCardEffect()
         {
-            for (int i = cardEffectMap.Count - 1; i >= 0; i--)
+            for (int i = cardEffectedMap.Count - 1; i >= 0; i--)
             {
-                cardEffectMap[i].CheckEffect();
+                cardEffectedMap[i].CheckEffect();
             }
         }
 
@@ -634,7 +659,7 @@ namespace Assets.Script.Card
                 SetAttackValue(GetOriginalAttackValue());
                 SetDefenseValue(GetOriginalDefenseValue());
             }
-            foreach (var cardEffect in cardEffectMap)
+            foreach (var cardEffect in cardEffectedMap)
             {
                 switch (cardEffect.GetCardEffectType())
                 {
@@ -683,6 +708,16 @@ namespace Assets.Script.Card
         public DuelScene GetDuelScene()
         {
             return duelScene;
+        }
+
+        public void SetAreaIndex(int areaIndex)
+        {
+            this.areaIndex = areaIndex;
+        }
+
+        public int GetAreaIndex()
+        {
+            return areaIndex;
         }
     }
 }

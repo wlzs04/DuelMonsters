@@ -11,12 +11,23 @@ function C4178474.CanLaunchEffect(card)
 	return card:GetOwner():GetHandCards().Count>0 and card:GetDuelCardScript():GetDuelScene():GetCardNumberInArea()>1;
 end
 
-function C4178474.LaunchEffect(card)
-	local discardHandCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.DiscardHandCardEffectProcess(card,1,C4178474.AfterDiscardHandCard, card:GetOwner());
-    card:GetOwner():AddEffectProcess(discardHandCardEffectProcess);
+function C4178474.Cost(card)
+	--舍弃1张手牌
+	local discardHandCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.DiscardHandCardEffectProcess(card,1,C4178474.CostFinishBack, card:GetOwner());
+    discardHandCardEffectProcess:SetCanChain(false)
+	card:GetOwner():AddEffectProcess(discardHandCardEffectProcess);
 end
 
-function C4178474.AfterDiscardHandCard(launchEffectCard,discardCard)
+function C4178474.CostFinishBack(card1,card2)
+	local chooseCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChooseCardEffectProcess(launchEffectCard,C4178474.ChooseCardJudgeAction,C4178474.ChooseCardCallback, launchEffectCard:GetOwner());
+    chooseCardEffectProcess:SetTitle("请选择要破坏的卡牌！");
+	launchEffectCard:GetOwner():AddEffectProcess(chooseCardEffectProcess);
+
+	local currentChainEffectProcess = card1:GetDuelScene():GetCurrentChainEffectProcess();
+	currentChainEffectProcess:CostFinish()
+end
+
+function C4178474.LaunchEffect(launchEffectCard)
 	local chooseCardEffectProcess = CS.Assets.Script.Duel.EffectProcess.ChooseCardEffectProcess(launchEffectCard,C4178474.ChooseCardJudgeAction,C4178474.ChooseCardCallback, launchEffectCard:GetOwner());
     chooseCardEffectProcess:SetTitle("请选择要破坏的卡牌！");
 	launchEffectCard:GetOwner():AddEffectProcess(chooseCardEffectProcess);

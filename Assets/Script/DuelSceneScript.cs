@@ -482,7 +482,7 @@ namespace Assets.Script
         /// <param name="titleText"></param>
         public void ShowTitle(string titleText)
         {
-            if (string.IsNullOrEmpty(titleText))
+            if (string.IsNullOrWhiteSpace(titleText))
             {
                 Debug.Log(titleText);
             }

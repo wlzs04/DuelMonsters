@@ -183,6 +183,11 @@ namespace Assets.Script.Duel.EffectProcess
             return beInterrupted;
         }
 
+        public void SetCanChain(bool canChain)
+        {
+            this.canChain= canChain;
+        }
+
         public bool GetCanChain()
         {
             return canChain;
